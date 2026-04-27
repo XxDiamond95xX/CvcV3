@@ -1,25 +1,23 @@
-# CVC Academy — cycle frigorifique interactif
+# CVC Academy — Application d'apprentissage frigorifique
 
-Application Next.js destinée à la formation des nouveaux arrivants en CVC/frigorifique.
+Projet Next.js complet pour apprendre le cycle frigorifique avec une interface split-screen : cours structuré à gauche, simulateur 3D et diagramme Mollier pédagogique à droite.
 
 ## Routes
 
-- `/` : accueil produit
-- `/learn` : parcours pédagogique split-screen
-- `/simulator` : mode expert terrain avec scénarios et réglages
+- `/` : page d'accueil avec choix du mode
+- `/learn` : mode apprentissage, cours + simulation synchronisée
+- `/simulator` : mode expert, réglage manuel BP/HP/SH/SR + diagnostic
 
-## Points clés
+## Stack
 
-- Circuit frigorifique 3D interactif
-- Fluide visible dans les tuyauteries
-- Couleurs par état du fluide
-- Vue complète / formation / circuit seul
-- Modes Débutant / Terrain / Expert
-- Scénarios de panne typiques
-- Diagnostic assisté BP / HP / SH / SR
-- Notions de récupération fluide, tirage au vide, non-condensables et antigel
+- Next.js `14.2.29`
+- React `18.3.1`
+- Three.js `0.160.0`
+- Zustand
+- Tailwind CSS + PostCSS + Autoprefixer
+- Lucide React
 
-## Installation
+## Installation locale
 
 ```bash
 npm install
@@ -28,18 +26,56 @@ npm run dev
 
 Puis ouvrir :
 
-```txt
+```bash
 http://localhost:3000
 ```
 
-## Fichiers importants
+## Déploiement Vercel
 
-- `src/components/HvacCycle3D.jsx` : circuit 3D, UX de simulation, légendes, visite guidée
-- `src/data/courses.json` : contenu pédagogique
-- `src/app/learn/page.jsx` : interface de formation
-- `src/app/simulator/page.jsx` : simulateur expert
-- `src/lib/diagnostics.js` : règles de diagnostic pédagogique
+1. Pousser ce dossier sur GitHub.
+2. Importer le repo dans Vercel.
+3. Framework preset : `Next.js`.
+4. Build command : `npm run build`.
+5. Output directory : laisser vide / défaut Next.js.
+
+## Où modifier les cours
+
+Les contenus pédagogiques sont dans :
+
+```bash
+src/data/courses.json
+```
+
+Chaque chapitre pilote automatiquement :
+
+- le texte du cours,
+- le composant mis en avant dans le circuit 3D,
+- les valeurs simulées BP, HP, SH, SR,
+- le checkpoint de validation.
+
+## Structure principale
+
+```bash
+src/
+  app/
+    page.jsx
+    learn/page.jsx
+    simulator/page.jsx
+  components/
+    HvacCycle3D.jsx
+    MollierDiagram.jsx
+    DiagnosticPanel.jsx
+    CheckpointQuiz.jsx
+    MetricCard.jsx
+    TechnicalText.jsx
+  data/
+    courses.json
+  lib/
+    diagnostics.js
+  store/
+    useLearningStore.js
+```
 
 ## Note métier
 
-Les diagnostics sont pédagogiques. En intervention réelle, les mesures doivent être confirmées avec le contexte de l’installation, les températures d’air/eau, les conditions extérieures, l’état des échangeurs, les débits et les procédures réglementaires.
+Le diagramme Mollier est volontairement simplifié : il sert à la pédagogie et à la compréhension des tendances, pas au dimensionnement réglementaire ou au calcul de charge réel.
