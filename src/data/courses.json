@@ -3,13 +3,13 @@
     {
       "id": "m1_fondamentaux",
       "title": "Le Cycle Frigorifique Fondamental",
-      "level": "Débutant → Intermédiaire",
-      "description": "Comprendre les 4 organes du circuit frigorifique, les changements d'état et les mesures terrain essentielles.",
+      "level": "Débutant → Terrain",
+      "description": "Formation des nouveaux arrivants : cycle frigorifique, états du fluide, mesures terrain, diagnostic, purge/tirage au vide, antigel et sécurité.",
       "chapters": [
         {
           "id": "c1_intro",
           "title": "Les 4 temps du froid",
-          "content": "Le cycle frigorifique transfère la chaleur d'une source froide vers une source chaude. Il utilise un fluide frigorigène qui change d'état dans un circuit fermé.\n\nLes 4 organes principaux sont : **compresseur**, **condenseur**, **détendeur** et **évaporateur**.\n\nObjectif terrain : savoir relier ce que tu vois sur les manomètres aux phénomènes physiques qui se passent dans le circuit.",
+          "content": "Le cycle frigorifique transfère la chaleur d'une source froide vers une source chaude. Il utilise un fluide frigorigène qui change d'état dans un circuit fermé.\n\nLes 4 organes principaux sont : **compresseur**, **condenseur**, **détendeur** et **évaporateur**.\n\nObjectif terrain : savoir relier ce que tu vois sur les manomètres aux phénomènes physiques qui se passent dans le circuit.\n\n**Pour un nouvel arrivant :** retiens d'abord le sens de circulation. Le compresseur aspire la vapeur BP, refoule une vapeur chaude HP, le condenseur la transforme en liquide HP, le détendeur abaisse la pression, puis l'évaporateur absorbe la chaleur.\n\n**Erreur fréquente :** chercher une panne uniquement avec BP/HP. Les pressions donnent une direction, mais la conclusion vient du croisement avec SH, SR, températures d'air, état des filtres et état des échangeurs.",
           "focus_component": "all",
           "simulation_preset": {
             "bp": 4.5,
@@ -30,12 +30,44 @@
             ],
             "correct": 1,
             "explanation": "Le compresseur aspire la vapeur basse pression et la comprime en vapeur haute pression."
-          }
+          },
+          "quiz": [
+            {
+              "question": "Quel organe fournit l'énergie mécanique au fluide ?",
+              "answers": [
+                "Le condenseur",
+                "Le compresseur",
+                "Le détendeur"
+              ],
+              "correct": 1,
+              "explanation": "Le compresseur aspire la vapeur basse pression et la comprime en vapeur haute pression."
+            },
+            {
+              "question": "Quel est le bon sens général du cycle ?",
+              "answers": [
+                "Compresseur → condenseur → détendeur → évaporateur",
+                "Condenseur → évaporateur → compresseur → détendeur",
+                "Détendeur → condenseur → compresseur → évaporateur"
+              ],
+              "correct": 0,
+              "explanation": "Le fluide est comprimé, condensé, détendu puis évaporé avant de revenir au compresseur."
+            },
+            {
+              "question": "Quelle est la bonne habitude de diagnostic ?",
+              "answers": [
+                "Croiser plusieurs indices",
+                "Décider uniquement avec la HP",
+                "Ajouter du fluide sans contrôle"
+              ],
+              "correct": 0,
+              "explanation": "Un diagnostic fiable se fait par recoupement des mesures et du contexte terrain."
+            }
+          ]
         },
         {
           "id": "c2_compression",
           "title": "1. La Compression",
-          "content": "Le compresseur aspire le fluide à l'état de **vapeur basse pression / basse température**. Il le comprime, ce qui élève fortement sa pression et sa température. C'est l'étape qui consomme l'énergie mécanique.\n\nÀ retenir : le fluide en entrée compresseur doit impérativement être gazeux. Une arrivée de liquide peut provoquer un coup de liquide et casser la mécanique.\n\nIndice terrain : une surchauffe trop faible peut indiquer un risque de retour liquide.",
+          "content": "Le compresseur aspire le fluide à l'état de **vapeur basse pression / basse température**. Il le comprime, ce qui élève fortement sa pression et sa température. C'est l'étape qui consomme l'énergie mécanique.\n\nÀ retenir : le fluide en entrée compresseur doit impérativement être gazeux. Une arrivée de liquide peut provoquer un coup de liquide et casser la mécanique.\n\nIndice terrain : une surchauffe trop faible peut indiquer un risque de retour liquide.\n\n**À observer sur le terrain :** bruit compresseur, intensité électrique, température de refoulement, état de l'huile, vibrations et stabilité de la pression d'aspiration. Une compression trop sévère fatigue l'installation et fait chuter le rendement.\n\n**Point sécurité :** un retour liquide peut provoquer un coup de liquide. Une surchauffe trop faible ou instable doit donc être prise au sérieux.",
           "focus_component": "compressor",
           "simulation_preset": {
             "bp": 4.5,
@@ -56,12 +88,44 @@
             ],
             "correct": 0,
             "explanation": "Le liquide est très peu compressible et peut endommager clapets, pistons ou spirales."
-          }
+          },
+          "quiz": [
+            {
+              "question": "Pourquoi évite-t-on le liquide à l'aspiration du compresseur ?",
+              "answers": [
+                "Parce que le liquide est peu compressible",
+                "Parce qu'il augmente la ventilation",
+                "Parce qu'il diminue la pression HP"
+              ],
+              "correct": 0,
+              "explanation": "Le liquide est très peu compressible et peut endommager clapets, pistons ou spirales."
+            },
+            {
+              "question": "Quel symptôme peut signaler une compression trop sévère ?",
+              "answers": [
+                "Température de refoulement élevée",
+                "Voyant toujours vide par principe",
+                "Condenseur plus froid que l’air extérieur"
+              ],
+              "correct": 0,
+              "explanation": "Une température de refoulement élevée peut venir d’une HP excessive ou d’une surchauffe importante."
+            },
+            {
+              "question": "Quelle mesure aide à protéger le compresseur contre le liquide ?",
+              "answers": [
+                "La surchauffe",
+                "La couleur du capot",
+                "La longueur du câble"
+              ],
+              "correct": 0,
+              "explanation": "La surchauffe confirme que le fluide est bien vapeur avant le compresseur."
+            }
+          ]
         },
         {
           "id": "c3_condensation",
           "title": "2. La Condensation",
-          "content": "Le gaz chaud haute pression entre dans le condenseur. Au contact de l'air extérieur ou de l'eau, il cède sa chaleur et se liquéfie.\n\nLe **sous-refroidissement** est la différence entre la température de condensation lue au manomètre et la température réelle du liquide en sortie condenseur.\n\nIndice terrain : un sous-refroidissement élevé peut traduire une charge importante ou un condenseur qui stocke beaucoup de liquide.",
+          "content": "Le gaz chaud haute pression entre dans le condenseur. Au contact de l'air extérieur ou de l'eau, il cède sa chaleur et se liquéfie.\n\nLe **sous-refroidissement** est la différence entre la température de condensation lue au manomètre et la température réelle du liquide en sortie condenseur.\n\nIndice terrain : un sous-refroidissement élevé peut traduire une charge importante ou un condenseur qui stocke beaucoup de liquide.\n\n**À observer sur le terrain :** batterie condenseur propre, ventilateur en bon état, débit d'air correct, température extérieure cohérente, absence d'obstacle au rejet d'air.\n\n**Lecture rapide :** HP élevée + condenseur très chaud peut évoquer un condenseur encrassé, une ventilation insuffisante, une température extérieure élevée, un excès de charge ou des non-condensables.",
           "focus_component": "condenser",
           "simulation_preset": {
             "bp": 4.5,
@@ -82,12 +146,44 @@
             ],
             "correct": 1,
             "explanation": "SR = température de condensation saturée - température réelle du liquide."
-          }
+          },
+          "quiz": [
+            {
+              "question": "Que mesure le sous-refroidissement ?",
+              "answers": [
+                "L'écart entre aspiration et refoulement",
+                "L'écart entre température de condensation et température liquide",
+                "Le débit d'air évaporateur"
+              ],
+              "correct": 1,
+              "explanation": "SR = température de condensation saturée - température réelle du liquide."
+            },
+            {
+              "question": "Quel défaut fait souvent monter la HP ?",
+              "answers": [
+                "Condenseur encrassé ou mal ventilé",
+                "Évaporateur parfaitement propre",
+                "Filtre à air neuf uniquement"
+              ],
+              "correct": 0,
+              "explanation": "Si le condenseur rejette mal la chaleur, la pression de condensation augmente."
+            },
+            {
+              "question": "Que peut provoquer une HP trop élevée ?",
+              "answers": [
+                "Rendement plus faible et sécurité HP",
+                "COP toujours meilleur",
+                "Aucun effet sur le compresseur"
+              ],
+              "correct": 0,
+              "explanation": "Une HP élevée augmente le travail du compresseur et peut déclencher une sécurité."
+            }
+          ]
         },
         {
           "id": "c4_detente",
           "title": "3. La Détente",
-          "content": "Le détendeur crée une chute de pression brutale entre la ligne liquide haute pression et l'entrée évaporateur basse pression. Une partie du liquide se vaporise instantanément : c'est le flash-gaz.\n\nSon rôle est de doser le débit de fluide vers l'évaporateur. Trop ouvert : risque de suralimentation. Trop fermé : évaporateur affamé.\n\nIndice terrain : une surchauffe très élevée avec BP basse peut orienter vers un manque de débit fluide.",
+          "content": "Le détendeur crée une chute de pression brutale entre la ligne liquide haute pression et l'entrée évaporateur basse pression. Une partie du liquide se vaporise instantanément : c'est le flash-gaz.\n\nSon rôle est de doser le débit de fluide vers l'évaporateur. Trop ouvert : risque de suralimentation. Trop fermé : évaporateur affamé.\n\nIndice terrain : une surchauffe très élevée avec BP basse peut orienter vers un manque de débit fluide.\n\n**À observer sur le terrain :** position du bulbe, isolation du bulbe, filtre en amont, égalisation externe si présente, stabilité de la surchauffe. Un détendeur ne se règle pas au hasard : il se règle après avoir confirmé que la charge, les échanges et les filtres sont corrects.\n\n**Symptôme typique :** BP basse + SH élevée = évaporateur probablement sous-alimenté, mais la cause peut être manque de charge, filtre bouché, détendeur trop fermé ou restriction.",
           "focus_component": "expansionValve",
           "simulation_preset": {
             "bp": 3.2,
@@ -108,12 +204,44 @@
             ],
             "correct": 1,
             "explanation": "Le détendeur abaisse la pression et prépare l'évaporation à basse température."
-          }
+          },
+          "quiz": [
+            {
+              "question": "Quel est l'effet principal du détendeur ?",
+              "answers": [
+                "Augmenter la pression",
+                "Créer une chute de pression",
+                "Transformer le compresseur en condenseur"
+              ],
+              "correct": 1,
+              "explanation": "Le détendeur abaisse la pression et prépare l'évaporation à basse température."
+            },
+            {
+              "question": "Que peut indiquer BP basse + SH élevée ?",
+              "answers": [
+                "Évaporateur affamé",
+                "Retour liquide certain",
+                "Condenseur supprimé"
+              ],
+              "correct": 0,
+              "explanation": "Ce couple de symptômes indique souvent un manque d’alimentation de l’évaporateur."
+            },
+            {
+              "question": "Pourquoi ne règle-t-on pas un détendeur sans contrôle préalable ?",
+              "answers": [
+                "Parce que la cause peut venir d’ailleurs",
+                "Parce qu’un détendeur ne sert à rien",
+                "Parce que la HP devient toujours nulle"
+              ],
+              "correct": 0,
+              "explanation": "Il faut vérifier charge, filtre, échanges et conditions de fonctionnement avant réglage."
+            }
+          ]
         },
         {
           "id": "c5_evaporation",
           "title": "4. L'Évaporation",
-          "content": "Dans l'évaporateur, le fluide basse pression absorbe la chaleur du local ou du fluide à refroidir. Il s'évapore progressivement jusqu'à devenir vapeur.\n\nLa **surchauffe** est l'écart entre la température réelle du gaz en sortie évaporateur et la température d'évaporation saturée.\n\nIndice terrain : la surchauffe confirme que le fluide est bien vapeur en sortie évaporateur, mais une valeur trop élevée peut signaler un manque d'alimentation.",
+          "content": "Dans l'évaporateur, le fluide basse pression absorbe la chaleur du local ou du fluide à refroidir. Il s'évapore progressivement jusqu'à devenir vapeur.\n\nLa **surchauffe** est l'écart entre la température réelle du gaz en sortie évaporateur et la température d'évaporation saturée.\n\nIndice terrain : la surchauffe confirme que le fluide est bien vapeur en sortie évaporateur, mais une valeur trop élevée peut signaler un manque d'alimentation.\n\n**À observer sur le terrain :** filtre à air, propreté batterie, ventilateur, débit d'air, température entrée/sortie air, présence de givre. Un évaporateur qui manque d'air peut donner des symptômes proches d'un manque de fluide.\n\n**Point protection :** la sortie évaporateur doit garantir un retour vapeur au compresseur, mais sans affamer inutilement l'évaporateur.",
           "focus_component": "evaporator",
           "simulation_preset": {
             "bp": 4.1,
@@ -134,12 +262,44 @@
             ],
             "correct": 1,
             "explanation": "Une surchauffe positive indique que le fluide est au-delà de la vapeur saturée."
-          }
+          },
+          "quiz": [
+            {
+              "question": "Que garantit une surchauffe positive en sortie évaporateur ?",
+              "answers": [
+                "Le fluide est liquide",
+                "Le fluide est vapeur",
+                "La HP est nulle"
+              ],
+              "correct": 1,
+              "explanation": "Une surchauffe positive indique que le fluide est au-delà de la vapeur saturée."
+            },
+            {
+              "question": "Quel problème côté air peut perturber l’évaporateur ?",
+              "answers": [
+                "Filtre encrassé ou débit d’air faible",
+                "Tuyau de refoulement rouge",
+                "Sous-refroidissement affiché"
+              ],
+              "correct": 0,
+              "explanation": "Un débit d’air faible réduit l’apport de chaleur à l’évaporateur."
+            },
+            {
+              "question": "Que peut provoquer un évaporateur trop froid ?",
+              "answers": [
+                "Givre ou risque antigel",
+                "Compression parfaite garantie",
+                "Disparition de la BP"
+              ],
+              "correct": 0,
+              "explanation": "Une température d’évaporation trop basse peut entraîner du givre ou un risque de gel selon l’application."
+            }
+          ]
         },
         {
           "id": "c6_diagnostic",
           "title": "Lecture rapide d'un diagnostic",
-          "content": "Le diagnostic CVC consiste à croiser plusieurs indices : BP, HP, surchauffe, sous-refroidissement, température d'air et état des échangeurs.\n\nExemple : BP basse + SH élevée + SR normal peut évoquer un détendeur trop fermé, un filtre déshydrateur partiellement bouché ou un manque de charge selon le contexte.\n\nRègle pro : ne jamais conclure avec une seule valeur. On confirme toujours par recoupement.",
+          "content": "Le diagnostic CVC consiste à croiser plusieurs indices : BP, HP, surchauffe, sous-refroidissement, température d'air et état des échangeurs.\n\nExemple : BP basse + SH élevée + SR normal peut évoquer un détendeur trop fermé, un filtre déshydrateur partiellement bouché ou un manque de charge selon le contexte.\n\nRègle pro : ne jamais conclure avec une seule valeur. On confirme toujours par recoupement.\n\n**Méthode pro :** 1) vérifier les échanges, 2) stabiliser la machine, 3) mesurer BP/HP/SH/SR, 4) comparer aux valeurs attendues, 5) formuler une hypothèse, 6) chercher ce qui la confirme et ce qui la contredit.\n\n**Règle métier :** avant d'ajouter du fluide, vérifie les filtres, batteries, ventilateurs, sondes, conditions extérieures et historique d'intervention.",
           "focus_component": "diagnostic",
           "simulation_preset": {
             "bp": 2.8,
@@ -160,59 +320,329 @@
             ],
             "correct": 1,
             "explanation": "Les symptômes se recoupent : il faut comparer plusieurs mesures et le contexte d'installation."
-          }
-        },
-        {
-          "id": "c7_intervention",
-          "title": "Intervenir proprement : purge, récupération et vide",
-          "content": "Sur une installation frigorifique, le mot « purge » doit être compris correctement. L’objectif professionnel n’est pas de rejeter du fluide frigorigène, mais d’évacuer l’air, l’humidité et les non-condensables lors de la mise en service ou après ouverture du circuit.\n\nLa bonne méthode repose sur trois idées : **récupérer le fluide**, **tirer au vide** et **contrôler la tenue du vide**. L’humidité dans le circuit peut créer de l’acidité, de la glace au détendeur et des pannes répétées.\n\nIndice terrain : une HP anormalement élevée avec condensation instable peut être liée à un mauvais échange, mais aussi à de l’air ou des non-condensables. On vérifie toujours le contexte d’intervention avant de conclure.",
-          "focus_component": "condenser",
-          "simulation_preset": {
-            "bp": 4.6,
-            "hp": 22.6,
-            "sh": 7,
-            "sc": 5,
-            "evapTemp": 3,
-            "condTemp": 55,
-            "cop": 2.4,
-            "fault": "Suspicion air / non-condensables"
           },
-          "checkpoint": {
-            "question": "Que cherche-t-on surtout à éliminer par tirage au vide ?",
-            "answers": [
-              "L’air et l’humidité",
-              "Le compresseur",
-              "Le sous-refroidissement"
-            ],
-            "correct": 0,
-            "explanation": "Le tirage au vide sert à évacuer l’air et l’humidité avant une charge ou une remise en service."
-          }
+          "quiz": [
+            {
+              "question": "Pourquoi ne faut-il pas diagnostiquer avec une seule mesure ?",
+              "answers": [
+                "Parce que les manomètres ne servent à rien",
+                "Parce que plusieurs pannes peuvent donner un symptôme similaire",
+                "Parce que la BP est toujours fixe"
+              ],
+              "correct": 1,
+              "explanation": "Les symptômes se recoupent : il faut comparer plusieurs mesures et le contexte d'installation."
+            },
+            {
+              "question": "Quelle vérification faire avant de suspecter la charge ?",
+              "answers": [
+                "Échanges air/eau et propreté des batteries",
+                "Changer directement le compresseur",
+                "Ignorer SH et SR"
+              ],
+              "correct": 0,
+              "explanation": "Les défauts d’échange peuvent imiter un problème de charge."
+            },
+            {
+              "question": "Que signifie “recouper les indices” ?",
+              "answers": [
+                "Comparer mesures, symptômes et contexte",
+                "Choisir la première valeur venue",
+                "Travailler sans thermomètre"
+              ],
+              "correct": 0,
+              "explanation": "Le recoupement évite les diagnostics rapides mais faux."
+            }
+          ]
         },
         {
-          "id": "c8_antigel",
-          "title": "Protection antigel et évaporateur",
-          "content": "L’évaporateur est l’organe qui produit le froid utile, mais c’est aussi un point sensible. Si la température d’évaporation descend trop bas, si le débit d’air ou d’eau est insuffisant, ou si la régulation est mal réglée, l’échangeur peut givrer ou prendre en glace.\n\nSur batterie à air, on surveille les filtres, ventilateurs, sondes et l’état de la batterie. Sur eau glacée, la protection antigel est critique : elle évite la prise en glace de l’échangeur et les dégâts mécaniques.\n\nIndice terrain : **BP basse + givre + débit d’air faible** oriente vers un problème d’échange côté évaporateur. **BP basse + SH élevée** oriente plutôt vers un évaporateur sous-alimenté ou un manque de charge.",
+          "id": "c7_surchauffe",
+          "title": "La surchauffe : lecture et interprétation",
+          "content": "La **surchauffe** est l'écart entre la température réelle du gaz en sortie évaporateur et la température d'évaporation saturée correspondant à la BP.\n\nElle sert à confirmer que le fluide est bien vapeur avant le compresseur. Une SH trop faible peut indiquer une suralimentation ou un risque de retour liquide. Une SH trop élevée peut indiquer un évaporateur affamé.\n\nExemple : si la température d'évaporation saturée est de 0 °C et que le tube d'aspiration est à 7 °C, la surchauffe est de 7 K. On raisonne en écart, pas seulement en température absolue.\n\n**À retenir :** SH faible = danger potentiel pour le compresseur. SH élevée = manque probable d'alimentation évaporateur, à confirmer par BP, SR et état des échangeurs.",
           "focus_component": "evaporator",
           "simulation_preset": {
-            "bp": 2.7,
-            "hp": 17.2,
-            "sh": 8,
+            "bp": 4.0,
+            "hp": 18.0,
+            "sh": 2,
+            "sc": 4,
+            "evapTemp": 0,
+            "condTemp": 45,
+            "cop": 3.0,
+            "fault": "SH faible : surveiller le retour liquide"
+          },
+          "checkpoint": {
+            "question": "À quoi sert principalement la surchauffe ?",
+            "answers": [
+              "Vérifier que le fluide est vapeur avant compresseur",
+              "Mesurer uniquement la température extérieure",
+              "Régler la vitesse du ventilateur condenseur"
+            ],
+            "correct": 0,
+            "explanation": "La surchauffe donne une sécurité contre le retour liquide, si elle est interprétée correctement."
+          },
+          "quiz": [
+            {
+              "question": "À quoi sert principalement la surchauffe ?",
+              "answers": [
+                "Vérifier que le fluide est vapeur avant compresseur",
+                "Mesurer uniquement la température extérieure",
+                "Régler la vitesse du ventilateur condenseur"
+              ],
+              "correct": 0,
+              "explanation": "La surchauffe donne une sécurité contre le retour liquide, si elle est interprétée correctement."
+            },
+            {
+              "question": "Que peut indiquer SH élevée + BP basse ?",
+              "answers": [
+                "Évaporateur affamé",
+                "Retour liquide certain",
+                "Condenseur trop propre"
+              ],
+              "correct": 0,
+              "explanation": "Ce couple oriente vers un manque d’alimentation évaporateur."
+            },
+            {
+              "question": "Une surchauffe s’exprime généralement en...",
+              "answers": [
+                "Kelvin d’écart",
+                "Ampère",
+                "Pourcentage de charge uniquement"
+              ],
+              "correct": 0,
+              "explanation": "C’est une différence de température."
+            }
+          ]
+        },
+        {
+          "id": "c8_sous_refroidissement",
+          "title": "Le sous-refroidissement : stabilité de la ligne liquide",
+          "content": "Le **sous-refroidissement** est l'écart entre la température de condensation saturée correspondant à la HP et la température réelle du liquide en sortie condenseur.\n\nIl indique si le liquide est suffisamment refroidi avant d'arriver au détendeur. Un SR correct aide à alimenter le détendeur avec du liquide stable.\n\nSR faible : manque de charge possible, liquide instable, échange insuffisant ou conditions particulières selon installation. SR élevé : charge importante, condenseur qui stocke du liquide ou excès de charge possible.\n\n**Règle terrain :** le SR ne se juge jamais seul. Il se compare à la SH, aux pressions, aux températures d'air et à l'état des échangeurs.",
+          "focus_component": "condenser",
+          "simulation_preset": {
+            "bp": 4.4,
+            "hp": 18.3,
+            "sh": 6,
+            "sc": 1,
+            "evapTemp": 1,
+            "condTemp": 45,
+            "cop": 2.9,
+            "fault": "SR faible : liquide potentiellement instable"
+          },
+          "checkpoint": {
+            "question": "Que vérifie le sous-refroidissement ?",
+            "answers": [
+              "La stabilité du liquide avant détendeur",
+              "La vitesse exacte du compresseur",
+              "La température du local uniquement"
+            ],
+            "correct": 0,
+            "explanation": "Le SR confirme que le fluide est bien liquide et suffisamment refroidi avant détente."
+          },
+          "quiz": [
+            {
+              "question": "Que vérifie le sous-refroidissement ?",
+              "answers": [
+                "La stabilité du liquide avant détendeur",
+                "La vitesse exacte du compresseur",
+                "La température du local uniquement"
+              ],
+              "correct": 0,
+              "explanation": "Le SR confirme que le fluide est bien liquide et suffisamment refroidi avant détente."
+            },
+            {
+              "question": "Que peut provoquer un SR trop faible ?",
+              "answers": [
+                "Liquide instable avant détendeur",
+                "Compression parfaite garantie",
+                "Suppression du besoin de détendeur"
+              ],
+              "correct": 0,
+              "explanation": "Le détendeur doit recevoir du liquide stable."
+            },
+            {
+              "question": "Pourquoi ne pas conclure avec le SR seul ?",
+              "answers": [
+                "Il doit être croisé avec SH, pressions et contexte",
+                "Il est toujours inutile",
+                "Il ne concerne jamais le condenseur"
+              ],
+              "correct": 0,
+              "explanation": "Le SR fait partie d’un ensemble de mesures."
+            }
+          ]
+        },
+        {
+          "id": "c9_tirage_vide_purge",
+          "title": "Tirage au vide, purge et non-condensables",
+          "content": "Dans le langage terrain, on parle parfois de **purge**, mais il faut être précis. Sur une installation frigorifique, on ne rejette pas volontairement de fluide frigorigène à l'atmosphère. On récupère le fluide avec une station adaptée.\n\nLe **tirage au vide** sert à retirer l'air et l'humidité du circuit avant la charge ou après ouverture. L'humidité peut former des acides, geler au détendeur ou dégrader l'huile.\n\nLes **non-condensables**, comme l'air, peuvent faire monter la HP, perturber la condensation et réduire le rendement. Un circuit mal tiré au vide peut donc imiter un condenseur insuffisant.\n\n**Bonne pratique :** vacuomètre, contrôle de tenue au vide, filtre déshydrateur adapté, récupération du fluide et respect des procédures de sécurité.",
+          "focus_component": "all",
+          "simulation_preset": {
+            "bp": 4.5,
+            "hp": 23.0,
+            "sh": 7,
+            "sc": 4,
+            "evapTemp": 2,
+            "condTemp": 55,
+            "cop": 2.3,
+            "fault": "Air/non-condensables possibles : HP élevée"
+          },
+          "checkpoint": {
+            "question": "À quoi sert le tirage au vide ?",
+            "answers": [
+              "Retirer l’air et l’humidité du circuit",
+              "Ajouter du fluide sans contrôle",
+              "Refroidir le condenseur avec de l’eau"
+            ],
+            "correct": 0,
+            "explanation": "Le tirage au vide prépare le circuit en retirant air et humidité."
+          },
+          "quiz": [
+            {
+              "question": "À quoi sert le tirage au vide ?",
+              "answers": [
+                "Retirer l’air et l’humidité du circuit",
+                "Ajouter du fluide sans contrôle",
+                "Refroidir le condenseur avec de l’eau"
+              ],
+              "correct": 0,
+              "explanation": "Le tirage au vide prépare le circuit en retirant air et humidité."
+            },
+            {
+              "question": "Pourquoi les non-condensables posent problème ?",
+              "answers": [
+                "Ils peuvent faire monter la HP",
+                "Ils améliorent toujours le COP",
+                "Ils remplacent le condenseur"
+              ],
+              "correct": 0,
+              "explanation": "L’air perturbe la condensation et augmente la pression."
+            },
+            {
+              "question": "Que fait-on du fluide avant ouverture du circuit ?",
+              "answers": [
+                "On le récupère",
+                "On le relâche volontairement",
+                "On l’ignore"
+              ],
+              "correct": 0,
+              "explanation": "La récupération est une bonne pratique de sécurité et d’environnement."
+            }
+          ]
+        },
+        {
+          "id": "c10_antigel",
+          "title": "Antigel évaporateur et protection installation",
+          "content": "Le risque antigel apparaît quand la température d'évaporation ou la température de batterie devient trop basse. Sur une batterie à eau glacée, le gel peut détruire l'échangeur. Sur un évaporateur air, le givre réduit le débit et aggrave le défaut.\n\nCauses fréquentes : débit d'air faible, filtre encrassé, ventilateur défaillant, consigne trop basse, sonde mal placée, détendeur mal alimenté ou charge incorrecte.\n\nProtections possibles : pressostat BP, sonde antigel, thermostat de batterie, contrôle débit d'air/eau, dégivrage selon application et arrêt sécurité.\n\n**À retenir :** un évaporateur qui givre n'est pas forcément un manque de fluide. Il faut d'abord vérifier l'échange thermique et le débit.",
+          "focus_component": "evaporator",
+          "simulation_preset": {
+            "bp": 2.6,
+            "hp": 17.5,
+            "sh": 10,
             "sc": 3,
-            "evapTemp": -2,
-            "condTemp": 43,
-            "cop": 2.6,
+            "evapTemp": -12,
+            "condTemp": 42,
+            "cop": 2.1,
             "fault": "Risque antigel évaporateur"
           },
           "checkpoint": {
-            "question": "Quel duo doit alerter sur un risque de givrage évaporateur ?",
+            "question": "Quel symptôme favorise le risque antigel ?",
             "answers": [
-              "HP basse et SR élevé",
-              "BP basse et débit d’air faible",
-              "SH nulle et HP nulle"
+              "Température d’évaporation trop basse",
+              "Condensation parfaitement normale uniquement",
+              "HP toujours égale à zéro"
             ],
-            "correct": 1,
-            "explanation": "Une BP basse associée à un débit d’air faible peut conduire à une température d’évaporation trop basse et au givrage."
-          }
+            "correct": 0,
+            "explanation": "Une température d’évaporation trop basse peut entraîner givre ou gel selon l’application."
+          },
+          "quiz": [
+            {
+              "question": "Quel symptôme favorise le risque antigel ?",
+              "answers": [
+                "Température d’évaporation trop basse",
+                "Condensation parfaitement normale uniquement",
+                "HP toujours égale à zéro"
+              ],
+              "correct": 0,
+              "explanation": "Une température d’évaporation trop basse peut entraîner givre ou gel selon l’application."
+            },
+            {
+              "question": "Quelle cause terrain peut faire givrer un évaporateur air ?",
+              "answers": [
+                "Filtre encrassé",
+                "Condenseur trop propre",
+                "HP toujours normale"
+              ],
+              "correct": 0,
+              "explanation": "Le filtre encrassé réduit le débit d’air."
+            },
+            {
+              "question": "Quel élément peut protéger contre l’antigel ?",
+              "answers": [
+                "Sonde antigel ou pressostat BP",
+                "Voyant décoratif",
+                "Poignée de porte"
+              ],
+              "correct": 0,
+              "explanation": "Ces sécurités limitent les risques avant dommage."
+            }
+          ]
+        },
+        {
+          "id": "c11_securite",
+          "title": "Sécurité, récupération fluide et remise en service",
+          "content": "Un technicien travaille avec des pressions, de l'électricité, des pièces chaudes, des risques de brûlure par froid et des fluides réglementés. La sécurité fait partie de la compétence technique.\n\nAvant intervention : identifier le fluide, utiliser les EPI, ventiler la zone, sécuriser électriquement si nécessaire et utiliser du matériel adapté.\n\nPendant l'intervention : ne pas relâcher volontairement le fluide, contrôler les flexibles, éviter l'ouverture brutale d'une ligne sous pression et protéger les personnes autour.\n\nAprès intervention : contrôle d'étanchéité, tirage au vide si circuit ouvert, charge maîtrisée, essais, relevé des mesures et traçabilité. L'objectif est de rendre une installation fiable, sûre et conforme.",
+          "focus_component": "all",
+          "simulation_preset": {
+            "bp": 4.5,
+            "hp": 18.2,
+            "sh": 6,
+            "sc": 4,
+            "evapTemp": 2,
+            "condTemp": 45,
+            "cop": 3.3,
+            "fault": "Bonnes pratiques et sécurité"
+          },
+          "checkpoint": {
+            "question": "Quelle action est correcte avant d’ouvrir un circuit chargé ?",
+            "answers": [
+              "Récupérer le fluide avec matériel adapté",
+              "Le rejeter volontairement à l’atmosphère",
+              "Ouvrir sans identifier le fluide"
+            ],
+            "correct": 0,
+            "explanation": "Le fluide doit être récupéré selon les règles de sécurité et d’environnement."
+          },
+          "quiz": [
+            {
+              "question": "Quelle action est correcte avant d’ouvrir un circuit chargé ?",
+              "answers": [
+                "Récupérer le fluide avec matériel adapté",
+                "Le rejeter volontairement à l’atmosphère",
+                "Ouvrir sans identifier le fluide"
+              ],
+              "correct": 0,
+              "explanation": "Le fluide doit être récupéré selon les règles de sécurité et d’environnement."
+            },
+            {
+              "question": "Que faut-il faire après une ouverture du circuit ?",
+              "answers": [
+                "Contrôle d’étanchéité, tirage au vide, charge maîtrisée",
+                "Remettre en route sans mesure",
+                "Ajouter au hasard du fluide"
+              ],
+              "correct": 0,
+              "explanation": "La remise en service doit être contrôlée et tracée."
+            },
+            {
+              "question": "Pourquoi relever les mesures après intervention ?",
+              "answers": [
+                "Pour assurer la traçabilité et comparer plus tard",
+                "Pour remplir l’écran inutilement",
+                "Pour éviter tout diagnostic"
+              ],
+              "correct": 0,
+              "explanation": "Les mesures de référence sont utiles pour maintenance et dépannage."
+            }
+          ]
         }
       ]
     }
