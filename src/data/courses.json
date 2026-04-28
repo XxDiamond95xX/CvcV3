@@ -2,9 +2,9 @@
   "modules": [
     {
       "id": "m1_fondamentaux",
-      "title": "Le Cycle Frigorifique Fondamental",
-      "level": "Débutant → Terrain",
-      "description": "Formation des nouveaux arrivants : cycle frigorifique, états du fluide, mesures terrain, diagnostic, purge/tirage au vide, antigel et sécurité.",
+      "title": "Fondamentaux CVC et exploitation Data Center",
+      "level": "Débutant → Technicien site critique",
+      "description": "Formation progressive pour comprendre le cycle frigorifique, puis l’environnement réel d’un data center : salle IT, CRAC/CRAH, eau glacée, chaîne électrique, risers, supervision et interventions.",
       "chapters": [
         {
           "id": "c1_intro",
@@ -71,7 +71,7 @@
           "focus_component": "compressor",
           "simulation_preset": {
             "bp": 4.5,
-            "hp": 22.0,
+            "hp": 22,
             "sh": 8,
             "sc": 3,
             "evapTemp": 2,
@@ -245,7 +245,7 @@
           "focus_component": "evaporator",
           "simulation_preset": {
             "bp": 4.1,
-            "hp": 18.0,
+            "hp": 18,
             "sh": 7,
             "sc": 3,
             "evapTemp": 0,
@@ -360,13 +360,13 @@
           "content": "La **surchauffe** est l'écart entre la température réelle du gaz en sortie évaporateur et la température d'évaporation saturée correspondant à la BP.\n\nElle sert à confirmer que le fluide est bien vapeur avant le compresseur. Une SH trop faible peut indiquer une suralimentation ou un risque de retour liquide. Une SH trop élevée peut indiquer un évaporateur affamé.\n\nExemple : si la température d'évaporation saturée est de 0 °C et que le tube d'aspiration est à 7 °C, la surchauffe est de 7 K. On raisonne en écart, pas seulement en température absolue.\n\n**À retenir :** SH faible = danger potentiel pour le compresseur. SH élevée = manque probable d'alimentation évaporateur, à confirmer par BP, SR et état des échangeurs.",
           "focus_component": "evaporator",
           "simulation_preset": {
-            "bp": 4.0,
-            "hp": 18.0,
+            "bp": 4,
+            "hp": 18,
             "sh": 2,
             "sc": 4,
             "evapTemp": 0,
             "condTemp": 45,
-            "cop": 3.0,
+            "cop": 3,
             "fault": "SH faible : surveiller le retour liquide"
           },
           "checkpoint": {
@@ -477,7 +477,7 @@
           "focus_component": "all",
           "simulation_preset": {
             "bp": 4.5,
-            "hp": 23.0,
+            "hp": 23,
             "sh": 7,
             "sc": 4,
             "evapTemp": 2,
@@ -641,6 +641,516 @@
               ],
               "correct": 0,
               "explanation": "Les mesures de référence sont utiles pour maintenance et dépannage."
+            }
+          ]
+        },
+        {
+          "id": "c12_datacenter_vue_ensemble",
+          "title": "Data center : comprendre le système complet",
+          "focus_component": "racks",
+          "simulation_preset": {
+            "bp": 4.5,
+            "hp": 18.2,
+            "sh": 5,
+            "sc": 3,
+            "evapTemp": 2,
+            "condTemp": 45,
+            "cop": 3.2,
+            "fault": "Salle IT nominale"
+          },
+          "content": "Un data center n’est pas seulement une climatisation plus grosse. C’est un ensemble coordonné : **charge IT**, refroidissement, distribution électrique, supervision, sécurité et procédures d’exploitation.\n\nLa charge IT consomme de l’électricité et transforme presque toute cette énergie en chaleur. Le rôle du froid est donc simple à formuler, mais exigeant à tenir : **évacuer la chaleur sans interruption**, avec une marge suffisante en cas de panne ou de maintenance.\n\nLes nouveaux arrivants doivent apprendre à raisonner en chaîne :\n\n- d’où vient l’énergie ?\n- comment elle arrive aux baies ?\n- où la chaleur est produite ?\n- comment l’air froid arrive devant les serveurs ?\n- où repart l’air chaud ?\n- comment la chaleur est finalement rejetée dehors ?\n\n**À retenir :** sur un site critique, une action locale peut avoir une conséquence globale. Avant de modifier une consigne, fermer une vanne, acquitter une alarme ou intervenir sur une alimentation, on vérifie l’impact, la redondance et l’autorisation d’exploitation.",
+          "quiz": [
+            {
+              "question": "Dans une baie serveur, que devient principalement l’énergie électrique consommée ?",
+              "answers": [
+                "Elle est stockée dans les serveurs",
+                "Elle devient presque entièrement de la chaleur",
+                "Elle disparaît dans le réseau informatique",
+                "Elle refroidit naturellement la salle"
+              ],
+              "correct": 1,
+              "explanation": "La quasi-totalité de l’énergie électrique consommée par l’IT finit sous forme de chaleur. C’est cette chaleur qu’il faut évacuer en continu."
+            },
+            {
+              "question": "Pourquoi ne faut-il pas modifier une consigne de CRAC/CRAH sans analyse ?",
+              "answers": [
+                "Parce que la consigne n’a aucun effet",
+                "Parce que cela peut déséquilibrer la stratégie globale de refroidissement",
+                "Parce que les ventilateurs s’arrêtent toujours",
+                "Parce que la BP devient automatiquement nulle"
+              ],
+              "correct": 1,
+              "explanation": "Une consigne modifiée sur une seule unité peut créer des conflits de régulation, des mélanges d’air ou une perte de redondance."
+            },
+            {
+              "question": "Quelle est la bonne logique d’analyse en data center ?",
+              "answers": [
+                "Regarder seulement le compresseur",
+                "Regarder uniquement la température extérieure",
+                "Raisonner charge IT, air, froid, électricité et supervision",
+                "Remettre tous les défauts à zéro"
+              ],
+              "correct": 2,
+              "explanation": "Le diagnostic doit relier la charge IT, le flux d’air, le circuit froid, l’énergie et les alarmes BMS/DCIM."
+            }
+          ]
+        },
+        {
+          "id": "c13_salle_it_airflow",
+          "title": "Salle IT : baies, allées froides et allées chaudes",
+          "focus_component": "racks",
+          "simulation_preset": {
+            "bp": 4.5,
+            "hp": 18.2,
+            "sh": 5,
+            "sc": 3,
+            "evapTemp": 2,
+            "condTemp": 45,
+            "cop": 3.2,
+            "fault": "Confinement correct"
+          },
+          "content": "La salle IT doit être lue comme un circuit d’air.\n\nL’air froid doit arriver **en face avant des serveurs**, côté admission. L’air chaud ressort en face arrière. Si l’air chaud revient vers l’entrée des serveurs, on crée un **point chaud** même si la puissance froide totale semble suffisante.\n\nLes éléments à regarder pendant une ronde :\n\n- température d’entrée des baies ;\n- température de retour chaud ;\n- panneaux obturateurs dans les baies ;\n- portes ou cloisons de confinement ;\n- dalles perforées ou grilles de soufflage ;\n- obstacles devant les baies ;\n- cohérence entre charge IT et débit d’air.\n\nUne erreur fréquente consiste à regarder seulement la température de la salle. En data center, la bonne question est : **quelle température les serveurs aspirent-ils réellement ?**\n\n**Note terrain :** un point chaud local peut venir d’une mauvaise séparation d’air, d’une baie mal obturée, d’un câble qui bloque le flux ou d’un ventilateur IT en défaut.",
+          "quiz": [
+            {
+              "question": "Où faut-il prioritairement mesurer la température utile pour les serveurs ?",
+              "answers": [
+                "Au plafond uniquement",
+                "Devant les baies, côté entrée d’air serveur",
+                "Derrière les baies, au retour chaud seulement",
+                "Dans le local technique électrique"
+              ],
+              "correct": 1,
+              "explanation": "La température critique est celle aspirée par les serveurs, donc côté entrée d’air, dans l’allée froide."
+            },
+            {
+              "question": "À quoi servent les panneaux obturateurs dans les baies ?",
+              "answers": [
+                "À décorer les racks",
+                "À éviter le recyclage d’air chaud à travers les espaces vides",
+                "À augmenter la HP",
+                "À remplacer les filtres du CRAC"
+              ],
+              "correct": 1,
+              "explanation": "Les panneaux obturateurs empêchent l’air chaud de revenir vers l’avant de la baie par les emplacements libres."
+            },
+            {
+              "question": "Un point chaud local peut apparaître même si la puissance froide totale est suffisante. Pourquoi ?",
+              "answers": [
+                "Parce que le fluide ne circule jamais",
+                "Parce que l’air froid peut être mal distribué ou mélangé avec l’air chaud",
+                "Parce que le RMU chauffe la salle IT",
+                "Parce que le sous-refroidissement est toujours nul"
+              ],
+              "correct": 1,
+              "explanation": "Un problème de distribution d’air peut créer un point chaud local malgré une capacité froide globale suffisante."
+            }
+          ]
+        },
+        {
+          "id": "c14_crac_crah",
+          "title": "CRAC, CRAH et unités de salle",
+          "focus_component": "crac",
+          "simulation_preset": {
+            "bp": 4.5,
+            "hp": 18.2,
+            "sh": 5,
+            "sc": 3,
+            "evapTemp": 2,
+            "condTemp": 45,
+            "cop": 3.2,
+            "fault": "Unité de salle en service"
+          },
+          "content": "Les unités de salle assurent le traitement de l’air autour des baies.\n\nUn **CRAC** est souvent associé à une détente directe : le fluide frigorigène absorbe la chaleur dans une batterie. Un **CRAH** utilise généralement une batterie eau glacée : l’air cède sa chaleur à l’eau froide, puis cette chaleur est évacuée par le réseau hydraulique et les groupes/drycoolers.\n\nSur site, le technicien doit contrôler :\n\n- état des filtres ;\n- ventilateurs et variateurs ;\n- température de reprise ;\n- température de soufflage ;\n- delta T air ;\n- présence d’eau ou de condensats ;\n- vanne eau glacée ou détendeur ;\n- alarmes locales ;\n- sondes cohérentes avec la supervision.\n\n**Différence importante :** un défaut de débit d’air, un défaut de débit eau glacée et un défaut frigorifique peuvent tous produire une salle trop chaude. Il faut donc comparer les symptômes avant de conclure.",
+          "quiz": [
+            {
+              "question": "Quelle différence générale peut-on faire entre CRAC et CRAH ?",
+              "answers": [
+                "CRAC = réseau informatique, CRAH = onduleur",
+                "CRAC souvent détente directe, CRAH souvent batterie eau glacée",
+                "CRAC uniquement électrique, CRAH uniquement mécanique",
+                "Il n’y a jamais de différence"
+              ],
+              "correct": 1,
+              "explanation": "Dans le langage courant data center, CRAC désigne souvent une unité DX, CRAH une unité raccordée à l’eau glacée."
+            },
+            {
+              "question": "Quel contrôle est prioritaire sur une unité de salle qui refroidit mal ?",
+              "answers": [
+                "La couleur de la peinture",
+                "Débit d’air, filtres, reprise/soufflage et alarmes",
+                "La marque des serveurs",
+                "Le nombre de néons"
+              ],
+              "correct": 1,
+              "explanation": "Avant d’aller trop loin, il faut vérifier que l’air circule, que les filtres ne sont pas bloqués et que les températures sont cohérentes."
+            },
+            {
+              "question": "Pourquoi comparer reprise et soufflage ?",
+              "answers": [
+                "Pour estimer le transfert thermique côté air",
+                "Pour régler la RMU",
+                "Pour savoir si le PDU est ouvert",
+                "Pour supprimer le besoin de supervision"
+              ],
+              "correct": 0,
+              "explanation": "L’écart entre reprise et soufflage aide à comprendre si l’unité retire effectivement de la chaleur à l’air."
+            }
+          ]
+        },
+        {
+          "id": "c15_eau_glacee_hydraulique",
+          "title": "Eau glacée : pompes, vannes, glycol et antigel",
+          "focus_component": "pump",
+          "simulation_preset": {
+            "bp": 3.2,
+            "hp": 17.8,
+            "sh": 5,
+            "sc": 4,
+            "evapTemp": -0.3,
+            "condTemp": 44,
+            "cop": 3,
+            "fault": "Débit eau glacée à surveiller"
+          },
+          "content": "Beaucoup de data centers utilisent de l’eau glacée ou un mélange eau/glycol. Le froid n’est alors pas seulement une affaire de compresseur : il faut aussi maîtriser le débit hydraulique.\n\nPoints à connaître :\n\n- pompe primaire/secondaire ;\n- pression différentielle ;\n- vanne 2 voies ou 3 voies ;\n- filtre à tamis ;\n- température départ eau glacée ;\n- température retour ;\n- débit minimum ;\n- concentration glycol ;\n- protection antigel.\n\nUn débit trop faible peut provoquer une perte de capacité, une dérive de température salle ou un déclenchement antigel. Un mauvais taux de glycol peut aussi exposer l’installation au gel ou dégrader les performances.\n\n**Méthode terrain :** si une CRAH ne refroidit pas, vérifier à la fois le côté air et le côté eau : ventilateur, filtre, vanne, delta T eau, pression différentielle, pompe et consigne.",
+          "quiz": [
+            {
+              "question": "Sur une CRAH, que faut-il vérifier en plus du débit d’air ?",
+              "answers": [
+                "Le débit eau glacée et la vanne",
+                "La pression des pneus",
+                "Le voyant liquide du RMU",
+                "La couleur des câbles réseau"
+              ],
+              "correct": 0,
+              "explanation": "Une CRAH dépend du réseau eau glacée : vanne, débit, température départ/retour et pression différentielle sont essentiels."
+            },
+            {
+              "question": "À quoi sert le glycol dans certains réseaux ?",
+              "answers": [
+                "À augmenter la tension électrique",
+                "À améliorer la protection antigel",
+                "À remplacer les filtres",
+                "À supprimer les pompes"
+              ],
+              "correct": 1,
+              "explanation": "Le glycol abaisse le point de congélation, mais son taux doit être maîtrisé car il influence aussi les performances."
+            },
+            {
+              "question": "Un débit eau glacée trop faible peut provoquer :",
+              "answers": [
+                "Une meilleure capacité froide",
+                "Une perte de capacité et parfois un défaut antigel",
+                "Une suppression des alarmes",
+                "Une baisse automatique de la charge IT"
+              ],
+              "correct": 1,
+              "explanation": "Si le débit est insuffisant, la batterie n’échange plus correctement et les protections peuvent se déclencher."
+            }
+          ]
+        },
+        {
+          "id": "c16_electricite_critique",
+          "title": "Chaîne électrique : RMU, transformateur, TGBT, onduleur, PDU",
+          "focus_component": "ups",
+          "simulation_preset": {
+            "bp": 4.5,
+            "hp": 18.2,
+            "sh": 5,
+            "sc": 3,
+            "evapTemp": 2,
+            "condTemp": 45,
+            "cop": 3.2,
+            "fault": "Chaîne électrique nominale"
+          },
+          "content": "Un data center est aussi une installation électrique critique.\n\nChaîne typique simplifiée :\n\n1. **RMU HTA** : arrivée moyenne tension en boucle.\n2. **Transformateur** : conversion HTA vers basse tension.\n3. **TGBT / tableaux** : distribution basse tension.\n4. **Onduleur / UPS** : maintien des charges critiques pendant les défauts réseau.\n5. **PDU / busway** : distribution vers les baies, souvent en chemins A et B.\n6. **Baies IT** : charges finales.\n\nLe technicien CVC n’est pas forcément autorisé à manœuvrer ces équipements, mais il doit comprendre leur rôle. Une perte d’énergie peut arrêter pompes, groupes froids, unités de salle ou supervision. À l’inverse, une dérive thermique peut impacter les équipements électriques.\n\n**Règle professionnelle :** pas de manœuvre électrique sans habilitation, procédure, consignation et coordination exploitation.",
+          "quiz": [
+            {
+              "question": "Quel est le rôle principal de l’onduleur en data center ?",
+              "answers": [
+                "Produire du froid",
+                "Maintenir l’alimentation des charges critiques pendant les défauts courts",
+                "Remplacer le condenseur",
+                "Filtrer l’air de la salle"
+              ],
+              "correct": 1,
+              "explanation": "L’onduleur assure la continuité d’alimentation pendant les microcoupures et la transition vers les secours."
+            },
+            {
+              "question": "Que signifie généralement une distribution A/B vers les baies ?",
+              "answers": [
+                "Deux alimentations redondantes ou séparées",
+                "Deux circuits frigorifiques dans le même tube",
+                "Deux filtres d’air en série",
+                "Deux couleurs de peinture"
+              ],
+              "correct": 0,
+              "explanation": "Les alimentations A/B permettent de maintenir la charge si un chemin d’alimentation est indisponible, selon la conception du site."
+            },
+            {
+              "question": "Qui peut manœuvrer une cellule RMU HTA ?",
+              "answers": [
+                "N’importe quel technicien disponible",
+                "Uniquement du personnel habilité avec procédure",
+                "Le premier arrivé sur site",
+                "Le logiciel de quiz"
+              ],
+              "correct": 1,
+              "explanation": "La HTA nécessite habilitation, procédure, consignation et autorisation. Ce n’est pas une action improvisée."
+            }
+          ]
+        },
+        {
+          "id": "c17_riser_distribution",
+          "title": "Risers et cheminements techniques",
+          "focus_component": "riser",
+          "simulation_preset": {
+            "bp": 4.5,
+            "hp": 18.2,
+            "sh": 5,
+            "sc": 3,
+            "evapTemp": 2,
+            "condTemp": 45,
+            "cop": 3.2,
+            "fault": "Distribution verticale"
+          },
+          "content": "Le **riser** est une colonne technique verticale. Il peut contenir des câbles de puissance, du contrôle-commande, de la fibre, parfois des réseaux hydrauliques ou des supports de busway.\n\nUn bon technicien doit savoir lire un riser sans le considérer comme un simple placard.\n\nPoints à vérifier :\n\n- repérage clair des départs ;\n- séparation courants forts / courants faibles ;\n- supports mécaniques ;\n- coupe-feu entre niveaux ;\n- absence de condensation ;\n- accès maintenable ;\n- cohérence avec les plans ;\n- absence de stockage sauvage.\n\n**Danger courant :** couper le mauvais départ ou intervenir dans la mauvaise colonne. En site critique, le repérage et la validation d’impact sont aussi importants que l’action technique elle-même.",
+          "quiz": [
+            {
+              "question": "Pourquoi le coupe-feu est-il important dans un riser ?",
+              "answers": [
+                "Pour ralentir la propagation du feu et des fumées entre niveaux",
+                "Pour augmenter la BP",
+                "Pour faire tourner les ventilateurs plus vite",
+                "Pour remplacer une consignation"
+              ],
+              "correct": 0,
+              "explanation": "Les traversées verticales doivent préserver le compartimentage incendie du bâtiment."
+            },
+            {
+              "question": "Avant intervention dans un riser, que faut-il confirmer ?",
+              "answers": [
+                "Le repérage et l’impact réel du réseau concerné",
+                "La météo extérieure seulement",
+                "La couleur des baies",
+                "Le nombre de questions du quiz"
+              ],
+              "correct": 0,
+              "explanation": "Il faut identifier exactement le départ ou réseau concerné et valider l’impact avant toute action."
+            },
+            {
+              "question": "Quel problème peut créer de la condensation dans un riser ?",
+              "answers": [
+                "Risque électrique, corrosion ou dégradation d’isolants",
+                "Amélioration du rendement serveur",
+                "Suppression des alarmes",
+                "Augmentation automatique de l’autonomie UPS"
+              ],
+              "correct": 0,
+              "explanation": "La condensation près de chemins électriques ou de supports peut devenir dangereuse et doit être traitée."
+            }
+          ]
+        },
+        {
+          "id": "c18_supervision_bms_dcim",
+          "title": "Supervision BMS/DCIM : lire sans se laisser piéger",
+          "focus_component": "bms",
+          "simulation_preset": {
+            "bp": 4.2,
+            "hp": 21.5,
+            "sh": 6,
+            "sc": 6,
+            "evapTemp": 2,
+            "condTemp": 52,
+            "cop": 2.6,
+            "fault": "Alerte supervision"
+          },
+          "content": "La supervision est indispensable, mais elle ne remplace pas le raisonnement terrain.\n\nElle permet de voir :\n\n- alarmes actives ;\n- historiques ;\n- températures salle ;\n- températures baies ;\n- états ventilateurs/pompes/groupes ;\n- puissance électrique ;\n- tendances ;\n- communications automates.\n\nMais une sonde peut être mal placée, décalibrée ou non représentative. Une alarme acquittée peut rester non résolue. Une courbe peut être correcte globalement tout en masquant un point chaud local.\n\n**Méthode :** partir de la supervision pour prioriser, puis confirmer sur site quand l’impact est critique. Toujours noter l’heure, le symptôme, l’équipement concerné et l’action réalisée.",
+          "quiz": [
+            {
+              "question": "Une alarme acquittée signifie-t-elle que le défaut est résolu ?",
+              "answers": [
+                "Oui, toujours",
+                "Non, elle peut seulement avoir été reconnue par l’opérateur",
+                "Oui si elle est bleue",
+                "Oui si la salle est grande"
+              ],
+              "correct": 1,
+              "explanation": "Acquitter une alarme signifie souvent la reconnaître. Il faut vérifier si la cause a réellement disparu."
+            },
+            {
+              "question": "Pourquoi confirmer sur site une alarme critique ?",
+              "answers": [
+                "Parce que la supervision peut manquer de contexte ou avoir une sonde incohérente",
+                "Parce que les alarmes sont toujours fausses",
+                "Parce que les techniciens doivent marcher",
+                "Parce que le condenseur est toujours propre"
+              ],
+              "correct": 0,
+              "explanation": "La supervision guide le diagnostic, mais la vérification terrain reste essentielle sur un site critique."
+            },
+            {
+              "question": "Quelle information est utile dans un compte rendu d’alarme ?",
+              "answers": [
+                "Heure, symptôme, équipement, action et résultat",
+                "Uniquement le prénom du technicien",
+                "La couleur du badge",
+                "Le nombre de serveurs dans le monde"
+              ],
+              "correct": 0,
+              "explanation": "Un compte rendu exploitable doit permettre de comprendre la chronologie, l’impact et l’action réalisée."
+            }
+          ]
+        },
+        {
+          "id": "c19_modes_degrades",
+          "title": "Modes dégradés : redondance, N+1 et priorité d’action",
+          "focus_component": "condenser",
+          "simulation_preset": {
+            "bp": 3.9,
+            "hp": 23.5,
+            "sh": 7,
+            "sc": 7,
+            "evapTemp": 2,
+            "condTemp": 57,
+            "cop": 2.1,
+            "fault": "Rejet chaleur dégradé"
+          },
+          "content": "Un data center est conçu avec de la redondance, mais la redondance n’est pas une excuse pour improviser.\n\nNotions importantes :\n\n- **N** : capacité nécessaire pour tenir la charge.\n- **N+1** : une unité supplémentaire permet de perdre un équipement sans perdre le service.\n- **2N** : deux chaînes complètes peuvent théoriquement reprendre la charge.\n- **Mode dégradé** : le site fonctionne encore, mais avec moins de marge.\n\nEn mode dégradé, l’objectif n’est pas seulement de remettre en route vite. Il faut éviter de provoquer un second défaut. On analyse la marge restante, la charge IT, la météo, la capacité froide, l’énergie disponible et le temps de réparation.\n\n**Priorité terrain :** sécuriser le service, informer l’exploitation, stabiliser, diagnostiquer, puis réparer.",
+          "quiz": [
+            {
+              "question": "Que signifie N+1 dans une logique de capacité ?",
+              "answers": [
+                "Une unité de plus que le besoin nominal",
+                "Une unité en moins que le besoin",
+                "Un seul équipement sans secours",
+                "Une pression de plus dans le circuit"
+              ],
+              "correct": 0,
+              "explanation": "N+1 signifie qu’une unité supplémentaire est disponible par rapport au besoin nominal."
+            },
+            {
+              "question": "En mode dégradé, quel est le risque principal d’une action précipitée ?",
+              "answers": [
+                "Créer un second défaut et perdre la marge restante",
+                "Améliorer automatiquement le COP",
+                "Faire disparaître la charge IT",
+                "Réduire le besoin de compte rendu"
+              ],
+              "correct": 0,
+              "explanation": "Quand la marge est réduite, une mauvaise action peut provoquer une perte de service."
+            },
+            {
+              "question": "HP élevée sur plusieurs unités par forte chaleur : quelle piste est prioritaire ?",
+              "answers": [
+                "Rejet de chaleur : condenseurs/drycoolers, ventilation ou débit eau",
+                "Changer les claviers serveur",
+                "Éteindre la supervision",
+                "Ajouter des panneaux obturateurs sans vérifier le froid"
+              ],
+              "correct": 0,
+              "explanation": "Une HP élevée généralisée oriente vers le rejet de chaleur, surtout en conditions extérieures difficiles."
+            }
+          ]
+        },
+        {
+          "id": "c20_interventions_site_critique",
+          "title": "Intervention sur site critique : méthode et sécurité",
+          "focus_component": "rmu",
+          "simulation_preset": {
+            "bp": 4.5,
+            "hp": 18.2,
+            "sh": 5,
+            "sc": 3,
+            "evapTemp": 2,
+            "condTemp": 45,
+            "cop": 3.2,
+            "fault": "Préparation intervention"
+          },
+          "content": "La technique ne suffit pas. Sur un data center, la qualité d’intervention est aussi importante que le diagnostic.\n\nAvant intervention :\n\n- identifier l’équipement exact ;\n- comprendre l’impact ;\n- vérifier la redondance disponible ;\n- prévenir l’exploitation ;\n- obtenir les autorisations ;\n- préparer la consignation si nécessaire ;\n- prévoir retour arrière ;\n- documenter les valeurs avant action.\n\nPour le froid : récupération du fluide, remplacement du filtre déshydrateur si nécessaire, tirage au vide sérieux, contrôle d’étanchéité et recharge maîtrisée. Pour l’électricité : habilitation, consignation, VAT, EPI, procédure et périmètre clair.\n\n**Culture pro :** on ne gagne pas du temps en sautant les étapes. On crée du risque.",
+          "quiz": [
+            {
+              "question": "Avant toute action sur un équipement critique, que faut-il vérifier ?",
+              "answers": [
+                "Impact, redondance, autorisation et procédure",
+                "Seulement la marque de l’équipement",
+                "Uniquement la température extérieure",
+                "Rien si l’action semble simple"
+              ],
+              "correct": 0,
+              "explanation": "Impact, redondance, autorisation et procédure évitent de transformer une intervention simple en incident critique."
+            },
+            {
+              "question": "Sur un circuit frigorifique, que fait-on avant d’ouvrir le circuit ?",
+              "answers": [
+                "On récupère le fluide conformément aux règles",
+                "On purge à l’air libre",
+                "On augmente la HP",
+                "On retire les filtres de salle"
+              ],
+              "correct": 0,
+              "explanation": "Le fluide doit être récupéré avec le matériel adapté. Le rejet volontaire à l’atmosphère est interdit et dangereux."
+            },
+            {
+              "question": "Pourquoi noter les valeurs avant intervention ?",
+              "answers": [
+                "Pour comparer avant/après et comprendre l’effet réel de l’action",
+                "Pour décorer le rapport",
+                "Pour éviter de regarder la machine",
+                "Pour remplacer le diagnostic"
+              ],
+              "correct": 0,
+              "explanation": "Les valeurs avant/après permettent de valider l’action et d’éviter les conclusions approximatives."
+            }
+          ]
+        },
+        {
+          "id": "c21_diagnostic_datacenter",
+          "title": "Diagnostic terrain data center : ordre de priorité",
+          "focus_component": "all",
+          "simulation_preset": {
+            "bp": 3,
+            "hp": 22.2,
+            "sh": 13,
+            "sc": 1,
+            "evapTemp": -0.8,
+            "condTemp": 54,
+            "cop": 2,
+            "fault": "Diagnostic multi-symptômes"
+          },
+          "content": "Quand plusieurs symptômes apparaissent, il faut éviter le diagnostic au hasard.\n\nOrdre de lecture conseillé :\n\n1. **Impact IT** : quelles baies, quelle salle, quelle température entrée serveur ?\n2. **Supervision** : alarmes actives, tendance, équipement en défaut.\n3. **Air** : débit, filtres, allées froides/chaudes, confinement.\n4. **Froid** : BP, HP, surchauffe, sous-refroidissement, antigel, débit eau glacée.\n5. **Électricité** : alimentation unité, UPS, PDU, protections, variateurs.\n6. **Redondance** : combien de marge reste-t-il ?\n7. **Action** : stabiliser avant de réparer si le service est menacé.\n\nExemple : BP basse + surchauffe haute + température salle qui monte peut indiquer une batterie sous-alimentée, un filtre déshydrateur bouché, un détendeur trop fermé, un manque de charge ou un débit insuffisant selon le type d’unité. Le contexte départage les pistes.\n\n**Conclusion :** un bon technicien ne récite pas une panne. Il relie les mesures, l’environnement et l’impact réel.",
+          "quiz": [
+            {
+              "question": "Quel est le premier point à comprendre lors d’une alarme thermique data center ?",
+              "answers": [
+                "L’impact réel sur l’IT et les baies concernées",
+                "La couleur du condenseur",
+                "Le nombre de vis du capot",
+                "Le nom du fabricant du clavier"
+              ],
+              "correct": 0,
+              "explanation": "La priorité est de savoir si les charges IT sont exposées et où se situe l’impact."
+            },
+            {
+              "question": "BP basse + surchauffe haute signifie souvent :",
+              "answers": [
+                "Évaporateur sous-alimenté",
+                "Retour liquide massif",
+                "TGBT en court-circuit",
+                "Aucune piste possible"
+              ],
+              "correct": 0,
+              "explanation": "Cette combinaison oriente vers une alimentation insuffisante de l’évaporateur, à confirmer par le contexte."
+            },
+            {
+              "question": "Pourquoi intégrer l’électricité dans un diagnostic CVC data center ?",
+              "answers": [
+                "Parce que les pompes, ventilateurs, variateurs et unités dépendent de l’énergie",
+                "Parce que le froid n’a jamais besoin de fluide",
+                "Parce que les baies produisent du froid",
+                "Parce que l’UPS remplace la batterie froide"
+              ],
+              "correct": 0,
+              "explanation": "Une panne électrique ou un défaut variateur peut se traduire par une panne de refroidissement."
             }
           ]
         }
