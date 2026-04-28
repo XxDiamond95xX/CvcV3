@@ -19,15 +19,15 @@ const EQUIPMENT = {
     warning: 'Ne jamais laisser le compresseur aspirer du liquide. Une surchauffe trop faible doit être traitée immédiatement.'
   },
   condenser: {
-    label: 'Condenseur / drycooler',
-    short: 'Rejet chaleur',
+    label: 'Drycooler toiture',
+    short: 'Toit terrasse',
     layer: 'cooling',
     color: '#f97316',
-    position: [3.2, 1.6, 1.75],
-    role: 'Rejette la chaleur vers l’extérieur. Sur une installation eau glacée, on retrouve souvent drycooler, condenseur ou groupe froid.',
-    observe: 'HP, ventilateurs, encrassement, température extérieure, débit d’eau, sous-refroidissement, alarmes HP.',
-    dc: 'Le rejet de chaleur est critique : un condenseur sale ou un drycooler sous-débitant augmente la HP et réduit la marge thermique de la salle IT.',
-    warning: 'HP élevée = risque sécurité et perte de performance. Contrôler échange, ventilation/eau et présence possible de non-condensables.'
+    position: [2.85, 2.65, 1.65],
+    role: 'Rejette la chaleur à l’extérieur depuis le toit terrasse. Il communique avec la salle technique par le riser hydraulique.',
+    observe: 'Ventilateurs, encrassement batterie, température extérieure, débit eau/glycol, vannes, purge d’air, alarmes HP ou défaut débit.',
+    dc: 'En data center, le rejet de chaleur toiture est une zone critique : si le drycooler perd de l’échange, la marge thermique chute rapidement côté salle IT.',
+    warning: 'Vérifier l’accès toiture, la sécurité, les ventilateurs, le glycol, les vannes et la présence d’air dans la boucle avant de conclure à un défaut groupe.'
   },
   expansionValve: {
     label: 'Détendeur',
@@ -78,8 +78,8 @@ const EQUIPMENT = {
     short: 'Hydraulique',
     layer: 'cooling',
     color: '#67e8f9',
-    position: [-1.95, 0.52, 1.95],
-    role: 'Assurent le débit d’eau glacée vers les CRAH ou batteries hydrauliques.',
+    position: [0.15, 0.52, 1.55],
+    role: 'Assurent le débit d’eau glacée ou d’eau glycolée vers les CRAH, les batteries hydrauliques et le rejet toiture.',
     observe: 'Pression différentielle, débit, sens de rotation, variateur, bruit, vibrations, vannes, filtres, glycol.',
     dc: 'Une pompe arrêtée ou bridée peut créer un défaut thermique salle même si les groupes froids sont disponibles.',
     warning: 'Avant d’accuser le groupe froid, vérifier que le débit arrive réellement aux unités de salle.'
@@ -151,15 +151,15 @@ const EQUIPMENT = {
     warning: 'Vérifier la redondance réelle avant toute intervention sur alimentation baie.'
   },
   riser: {
-    label: 'Riser technique',
+    label: 'Riser toiture',
     short: 'Vertical',
-    layer: 'electrical',
-    color: '#eab308',
-    position: [2.85, 1.55, 0.35],
-    role: 'Colonne verticale de distribution : câbles, busway, parfois eau glacée, contrôle-commande ou fibres.',
-    observe: 'Cheminement, repérage, coupe-feu, supports, condensation, accessibilité, séparation courants forts/faibles.',
-    dc: 'Un riser mal repéré complique les interventions et augmente le risque de couper le mauvais départ.',
-    warning: 'Toujours vérifier repérage, autorisation et impact avant intervention dans une colonne technique.'
+    layer: 'cooling',
+    color: '#22d3ee',
+    position: [2.85, 1.35, 1.65],
+    role: 'Colonne verticale reliant le drycooler en toiture au reste de la boucle technique : tuyaux eau/glycol, câbles de puissance et contrôle-commande.',
+    observe: 'Vannes d’isolement, purgeurs, calorifuge, supports, coupe-feu, repérage départ/retour, condensation, accessibilité.',
+    dc: 'Le riser est le lien entre toit terrasse et salle technique. Une vanne fermée, de l’air ou un repérage faux peut faire croire à une panne de drycooler ou de pompe.',
+    warning: 'Avant intervention : identifier départ et retour, vérifier la redondance, sécuriser la zone toiture et respecter les procédures de consignation.'
   },
   bms: {
     label: 'BMS / DCIM',
@@ -176,52 +176,68 @@ const EQUIPMENT = {
 
 const FLUID_SEGMENTS = {
   discharge: {
-    label: 'Refoulement',
+    label: 'Refoulement DX',
     layer: 'cooling',
     state: 'Vapeur chaude HP',
     color: 0xef4444,
-    text: 'Gaz chaud haute pression entre compresseur et condenseur.',
-    points: [[2.8, 0.9, -1.9], [3.35, 1.05, -0.7], [3.35, 1.45, 0.8], [3.2, 1.6, 1.75]]
+    text: 'Gaz chaud haute pression du compresseur vers le condenseur/drycooler toiture via le chemin vertical.',
+    points: [[2.8, 0.9, -1.9], [3.05, 1.45, -0.85], [3.05, 2.2, 0.55], [2.85, 2.65, 1.65]]
   },
   liquid: {
-    label: 'Ligne liquide',
+    label: 'Retour liquide DX',
     layer: 'cooling',
     state: 'Liquide HP',
     color: 0xfb923c,
-    text: 'Liquide sous-refroidi vers le détendeur.',
-    points: [[3.2, 1.5, 1.75], [1.4, 1.18, 1.55], [-0.9, 0.98, 1.35], [-2.25, 0.75, -1.35]]
+    text: 'Liquide haute pression qui redescend du rejet toiture vers le détendeur.',
+    points: [[2.85, 2.55, 1.65], [2.55, 1.32, 1.65], [0.7, 1.02, 0.92], [-1.15, 0.86, -0.35], [-2.25, 0.75, -1.35]]
   },
   expansion: {
     label: 'Après détente',
     layer: 'cooling',
     state: 'Mélange liquide-vapeur BP',
     color: 0x34d399,
-    text: 'Mélange froid basse pression envoyé vers la batterie.',
-    points: [[-2.25, 0.75, -1.35], [-2.65, 0.7, -1.55], [-3.15, 0.95, -1.75]]
+    text: 'Mélange froid basse pression envoyé vers la batterie froide du CRAC.',
+    points: [[-2.25, 0.75, -1.35], [-2.65, 0.72, -1.55], [-3.15, 0.95, -1.75]]
   },
   suction: {
-    label: 'Aspiration',
+    label: 'Aspiration DX',
     layer: 'cooling',
     state: 'Vapeur BP',
     color: 0x38bdf8,
     text: 'Vapeur basse pression avec surchauffe de sécurité vers compresseur.',
-    points: [[-3.15, 0.95, -1.75], [-1.5, 0.7, -2.35], [0.9, 0.72, -2.3], [2.8, 0.9, -1.9]]
+    points: [[-3.15, 0.95, -1.75], [-1.55, 0.72, -2.35], [0.9, 0.72, -2.32], [2.8, 0.9, -1.9]]
   },
   chilledSupply: {
     label: 'Départ eau glacée',
     layer: 'cooling',
-    state: 'Eau glacée vers CRAH',
+    state: 'Eau froide vers CRAH',
     color: 0x67e8f9,
-    text: 'Départ hydraulique vers les unités CRAH.',
-    points: [[-1.95, 0.52, 1.95], [-2.7, 0.52, 1.55], [-3.2, 0.85, 0.75]]
+    text: 'Départ hydraulique depuis les pompes vers les CRAH et batteries hydrauliques.',
+    points: [[0.15, 0.52, 1.55], [-1.1, 0.52, 1.2], [-2.35, 0.66, 0.95], [-3.2, 0.85, 0.75]]
   },
   chilledReturn: {
     label: 'Retour eau glacée',
     layer: 'cooling',
     state: 'Retour plus chaud',
     color: 0x0284c7,
-    text: 'Retour hydraulique après échange dans la batterie.',
-    points: [[-3.2, 0.78, 0.75], [-2.55, 0.42, 2.15], [-1.95, 0.52, 1.95]]
+    text: 'Retour hydraulique après échange dans la batterie CRAH.',
+    points: [[-3.2, 0.78, 0.75], [-2.05, 0.43, 1.95], [-0.75, 0.43, 1.95], [0.15, 0.52, 1.55]]
+  },
+  dryHot: {
+    label: 'Montée toiture',
+    layer: 'cooling',
+    state: 'Eau/glycol chaude vers drycooler',
+    color: 0xf97316,
+    text: 'Boucle de rejet : l’eau/glycol monte par le riser vers le drycooler en toiture.',
+    points: [[0.15, 0.7, 1.55], [1.45, 0.92, 1.72], [2.65, 1.0, 1.72], [2.85, 1.95, 1.72], [2.85, 2.65, 1.65]]
+  },
+  dryCold: {
+    label: 'Descente toiture',
+    layer: 'cooling',
+    state: 'Eau/glycol refroidie',
+    color: 0x22d3ee,
+    text: 'Retour refroidi du drycooler vers les pompes et la boucle technique.',
+    points: [[2.62, 2.55, 1.42], [2.62, 1.95, 1.42], [2.35, 0.82, 1.42], [1.2, 0.62, 1.38], [0.15, 0.52, 1.55]]
   }
 };
 
@@ -236,13 +252,14 @@ const ELECTRICAL_LINKS = [
 ];
 
 const GUIDE_STEPS = [
-  { title: '1. Charge IT', key: 'racks', layer: 'air', text: 'Les serveurs transforment presque toute l’énergie électrique en chaleur. Le froid sert à maintenir la température d’entrée serveur dans une zone maîtrisée.' },
-  { title: '2. Soufflage froid', key: 'crac', layer: 'air', text: 'Le CRAC/CRAH souffle l’air froid vers les allées froides. Le confinement évite le mélange avec l’air chaud de retour.' },
-  { title: '3. Évaporation', key: 'evaporator', layer: 'cooling', text: 'Dans un circuit DX, la batterie froide vaporise le fluide. En eau glacée, la batterie échange avec le réseau hydraulique.' },
-  { title: '4. Rejet de chaleur', key: 'condenser', layer: 'cooling', text: 'La chaleur prise dans la salle doit être rejetée dehors. Si le rejet est mauvais, la HP monte et la capacité disponible baisse.' },
-  { title: '5. Énergie critique', key: 'ups', layer: 'electrical', text: 'L’onduleur maintient l’énergie des charges critiques pendant les défauts réseau et la transition groupe électrogène.' },
-  { title: '6. Distribution', key: 'pdu', layer: 'electrical', text: 'Les PDU ou busway distribuent l’énergie aux baies. On contrôle l’équilibrage, la charge et la redondance A/B.' },
-  { title: '7. Riser', key: 'riser', layer: 'electrical', text: 'Le riser concentre les distributions verticales. Repérage, coupe-feu et séparation des réseaux sont essentiels.' }
+  { title: '1. Charge IT', key: 'racks', layer: 'air', text: 'Les serveurs transforment presque toute l’énergie électrique en chaleur. Les températures utiles se lisent surtout en entrée de baie, côté allée froide.' },
+  { title: '2. Soufflage froid', key: 'crah', layer: 'air', text: 'Le CRAH ou le CRAC souffle l’air froid vers les allées froides. Le confinement évite le mélange avec l’air chaud de retour.' },
+  { title: '3. Batterie froide', key: 'evaporator', layer: 'cooling', text: 'La batterie récupère la chaleur de l’air. En DX, le fluide frigorigène s’évapore ; en eau glacée, l’échange se fait avec la boucle hydraulique.' },
+  { title: '4. Pompes', key: 'pump', layer: 'cooling', text: 'Les pompes assurent le débit. Sans débit réel, le drycooler, les CRAH et les échangeurs peuvent être disponibles mais inefficaces.' },
+  { title: '5. Riser toiture', key: 'riser', layer: 'cooling', text: 'Le riser relie la salle technique au toit terrasse. Il faut identifier départ/retour, purgeurs, vannes, supports, coupe-feu et calorifuge.' },
+  { title: '6. Drycooler toiture', key: 'condenser', layer: 'cooling', text: 'Le drycooler rejette la chaleur dehors. Ventilateurs, batterie, glycol, air dans la boucle et température extérieure impactent directement la capacité.' },
+  { title: '7. Énergie critique', key: 'ups', layer: 'electrical', text: 'L’onduleur maintient l’énergie des charges critiques pendant les défauts réseau et la transition groupe électrogène.' },
+  { title: '8. Distribution', key: 'pdu', layer: 'electrical', text: 'Les PDU ou busway distribuent l’énergie aux baies. On contrôle l’équilibrage, la charge et la redondance A/B.' }
 ];
 
 function normalizeParams(params) {
@@ -520,18 +537,27 @@ function makePDU() {
 
 function makeRiser() {
   const group = new THREE.Group();
-  const shaft = new THREE.Mesh(new THREE.BoxGeometry(0.38, 2.3, 0.38), material(0x292524, { opacity: 0.72 }));
-  shaft.position.y = 1.15;
+  const shaft = new THREE.Mesh(new THREE.BoxGeometry(0.44, 2.95, 0.5), material(0x0f172a, { opacity: 0.66 }));
+  shaft.position.y = 1.46;
   group.add(shaft);
-  const colors = [0xfacc15, 0x60a5fa, 0x22d3ee];
-  colors.forEach((color, i) => {
-    const cable = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 2.2, 14), basic(color, 0.95));
-    cable.position.set(-0.11 + i * 0.11, 1.15, -0.21);
-    group.add(cable);
+
+  const pipes = [
+    { color: 0xf97316, x: -0.1, z: -0.2 },
+    { color: 0x22d3ee, x: 0.08, z: -0.2 },
+    { color: 0xfacc15, x: -0.11, z: 0.19 },
+    { color: 0x60a5fa, x: 0.11, z: 0.19 }
+  ];
+  pipes.forEach(({ color, x, z }) => {
+    const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 2.85, 14), basic(color, 0.95));
+    pipe.position.set(x, 1.46, z);
+    group.add(pipe);
   });
+
+  const cap = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.08, 0.62), material(0x334155, { opacity: 0.8 }));
+  cap.position.y = 2.95;
+  group.add(cap);
   return group;
 }
-
 function makeBMS() {
   const group = new THREE.Group();
   const desk = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.28, 0.42), material(0x1e293b));
@@ -601,11 +627,14 @@ function particleStyle(segmentKey, visual, index) {
   }
   if (segmentKey === 'chilledSupply') return { color: 0x67e8f9, radius: 0.034, opacity: 0.82 };
   if (segmentKey === 'chilledReturn') return { color: 0x0ea5e9, radius: 0.034, opacity: 0.76 };
+  if (segmentKey === 'dryHot') return { color: 0xfb923c, radius: 0.034, opacity: 0.84 };
+  if (segmentKey === 'dryCold') return { color: 0x22d3ee, radius: 0.034, opacity: 0.84 };
   return { color: 0xffffff, radius: 0.035, opacity: 0.8 };
 }
 
 function layerMatches(key, activeLayer) {
   if (activeLayer === 'all') return true;
+  if (key === 'riser' && (activeLayer === 'cooling' || activeLayer === 'electrical')) return true;
   return EQUIPMENT[key]?.layer === activeLayer;
 }
 
@@ -655,7 +684,7 @@ export default function HvacCycle3D({ highlightedComponent = 'all', params, simu
   const labelRefs = useRef({});
   const resetViewRef = useRef(null);
   const [selectedKey, setSelectedKey] = useState(highlightedComponent === 'all' ? 'racks' : highlightedComponent);
-  const [activeLayer, setActiveLayer] = useState('all');
+  const [activeLayer, setActiveLayer] = useState('cooling');
   const [viewMode, setViewMode] = useState('formation');
   const [drawer, setDrawer] = useState(null);
   const [guideIndex, setGuideIndex] = useState(0);
@@ -689,18 +718,18 @@ export default function HvacCycle3D({ highlightedComponent = 'all', params, simu
     mount.appendChild(renderer.domElement);
 
     const camera = new THREE.PerspectiveCamera(42, mount.clientWidth / mount.clientHeight, 0.1, 100);
-    camera.position.set(5.6, 4.4, 6.4);
+    camera.position.set(6.4, 5.15, 7.25);
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.enablePan = false;
     controls.minDistance = 4.9;
-    controls.maxDistance = 11.5;
-    controls.target.set(0, 0.75, 0.25);
+    controls.maxDistance = 13.5;
+    controls.target.set(0.15, 1.05, 0.25);
 
     resetViewRef.current = () => {
-      camera.position.set(5.6, 4.4, 6.4);
-      controls.target.set(0, 0.75, 0.25);
+      camera.position.set(6.4, 5.15, 7.25);
+      controls.target.set(0.15, 1.05, 0.25);
       controls.update();
     };
 
@@ -721,6 +750,14 @@ export default function HvacCycle3D({ highlightedComponent = 'all', params, simu
     const floor = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.06, 5.8), material(0x0f172a, { roughness: 0.68, metalness: 0.05 }));
     floor.position.y = -0.03;
     root.add(floor);
+
+    const roofDeck = new THREE.Mesh(new THREE.BoxGeometry(2.75, 0.08, 1.75), material(0x1e293b, { roughness: 0.7, metalness: 0.08, opacity: 0.72 }));
+    roofDeck.position.set(2.85, 2.34, 1.65);
+    root.add(roofDeck);
+
+    const roofGuard = new THREE.Mesh(new THREE.BoxGeometry(2.85, 0.05, 0.05), basic(0x94a3b8, 0.45));
+    roofGuard.position.set(2.85, 2.55, 0.78);
+    root.add(roofGuard);
 
     for (let x = -3.8; x <= 3.81; x += 0.6) {
       const line = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.012, 5.8), basic(0x334155, 0.42));
@@ -783,20 +820,20 @@ export default function HvacCycle3D({ highlightedComponent = 'all', params, simu
     const pipeObjects = [];
     Object.entries(FLUID_SEGMENTS).forEach(([key, segment]) => {
       const layerAlpha = segmentMatches(key, showOnlyTechnicalLayer) ? 1 : 0.18;
-      const focusAlpha = effectiveFocus && ['compressor', 'condenser', 'expansionValve', 'evaporator', 'crac', 'crah', 'pump'].includes(effectiveFocus) && segment.layer === 'cooling' ? 1 : layerAlpha;
+      const focusAlpha = effectiveFocus && ['compressor', 'condenser', 'expansionValve', 'evaporator', 'crac', 'crah', 'pump', 'riser'].includes(effectiveFocus) && segment.layer === 'cooling' ? 1 : layerAlpha;
       const color = colorForSegment(key, visual);
-      const pipe = makeTube(segment.points, color, key.startsWith('chilled') ? 0.04 : 0.052, { opacity: focusAlpha < 1 ? 0.26 : undefined, emissiveIntensity: focusAlpha < 1 ? 0.03 : 0.12 });
+      const pipe = makeTube(segment.points, color, key.startsWith('chilled') || key.startsWith('dry') ? 0.043 : 0.052, { opacity: focusAlpha < 1 ? 0.26 : undefined, emissiveIntensity: focusAlpha < 1 ? 0.03 : 0.12 });
       root.add(pipe);
 
       const curve = pipe.userData.curve;
       for (let t = 0.22; t <= 0.82; t += 0.3) {
-        const arrow = makeArrow(color, key.startsWith('chilled') ? 0.72 : 0.82);
+        const arrow = makeArrow(color, key.startsWith('chilled') || key.startsWith('dry') ? 0.72 : 0.82);
         orientAlongCurve(arrow, curve, t);
         root.add(arrow);
       }
 
       const particles = [];
-      const count = key.startsWith('chilled') ? 10 : 16;
+      const count = key.startsWith('chilled') || key.startsWith('dry') ? 12 : 16;
       for (let i = 0; i < count; i += 1) {
         const style = particleStyle(key, visual, i);
         const particle = new THREE.Mesh(new THREE.SphereGeometry(style.radius, 14, 14), basic(style.color, style.opacity));
@@ -858,7 +895,7 @@ export default function HvacCycle3D({ highlightedComponent = 'all', params, simu
       pipeObjects.forEach(({ key, curve, particles }) => {
         const reverse = false;
         particles.forEach((particle, index) => {
-          const speed = (key.startsWith('chilled') ? 0.065 : visual.flowSpeed) * (1 + (index % 3) * 0.05);
+          const speed = (key.startsWith('chilled') || key.startsWith('dry') ? 0.065 : visual.flowSpeed) * (1 + (index % 3) * 0.05);
           const t = (particle.userData.offset + elapsed * speed * (reverse ? -1 : 1)) % 1;
           const safeT = t < 0 ? t + 1 : t;
           const pos = curve.getPointAt(safeT);
@@ -948,7 +985,7 @@ export default function HvacCycle3D({ highlightedComponent = 'all', params, simu
           <div className="flex flex-wrap gap-2">
             {[
               ['all', 'Tout'],
-              ['cooling', 'Froid'],
+              ['cooling', 'Froid / hydraulique'],
               ['air', 'Salle IT'],
               ['electrical', 'Élec']
             ].map(([key, label]) => (
@@ -1030,7 +1067,7 @@ export default function HvacCycle3D({ highlightedComponent = 'all', params, simu
                   </div>
                 ))}
               </div>
-              <p className="rounded-2xl bg-slate-900/80 p-4 text-xs leading-relaxed text-slate-400">Les câbles jaunes/violets représentent la chaîne électrique critique : RMU, transformateur, onduleur, TGBT, PDU, riser et supervision.</p>
+              <p className="rounded-2xl bg-slate-900/80 p-4 text-xs leading-relaxed text-slate-400">Lecture recommandée : en mode Froid/hydraulique, suis la boucle toiture : pompes → montée riser → drycooler → descente riser → boucle technique. Les câbles jaunes/violets restent la chaîne électrique critique : RMU, transformateur, onduleur, TGBT, PDU et supervision.</p>
             </div>
           ) : null}
 
