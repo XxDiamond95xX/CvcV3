@@ -1,1160 +1,724 @@
 {
-  "modules": [
-    {
-      "id": "m1_fondamentaux",
-      "title": "Fondamentaux CVC et exploitation Data Center",
-      "level": "Débutant → Technicien site critique",
-      "description": "Formation progressive pour comprendre le cycle frigorifique, puis l’environnement réel d’un data center : salle IT, CRAC/CRAH, eau glacée, chaîne électrique, risers, supervision et interventions.",
-      "chapters": [
+    "modules": [
         {
-          "id": "c1_intro",
-          "title": "Les 4 temps du froid",
-          "content": "Le cycle frigorifique transfère la chaleur d'une source froide vers une source chaude. Il utilise un fluide frigorigène qui change d'état dans un circuit fermé.\n\nLes 4 organes principaux sont : **compresseur**, **condenseur**, **détendeur** et **évaporateur**.\n\nObjectif terrain : savoir relier ce que tu vois sur les manomètres aux phénomènes physiques qui se passent dans le circuit.\n\n**Pour un nouvel arrivant :** retiens d'abord le sens de circulation. Le compresseur aspire la vapeur BP, refoule une vapeur chaude HP, le condenseur la transforme en liquide HP, le détendeur abaisse la pression, puis l'évaporateur absorbe la chaleur.\n\n**Erreur fréquente :** chercher une panne uniquement avec BP/HP. Les pressions donnent une direction, mais la conclusion vient du croisement avec SH, SR, températures d'air, état des filtres et état des échangeurs.",
-          "focus_component": "all",
-          "simulation_preset": {
-            "bp": 4.5,
-            "hp": 18.2,
-            "sh": 5,
-            "sc": 3,
-            "evapTemp": 2,
-            "condTemp": 45,
-            "cop": 3.2,
-            "fault": "Cycle nominal"
-          },
-          "checkpoint": {
-            "question": "Quel organe fournit l'énergie mécanique au fluide ?",
-            "answers": [
-              "Le condenseur",
-              "Le compresseur",
-              "Le détendeur"
-            ],
-            "correct": 1,
-            "explanation": "Le compresseur aspire la vapeur basse pression et la comprime en vapeur haute pression."
-          },
-          "quiz": [
-            {
-              "question": "Quel organe fournit l'énergie mécanique au fluide ?",
-              "answers": [
-                "Le condenseur",
-                "Le compresseur",
-                "Le détendeur"
-              ],
-              "correct": 1,
-              "explanation": "Le compresseur aspire la vapeur basse pression et la comprime en vapeur haute pression."
-            },
-            {
-              "question": "Quel est le bon sens général du cycle ?",
-              "answers": [
-                "Compresseur → condenseur → détendeur → évaporateur",
-                "Condenseur → évaporateur → compresseur → détendeur",
-                "Détendeur → condenseur → compresseur → évaporateur"
-              ],
-              "correct": 0,
-              "explanation": "Le fluide est comprimé, condensé, détendu puis évaporé avant de revenir au compresseur."
-            },
-            {
-              "question": "Quelle est la bonne habitude de diagnostic ?",
-              "answers": [
-                "Croiser plusieurs indices",
-                "Décider uniquement avec la HP",
-                "Ajouter du fluide sans contrôle"
-              ],
-              "correct": 0,
-              "explanation": "Un diagnostic fiable se fait par recoupement des mesures et du contexte terrain."
-            }
-          ]
-        },
-        {
-          "id": "c2_compression",
-          "title": "1. La Compression",
-          "content": "Le compresseur aspire le fluide à l'état de **vapeur basse pression / basse température**. Il le comprime, ce qui élève fortement sa pression et sa température. C'est l'étape qui consomme l'énergie mécanique.\n\nÀ retenir : le fluide en entrée compresseur doit impérativement être gazeux. Une arrivée de liquide peut provoquer un coup de liquide et casser la mécanique.\n\nIndice terrain : une surchauffe trop faible peut indiquer un risque de retour liquide.\n\n**À observer sur le terrain :** bruit compresseur, intensité électrique, température de refoulement, état de l'huile, vibrations et stabilité de la pression d'aspiration. Une compression trop sévère fatigue l'installation et fait chuter le rendement.\n\n**Point sécurité :** un retour liquide peut provoquer un coup de liquide. Une surchauffe trop faible ou instable doit donc être prise au sérieux.",
-          "focus_component": "compressor",
-          "simulation_preset": {
-            "bp": 4.5,
-            "hp": 22,
-            "sh": 8,
-            "sc": 3,
-            "evapTemp": 2,
-            "condTemp": 52,
-            "cop": 2.7,
-            "fault": "HP élevée : compression plus sévère"
-          },
-          "checkpoint": {
-            "question": "Pourquoi évite-t-on le liquide à l'aspiration du compresseur ?",
-            "answers": [
-              "Parce que le liquide est peu compressible",
-              "Parce qu'il augmente la ventilation",
-              "Parce qu'il diminue la pression HP"
-            ],
-            "correct": 0,
-            "explanation": "Le liquide est très peu compressible et peut endommager clapets, pistons ou spirales."
-          },
-          "quiz": [
-            {
-              "question": "Pourquoi évite-t-on le liquide à l'aspiration du compresseur ?",
-              "answers": [
-                "Parce que le liquide est peu compressible",
-                "Parce qu'il augmente la ventilation",
-                "Parce qu'il diminue la pression HP"
-              ],
-              "correct": 0,
-              "explanation": "Le liquide est très peu compressible et peut endommager clapets, pistons ou spirales."
-            },
-            {
-              "question": "Quel symptôme peut signaler une compression trop sévère ?",
-              "answers": [
-                "Température de refoulement élevée",
-                "Voyant toujours vide par principe",
-                "Condenseur plus froid que l’air extérieur"
-              ],
-              "correct": 0,
-              "explanation": "Une température de refoulement élevée peut venir d’une HP excessive ou d’une surchauffe importante."
-            },
-            {
-              "question": "Quelle mesure aide à protéger le compresseur contre le liquide ?",
-              "answers": [
-                "La surchauffe",
-                "La couleur du capot",
-                "La longueur du câble"
-              ],
-              "correct": 0,
-              "explanation": "La surchauffe confirme que le fluide est bien vapeur avant le compresseur."
-            }
-          ]
-        },
-        {
-          "id": "c3_condensation",
-          "title": "2. La Condensation",
-          "content": "Le gaz chaud haute pression entre dans le condenseur. Au contact de l'air extérieur ou de l'eau, il cède sa chaleur et se liquéfie.\n\nLe **sous-refroidissement** est la différence entre la température de condensation lue au manomètre et la température réelle du liquide en sortie condenseur.\n\nIndice terrain : un sous-refroidissement élevé peut traduire une charge importante ou un condenseur qui stocke beaucoup de liquide.\n\n**À observer sur le terrain :** batterie condenseur propre, ventilateur en bon état, débit d'air correct, température extérieure cohérente, absence d'obstacle au rejet d'air.\n\n**Lecture rapide :** HP élevée + condenseur très chaud peut évoquer un condenseur encrassé, une ventilation insuffisante, une température extérieure élevée, un excès de charge ou des non-condensables.",
-          "focus_component": "condenser",
-          "simulation_preset": {
-            "bp": 4.5,
-            "hp": 18.2,
-            "sh": 5,
-            "sc": 8,
-            "evapTemp": 2,
-            "condTemp": 45,
-            "cop": 3.1,
-            "fault": "Sous-refroidissement renforcé"
-          },
-          "checkpoint": {
-            "question": "Que mesure le sous-refroidissement ?",
-            "answers": [
-              "L'écart entre aspiration et refoulement",
-              "L'écart entre température de condensation et température liquide",
-              "Le débit d'air évaporateur"
-            ],
-            "correct": 1,
-            "explanation": "SR = température de condensation saturée - température réelle du liquide."
-          },
-          "quiz": [
-            {
-              "question": "Que mesure le sous-refroidissement ?",
-              "answers": [
-                "L'écart entre aspiration et refoulement",
-                "L'écart entre température de condensation et température liquide",
-                "Le débit d'air évaporateur"
-              ],
-              "correct": 1,
-              "explanation": "SR = température de condensation saturée - température réelle du liquide."
-            },
-            {
-              "question": "Quel défaut fait souvent monter la HP ?",
-              "answers": [
-                "Condenseur encrassé ou mal ventilé",
-                "Évaporateur parfaitement propre",
-                "Filtre à air neuf uniquement"
-              ],
-              "correct": 0,
-              "explanation": "Si le condenseur rejette mal la chaleur, la pression de condensation augmente."
-            },
-            {
-              "question": "Que peut provoquer une HP trop élevée ?",
-              "answers": [
-                "Rendement plus faible et sécurité HP",
-                "COP toujours meilleur",
-                "Aucun effet sur le compresseur"
-              ],
-              "correct": 0,
-              "explanation": "Une HP élevée augmente le travail du compresseur et peut déclencher une sécurité."
-            }
-          ]
-        },
-        {
-          "id": "c4_detente",
-          "title": "3. La Détente",
-          "content": "Le détendeur crée une chute de pression brutale entre la ligne liquide haute pression et l'entrée évaporateur basse pression. Une partie du liquide se vaporise instantanément : c'est le flash-gaz.\n\nSon rôle est de doser le débit de fluide vers l'évaporateur. Trop ouvert : risque de suralimentation. Trop fermé : évaporateur affamé.\n\nIndice terrain : une surchauffe très élevée avec BP basse peut orienter vers un manque de débit fluide.\n\n**À observer sur le terrain :** position du bulbe, isolation du bulbe, filtre en amont, égalisation externe si présente, stabilité de la surchauffe. Un détendeur ne se règle pas au hasard : il se règle après avoir confirmé que la charge, les échanges et les filtres sont corrects.\n\n**Symptôme typique :** BP basse + SH élevée = évaporateur probablement sous-alimenté, mais la cause peut être manque de charge, filtre bouché, détendeur trop fermé ou restriction.",
-          "focus_component": "expansionValve",
-          "simulation_preset": {
-            "bp": 3.2,
-            "hp": 17.6,
-            "sh": 14,
-            "sc": 4,
-            "evapTemp": -6,
-            "condTemp": 43,
-            "cop": 2.8,
-            "fault": "Évaporateur affamé : SH élevée"
-          },
-          "checkpoint": {
-            "question": "Quel est l'effet principal du détendeur ?",
-            "answers": [
-              "Augmenter la pression",
-              "Créer une chute de pression",
-              "Transformer le compresseur en condenseur"
-            ],
-            "correct": 1,
-            "explanation": "Le détendeur abaisse la pression et prépare l'évaporation à basse température."
-          },
-          "quiz": [
-            {
-              "question": "Quel est l'effet principal du détendeur ?",
-              "answers": [
-                "Augmenter la pression",
-                "Créer une chute de pression",
-                "Transformer le compresseur en condenseur"
-              ],
-              "correct": 1,
-              "explanation": "Le détendeur abaisse la pression et prépare l'évaporation à basse température."
-            },
-            {
-              "question": "Que peut indiquer BP basse + SH élevée ?",
-              "answers": [
-                "Évaporateur affamé",
-                "Retour liquide certain",
-                "Condenseur supprimé"
-              ],
-              "correct": 0,
-              "explanation": "Ce couple de symptômes indique souvent un manque d’alimentation de l’évaporateur."
-            },
-            {
-              "question": "Pourquoi ne règle-t-on pas un détendeur sans contrôle préalable ?",
-              "answers": [
-                "Parce que la cause peut venir d’ailleurs",
-                "Parce qu’un détendeur ne sert à rien",
-                "Parce que la HP devient toujours nulle"
-              ],
-              "correct": 0,
-              "explanation": "Il faut vérifier charge, filtre, échanges et conditions de fonctionnement avant réglage."
-            }
-          ]
-        },
-        {
-          "id": "c5_evaporation",
-          "title": "4. L'Évaporation",
-          "content": "Dans l'évaporateur, le fluide basse pression absorbe la chaleur du local ou du fluide à refroidir. Il s'évapore progressivement jusqu'à devenir vapeur.\n\nLa **surchauffe** est l'écart entre la température réelle du gaz en sortie évaporateur et la température d'évaporation saturée.\n\nIndice terrain : la surchauffe confirme que le fluide est bien vapeur en sortie évaporateur, mais une valeur trop élevée peut signaler un manque d'alimentation.\n\n**À observer sur le terrain :** filtre à air, propreté batterie, ventilateur, débit d'air, température entrée/sortie air, présence de givre. Un évaporateur qui manque d'air peut donner des symptômes proches d'un manque de fluide.\n\n**Point protection :** la sortie évaporateur doit garantir un retour vapeur au compresseur, mais sans affamer inutilement l'évaporateur.",
-          "focus_component": "evaporator",
-          "simulation_preset": {
-            "bp": 4.1,
-            "hp": 18,
-            "sh": 7,
-            "sc": 3,
-            "evapTemp": 0,
-            "condTemp": 45,
-            "cop": 3.4,
-            "fault": "Évaporation stabilisée"
-          },
-          "checkpoint": {
-            "question": "Que garantit une surchauffe positive en sortie évaporateur ?",
-            "answers": [
-              "Le fluide est liquide",
-              "Le fluide est vapeur",
-              "La HP est nulle"
-            ],
-            "correct": 1,
-            "explanation": "Une surchauffe positive indique que le fluide est au-delà de la vapeur saturée."
-          },
-          "quiz": [
-            {
-              "question": "Que garantit une surchauffe positive en sortie évaporateur ?",
-              "answers": [
-                "Le fluide est liquide",
-                "Le fluide est vapeur",
-                "La HP est nulle"
-              ],
-              "correct": 1,
-              "explanation": "Une surchauffe positive indique que le fluide est au-delà de la vapeur saturée."
-            },
-            {
-              "question": "Quel problème côté air peut perturber l’évaporateur ?",
-              "answers": [
-                "Filtre encrassé ou débit d’air faible",
-                "Tuyau de refoulement rouge",
-                "Sous-refroidissement affiché"
-              ],
-              "correct": 0,
-              "explanation": "Un débit d’air faible réduit l’apport de chaleur à l’évaporateur."
-            },
-            {
-              "question": "Que peut provoquer un évaporateur trop froid ?",
-              "answers": [
-                "Givre ou risque antigel",
-                "Compression parfaite garantie",
-                "Disparition de la BP"
-              ],
-              "correct": 0,
-              "explanation": "Une température d’évaporation trop basse peut entraîner du givre ou un risque de gel selon l’application."
-            }
-          ]
-        },
-        {
-          "id": "c6_diagnostic",
-          "title": "Lecture rapide d'un diagnostic",
-          "content": "Le diagnostic CVC consiste à croiser plusieurs indices : BP, HP, surchauffe, sous-refroidissement, température d'air et état des échangeurs.\n\nExemple : BP basse + SH élevée + SR normal peut évoquer un détendeur trop fermé, un filtre déshydrateur partiellement bouché ou un manque de charge selon le contexte.\n\nRègle pro : ne jamais conclure avec une seule valeur. On confirme toujours par recoupement.\n\n**Méthode pro :** 1) vérifier les échanges, 2) stabiliser la machine, 3) mesurer BP/HP/SH/SR, 4) comparer aux valeurs attendues, 5) formuler une hypothèse, 6) chercher ce qui la confirme et ce qui la contredit.\n\n**Règle métier :** avant d'ajouter du fluide, vérifie les filtres, batteries, ventilateurs, sondes, conditions extérieures et historique d'intervention.",
-          "focus_component": "diagnostic",
-          "simulation_preset": {
-            "bp": 2.8,
-            "hp": 16.4,
-            "sh": 18,
-            "sc": 2,
-            "evapTemp": -9,
-            "condTemp": 40,
-            "cop": 2.3,
-            "fault": "Piste : manque de débit ou manque de charge"
-          },
-          "checkpoint": {
-            "question": "Pourquoi ne faut-il pas diagnostiquer avec une seule mesure ?",
-            "answers": [
-              "Parce que les manomètres ne servent à rien",
-              "Parce que plusieurs pannes peuvent donner un symptôme similaire",
-              "Parce que la BP est toujours fixe"
-            ],
-            "correct": 1,
-            "explanation": "Les symptômes se recoupent : il faut comparer plusieurs mesures et le contexte d'installation."
-          },
-          "quiz": [
-            {
-              "question": "Pourquoi ne faut-il pas diagnostiquer avec une seule mesure ?",
-              "answers": [
-                "Parce que les manomètres ne servent à rien",
-                "Parce que plusieurs pannes peuvent donner un symptôme similaire",
-                "Parce que la BP est toujours fixe"
-              ],
-              "correct": 1,
-              "explanation": "Les symptômes se recoupent : il faut comparer plusieurs mesures et le contexte d'installation."
-            },
-            {
-              "question": "Quelle vérification faire avant de suspecter la charge ?",
-              "answers": [
-                "Échanges air/eau et propreté des batteries",
-                "Changer directement le compresseur",
-                "Ignorer SH et SR"
-              ],
-              "correct": 0,
-              "explanation": "Les défauts d’échange peuvent imiter un problème de charge."
-            },
-            {
-              "question": "Que signifie “recouper les indices” ?",
-              "answers": [
-                "Comparer mesures, symptômes et contexte",
-                "Choisir la première valeur venue",
-                "Travailler sans thermomètre"
-              ],
-              "correct": 0,
-              "explanation": "Le recoupement évite les diagnostics rapides mais faux."
-            }
-          ]
-        },
-        {
-          "id": "c7_surchauffe",
-          "title": "La surchauffe : lecture et interprétation",
-          "content": "La **surchauffe** est l'écart entre la température réelle du gaz en sortie évaporateur et la température d'évaporation saturée correspondant à la BP.\n\nElle sert à confirmer que le fluide est bien vapeur avant le compresseur. Une SH trop faible peut indiquer une suralimentation ou un risque de retour liquide. Une SH trop élevée peut indiquer un évaporateur affamé.\n\nExemple : si la température d'évaporation saturée est de 0 °C et que le tube d'aspiration est à 7 °C, la surchauffe est de 7 K. On raisonne en écart, pas seulement en température absolue.\n\n**À retenir :** SH faible = danger potentiel pour le compresseur. SH élevée = manque probable d'alimentation évaporateur, à confirmer par BP, SR et état des échangeurs.",
-          "focus_component": "evaporator",
-          "simulation_preset": {
-            "bp": 4,
-            "hp": 18,
-            "sh": 2,
-            "sc": 4,
-            "evapTemp": 0,
-            "condTemp": 45,
-            "cop": 3,
-            "fault": "SH faible : surveiller le retour liquide"
-          },
-          "checkpoint": {
-            "question": "À quoi sert principalement la surchauffe ?",
-            "answers": [
-              "Vérifier que le fluide est vapeur avant compresseur",
-              "Mesurer uniquement la température extérieure",
-              "Régler la vitesse du ventilateur condenseur"
-            ],
-            "correct": 0,
-            "explanation": "La surchauffe donne une sécurité contre le retour liquide, si elle est interprétée correctement."
-          },
-          "quiz": [
-            {
-              "question": "À quoi sert principalement la surchauffe ?",
-              "answers": [
-                "Vérifier que le fluide est vapeur avant compresseur",
-                "Mesurer uniquement la température extérieure",
-                "Régler la vitesse du ventilateur condenseur"
-              ],
-              "correct": 0,
-              "explanation": "La surchauffe donne une sécurité contre le retour liquide, si elle est interprétée correctement."
-            },
-            {
-              "question": "Que peut indiquer SH élevée + BP basse ?",
-              "answers": [
-                "Évaporateur affamé",
-                "Retour liquide certain",
-                "Condenseur trop propre"
-              ],
-              "correct": 0,
-              "explanation": "Ce couple oriente vers un manque d’alimentation évaporateur."
-            },
-            {
-              "question": "Une surchauffe s’exprime généralement en...",
-              "answers": [
-                "Kelvin d’écart",
-                "Ampère",
-                "Pourcentage de charge uniquement"
-              ],
-              "correct": 0,
-              "explanation": "C’est une différence de température."
-            }
-          ]
-        },
-        {
-          "id": "c8_sous_refroidissement",
-          "title": "Le sous-refroidissement : stabilité de la ligne liquide",
-          "content": "Le **sous-refroidissement** est l'écart entre la température de condensation saturée correspondant à la HP et la température réelle du liquide en sortie condenseur.\n\nIl indique si le liquide est suffisamment refroidi avant d'arriver au détendeur. Un SR correct aide à alimenter le détendeur avec du liquide stable.\n\nSR faible : manque de charge possible, liquide instable, échange insuffisant ou conditions particulières selon installation. SR élevé : charge importante, condenseur qui stocke du liquide ou excès de charge possible.\n\n**Règle terrain :** le SR ne se juge jamais seul. Il se compare à la SH, aux pressions, aux températures d'air et à l'état des échangeurs.",
-          "focus_component": "condenser",
-          "simulation_preset": {
-            "bp": 4.4,
-            "hp": 18.3,
-            "sh": 6,
-            "sc": 1,
-            "evapTemp": 1,
-            "condTemp": 45,
-            "cop": 2.9,
-            "fault": "SR faible : liquide potentiellement instable"
-          },
-          "checkpoint": {
-            "question": "Que vérifie le sous-refroidissement ?",
-            "answers": [
-              "La stabilité du liquide avant détendeur",
-              "La vitesse exacte du compresseur",
-              "La température du local uniquement"
-            ],
-            "correct": 0,
-            "explanation": "Le SR confirme que le fluide est bien liquide et suffisamment refroidi avant détente."
-          },
-          "quiz": [
-            {
-              "question": "Que vérifie le sous-refroidissement ?",
-              "answers": [
-                "La stabilité du liquide avant détendeur",
-                "La vitesse exacte du compresseur",
-                "La température du local uniquement"
-              ],
-              "correct": 0,
-              "explanation": "Le SR confirme que le fluide est bien liquide et suffisamment refroidi avant détente."
-            },
-            {
-              "question": "Que peut provoquer un SR trop faible ?",
-              "answers": [
-                "Liquide instable avant détendeur",
-                "Compression parfaite garantie",
-                "Suppression du besoin de détendeur"
-              ],
-              "correct": 0,
-              "explanation": "Le détendeur doit recevoir du liquide stable."
-            },
-            {
-              "question": "Pourquoi ne pas conclure avec le SR seul ?",
-              "answers": [
-                "Il doit être croisé avec SH, pressions et contexte",
-                "Il est toujours inutile",
-                "Il ne concerne jamais le condenseur"
-              ],
-              "correct": 0,
-              "explanation": "Le SR fait partie d’un ensemble de mesures."
-            }
-          ]
-        },
-        {
-          "id": "c9_tirage_vide_purge",
-          "title": "Tirage au vide, purge et non-condensables",
-          "content": "Dans le langage terrain, on parle parfois de **purge**, mais il faut être précis. Sur une installation frigorifique, on ne rejette pas volontairement de fluide frigorigène à l'atmosphère. On récupère le fluide avec une station adaptée.\n\nLe **tirage au vide** sert à retirer l'air et l'humidité du circuit avant la charge ou après ouverture. L'humidité peut former des acides, geler au détendeur ou dégrader l'huile.\n\nLes **non-condensables**, comme l'air, peuvent faire monter la HP, perturber la condensation et réduire le rendement. Un circuit mal tiré au vide peut donc imiter un condenseur insuffisant.\n\n**Bonne pratique :** vacuomètre, contrôle de tenue au vide, filtre déshydrateur adapté, récupération du fluide et respect des procédures de sécurité.",
-          "focus_component": "all",
-          "simulation_preset": {
-            "bp": 4.5,
-            "hp": 23,
-            "sh": 7,
-            "sc": 4,
-            "evapTemp": 2,
-            "condTemp": 55,
-            "cop": 2.3,
-            "fault": "Air/non-condensables possibles : HP élevée"
-          },
-          "checkpoint": {
-            "question": "À quoi sert le tirage au vide ?",
-            "answers": [
-              "Retirer l’air et l’humidité du circuit",
-              "Ajouter du fluide sans contrôle",
-              "Refroidir le condenseur avec de l’eau"
-            ],
-            "correct": 0,
-            "explanation": "Le tirage au vide prépare le circuit en retirant air et humidité."
-          },
-          "quiz": [
-            {
-              "question": "À quoi sert le tirage au vide ?",
-              "answers": [
-                "Retirer l’air et l’humidité du circuit",
-                "Ajouter du fluide sans contrôle",
-                "Refroidir le condenseur avec de l’eau"
-              ],
-              "correct": 0,
-              "explanation": "Le tirage au vide prépare le circuit en retirant air et humidité."
-            },
-            {
-              "question": "Pourquoi les non-condensables posent problème ?",
-              "answers": [
-                "Ils peuvent faire monter la HP",
-                "Ils améliorent toujours le COP",
-                "Ils remplacent le condenseur"
-              ],
-              "correct": 0,
-              "explanation": "L’air perturbe la condensation et augmente la pression."
-            },
-            {
-              "question": "Que fait-on du fluide avant ouverture du circuit ?",
-              "answers": [
-                "On le récupère",
-                "On le relâche volontairement",
-                "On l’ignore"
-              ],
-              "correct": 0,
-              "explanation": "La récupération est une bonne pratique de sécurité et d’environnement."
-            }
-          ]
-        },
-        {
-          "id": "c10_antigel",
-          "title": "Antigel évaporateur et protection installation",
-          "content": "Le risque antigel apparaît quand la température d'évaporation ou la température de batterie devient trop basse. Sur une batterie à eau glacée, le gel peut détruire l'échangeur. Sur un évaporateur air, le givre réduit le débit et aggrave le défaut.\n\nCauses fréquentes : débit d'air faible, filtre encrassé, ventilateur défaillant, consigne trop basse, sonde mal placée, détendeur mal alimenté ou charge incorrecte.\n\nProtections possibles : pressostat BP, sonde antigel, thermostat de batterie, contrôle débit d'air/eau, dégivrage selon application et arrêt sécurité.\n\n**À retenir :** un évaporateur qui givre n'est pas forcément un manque de fluide. Il faut d'abord vérifier l'échange thermique et le débit.",
-          "focus_component": "evaporator",
-          "simulation_preset": {
-            "bp": 2.6,
-            "hp": 17.5,
-            "sh": 10,
-            "sc": 3,
-            "evapTemp": -12,
-            "condTemp": 42,
-            "cop": 2.1,
-            "fault": "Risque antigel évaporateur"
-          },
-          "checkpoint": {
-            "question": "Quel symptôme favorise le risque antigel ?",
-            "answers": [
-              "Température d’évaporation trop basse",
-              "Condensation parfaitement normale uniquement",
-              "HP toujours égale à zéro"
-            ],
-            "correct": 0,
-            "explanation": "Une température d’évaporation trop basse peut entraîner givre ou gel selon l’application."
-          },
-          "quiz": [
-            {
-              "question": "Quel symptôme favorise le risque antigel ?",
-              "answers": [
-                "Température d’évaporation trop basse",
-                "Condensation parfaitement normale uniquement",
-                "HP toujours égale à zéro"
-              ],
-              "correct": 0,
-              "explanation": "Une température d’évaporation trop basse peut entraîner givre ou gel selon l’application."
-            },
-            {
-              "question": "Quelle cause terrain peut faire givrer un évaporateur air ?",
-              "answers": [
-                "Filtre encrassé",
-                "Condenseur trop propre",
-                "HP toujours normale"
-              ],
-              "correct": 0,
-              "explanation": "Le filtre encrassé réduit le débit d’air."
-            },
-            {
-              "question": "Quel élément peut protéger contre l’antigel ?",
-              "answers": [
-                "Sonde antigel ou pressostat BP",
-                "Voyant décoratif",
-                "Poignée de porte"
-              ],
-              "correct": 0,
-              "explanation": "Ces sécurités limitent les risques avant dommage."
-            }
-          ]
-        },
-        {
-          "id": "c11_securite",
-          "title": "Sécurité, récupération fluide et remise en service",
-          "content": "Un technicien travaille avec des pressions, de l'électricité, des pièces chaudes, des risques de brûlure par froid et des fluides réglementés. La sécurité fait partie de la compétence technique.\n\nAvant intervention : identifier le fluide, utiliser les EPI, ventiler la zone, sécuriser électriquement si nécessaire et utiliser du matériel adapté.\n\nPendant l'intervention : ne pas relâcher volontairement le fluide, contrôler les flexibles, éviter l'ouverture brutale d'une ligne sous pression et protéger les personnes autour.\n\nAprès intervention : contrôle d'étanchéité, tirage au vide si circuit ouvert, charge maîtrisée, essais, relevé des mesures et traçabilité. L'objectif est de rendre une installation fiable, sûre et conforme.",
-          "focus_component": "all",
-          "simulation_preset": {
-            "bp": 4.5,
-            "hp": 18.2,
-            "sh": 6,
-            "sc": 4,
-            "evapTemp": 2,
-            "condTemp": 45,
-            "cop": 3.3,
-            "fault": "Bonnes pratiques et sécurité"
-          },
-          "checkpoint": {
-            "question": "Quelle action est correcte avant d’ouvrir un circuit chargé ?",
-            "answers": [
-              "Récupérer le fluide avec matériel adapté",
-              "Le rejeter volontairement à l’atmosphère",
-              "Ouvrir sans identifier le fluide"
-            ],
-            "correct": 0,
-            "explanation": "Le fluide doit être récupéré selon les règles de sécurité et d’environnement."
-          },
-          "quiz": [
-            {
-              "question": "Quelle action est correcte avant d’ouvrir un circuit chargé ?",
-              "answers": [
-                "Récupérer le fluide avec matériel adapté",
-                "Le rejeter volontairement à l’atmosphère",
-                "Ouvrir sans identifier le fluide"
-              ],
-              "correct": 0,
-              "explanation": "Le fluide doit être récupéré selon les règles de sécurité et d’environnement."
-            },
-            {
-              "question": "Que faut-il faire après une ouverture du circuit ?",
-              "answers": [
-                "Contrôle d’étanchéité, tirage au vide, charge maîtrisée",
-                "Remettre en route sans mesure",
-                "Ajouter au hasard du fluide"
-              ],
-              "correct": 0,
-              "explanation": "La remise en service doit être contrôlée et tracée."
-            },
-            {
-              "question": "Pourquoi relever les mesures après intervention ?",
-              "answers": [
-                "Pour assurer la traçabilité et comparer plus tard",
-                "Pour remplir l’écran inutilement",
-                "Pour éviter tout diagnostic"
-              ],
-              "correct": 0,
-              "explanation": "Les mesures de référence sont utiles pour maintenance et dépannage."
-            }
-          ]
-        },
-        {
-          "id": "c12_datacenter_vue_ensemble",
-          "title": "Data center : comprendre le système complet",
-          "focus_component": "racks",
-          "simulation_preset": {
-            "bp": 4.5,
-            "hp": 18.2,
-            "sh": 5,
-            "sc": 3,
-            "evapTemp": 2,
-            "condTemp": 45,
-            "cop": 3.2,
-            "fault": "Salle IT nominale"
-          },
-          "content": "Un data center n’est pas seulement une climatisation plus grosse. C’est un ensemble coordonné : **charge IT**, refroidissement, distribution électrique, supervision, sécurité et procédures d’exploitation.\n\nLa charge IT consomme de l’électricité et transforme presque toute cette énergie en chaleur. Le rôle du froid est donc simple à formuler, mais exigeant à tenir : **évacuer la chaleur sans interruption**, avec une marge suffisante en cas de panne ou de maintenance.\n\nLes nouveaux arrivants doivent apprendre à raisonner en chaîne :\n\n- d’où vient l’énergie ?\n- comment elle arrive aux baies ?\n- où la chaleur est produite ?\n- comment l’air froid arrive devant les serveurs ?\n- où repart l’air chaud ?\n- comment la chaleur est finalement rejetée dehors ?\n\n**À retenir :** sur un site critique, une action locale peut avoir une conséquence globale. Avant de modifier une consigne, fermer une vanne, acquitter une alarme ou intervenir sur une alimentation, on vérifie l’impact, la redondance et l’autorisation d’exploitation.",
-          "quiz": [
-            {
-              "question": "Dans une baie serveur, que devient principalement l’énergie électrique consommée ?",
-              "answers": [
-                "Elle est stockée dans les serveurs",
-                "Elle devient presque entièrement de la chaleur",
-                "Elle disparaît dans le réseau informatique",
-                "Elle refroidit naturellement la salle"
-              ],
-              "correct": 1,
-              "explanation": "La quasi-totalité de l’énergie électrique consommée par l’IT finit sous forme de chaleur. C’est cette chaleur qu’il faut évacuer en continu."
-            },
-            {
-              "question": "Pourquoi ne faut-il pas modifier une consigne de CRAC/CRAH sans analyse ?",
-              "answers": [
-                "Parce que la consigne n’a aucun effet",
-                "Parce que cela peut déséquilibrer la stratégie globale de refroidissement",
-                "Parce que les ventilateurs s’arrêtent toujours",
-                "Parce que la BP devient automatiquement nulle"
-              ],
-              "correct": 1,
-              "explanation": "Une consigne modifiée sur une seule unité peut créer des conflits de régulation, des mélanges d’air ou une perte de redondance."
-            },
-            {
-              "question": "Quelle est la bonne logique d’analyse en data center ?",
-              "answers": [
-                "Regarder seulement le compresseur",
-                "Regarder uniquement la température extérieure",
-                "Raisonner charge IT, air, froid, électricité et supervision",
-                "Remettre tous les défauts à zéro"
-              ],
-              "correct": 2,
-              "explanation": "Le diagnostic doit relier la charge IT, le flux d’air, le circuit froid, l’énergie et les alarmes BMS/DCIM."
-            }
-          ]
-        },
-        {
-          "id": "c13_salle_it_airflow",
-          "title": "Salle IT : baies, allées froides et allées chaudes",
-          "focus_component": "racks",
-          "simulation_preset": {
-            "bp": 4.5,
-            "hp": 18.2,
-            "sh": 5,
-            "sc": 3,
-            "evapTemp": 2,
-            "condTemp": 45,
-            "cop": 3.2,
-            "fault": "Confinement correct"
-          },
-          "content": "La salle IT doit être lue comme un circuit d’air.\n\nL’air froid doit arriver **en face avant des serveurs**, côté admission. L’air chaud ressort en face arrière. Si l’air chaud revient vers l’entrée des serveurs, on crée un **point chaud** même si la puissance froide totale semble suffisante.\n\nLes éléments à regarder pendant une ronde :\n\n- température d’entrée des baies ;\n- température de retour chaud ;\n- panneaux obturateurs dans les baies ;\n- portes ou cloisons de confinement ;\n- dalles perforées ou grilles de soufflage ;\n- obstacles devant les baies ;\n- cohérence entre charge IT et débit d’air.\n\nUne erreur fréquente consiste à regarder seulement la température de la salle. En data center, la bonne question est : **quelle température les serveurs aspirent-ils réellement ?**\n\n**Note terrain :** un point chaud local peut venir d’une mauvaise séparation d’air, d’une baie mal obturée, d’un câble qui bloque le flux ou d’un ventilateur IT en défaut.",
-          "quiz": [
-            {
-              "question": "Où faut-il prioritairement mesurer la température utile pour les serveurs ?",
-              "answers": [
-                "Au plafond uniquement",
-                "Devant les baies, côté entrée d’air serveur",
-                "Derrière les baies, au retour chaud seulement",
-                "Dans le local technique électrique"
-              ],
-              "correct": 1,
-              "explanation": "La température critique est celle aspirée par les serveurs, donc côté entrée d’air, dans l’allée froide."
-            },
-            {
-              "question": "À quoi servent les panneaux obturateurs dans les baies ?",
-              "answers": [
-                "À décorer les racks",
-                "À éviter le recyclage d’air chaud à travers les espaces vides",
-                "À augmenter la HP",
-                "À remplacer les filtres du CRAC"
-              ],
-              "correct": 1,
-              "explanation": "Les panneaux obturateurs empêchent l’air chaud de revenir vers l’avant de la baie par les emplacements libres."
-            },
-            {
-              "question": "Un point chaud local peut apparaître même si la puissance froide totale est suffisante. Pourquoi ?",
-              "answers": [
-                "Parce que le fluide ne circule jamais",
-                "Parce que l’air froid peut être mal distribué ou mélangé avec l’air chaud",
-                "Parce que le RMU chauffe la salle IT",
-                "Parce que le sous-refroidissement est toujours nul"
-              ],
-              "correct": 1,
-              "explanation": "Un problème de distribution d’air peut créer un point chaud local malgré une capacité froide globale suffisante."
-            }
-          ]
-        },
-        {
-          "id": "c14_crac_crah",
-          "title": "CRAC, CRAH et unités de salle",
-          "focus_component": "crac",
-          "simulation_preset": {
-            "bp": 4.5,
-            "hp": 18.2,
-            "sh": 5,
-            "sc": 3,
-            "evapTemp": 2,
-            "condTemp": 45,
-            "cop": 3.2,
-            "fault": "Unité de salle en service"
-          },
-          "content": "Les unités de salle assurent le traitement de l’air autour des baies.\n\nUn **CRAC** est souvent associé à une détente directe : le fluide frigorigène absorbe la chaleur dans une batterie. Un **CRAH** utilise généralement une batterie eau glacée : l’air cède sa chaleur à l’eau froide, puis cette chaleur est évacuée par le réseau hydraulique et les groupes/drycoolers.\n\nSur site, le technicien doit contrôler :\n\n- état des filtres ;\n- ventilateurs et variateurs ;\n- température de reprise ;\n- température de soufflage ;\n- delta T air ;\n- présence d’eau ou de condensats ;\n- vanne eau glacée ou détendeur ;\n- alarmes locales ;\n- sondes cohérentes avec la supervision.\n\n**Différence importante :** un défaut de débit d’air, un défaut de débit eau glacée et un défaut frigorifique peuvent tous produire une salle trop chaude. Il faut donc comparer les symptômes avant de conclure.",
-          "quiz": [
-            {
-              "question": "Quelle différence générale peut-on faire entre CRAC et CRAH ?",
-              "answers": [
-                "CRAC = réseau informatique, CRAH = onduleur",
-                "CRAC souvent détente directe, CRAH souvent batterie eau glacée",
-                "CRAC uniquement électrique, CRAH uniquement mécanique",
-                "Il n’y a jamais de différence"
-              ],
-              "correct": 1,
-              "explanation": "Dans le langage courant data center, CRAC désigne souvent une unité DX, CRAH une unité raccordée à l’eau glacée."
-            },
-            {
-              "question": "Quel contrôle est prioritaire sur une unité de salle qui refroidit mal ?",
-              "answers": [
-                "La couleur de la peinture",
-                "Débit d’air, filtres, reprise/soufflage et alarmes",
-                "La marque des serveurs",
-                "Le nombre de néons"
-              ],
-              "correct": 1,
-              "explanation": "Avant d’aller trop loin, il faut vérifier que l’air circule, que les filtres ne sont pas bloqués et que les températures sont cohérentes."
-            },
-            {
-              "question": "Pourquoi comparer reprise et soufflage ?",
-              "answers": [
-                "Pour estimer le transfert thermique côté air",
-                "Pour régler la RMU",
-                "Pour savoir si le PDU est ouvert",
-                "Pour supprimer le besoin de supervision"
-              ],
-              "correct": 0,
-              "explanation": "L’écart entre reprise et soufflage aide à comprendre si l’unité retire effectivement de la chaleur à l’air."
-            }
-          ]
-        },
-        {
-          "id": "c15_eau_glacee_hydraulique",
-          "title": "Eau glacée : pompes, vannes, glycol et antigel",
-          "focus_component": "pump",
-          "simulation_preset": {
-            "bp": 3.2,
-            "hp": 17.8,
-            "sh": 5,
-            "sc": 4,
-            "evapTemp": -0.3,
-            "condTemp": 44,
-            "cop": 3,
-            "fault": "Débit eau glacée à surveiller"
-          },
-          "content": "Beaucoup de data centers utilisent de l’eau glacée ou un mélange eau/glycol. Le froid n’est alors pas seulement une affaire de compresseur : il faut aussi maîtriser le débit hydraulique.\n\nPoints à connaître :\n\n- pompe primaire/secondaire ;\n- pression différentielle ;\n- vanne 2 voies ou 3 voies ;\n- filtre à tamis ;\n- température départ eau glacée ;\n- température retour ;\n- débit minimum ;\n- concentration glycol ;\n- protection antigel.\n\nUn débit trop faible peut provoquer une perte de capacité, une dérive de température salle ou un déclenchement antigel. Un mauvais taux de glycol peut aussi exposer l’installation au gel ou dégrader les performances.\n\n**Méthode terrain :** si une CRAH ne refroidit pas, vérifier à la fois le côté air et le côté eau : ventilateur, filtre, vanne, delta T eau, pression différentielle, pompe et consigne.",
-          "quiz": [
-            {
-              "question": "Sur une CRAH, que faut-il vérifier en plus du débit d’air ?",
-              "answers": [
-                "Le débit eau glacée et la vanne",
-                "La pression des pneus",
-                "Le voyant liquide du RMU",
-                "La couleur des câbles réseau"
-              ],
-              "correct": 0,
-              "explanation": "Une CRAH dépend du réseau eau glacée : vanne, débit, température départ/retour et pression différentielle sont essentiels."
-            },
-            {
-              "question": "À quoi sert le glycol dans certains réseaux ?",
-              "answers": [
-                "À augmenter la tension électrique",
-                "À améliorer la protection antigel",
-                "À remplacer les filtres",
-                "À supprimer les pompes"
-              ],
-              "correct": 1,
-              "explanation": "Le glycol abaisse le point de congélation, mais son taux doit être maîtrisé car il influence aussi les performances."
-            },
-            {
-              "question": "Un débit eau glacée trop faible peut provoquer :",
-              "answers": [
-                "Une meilleure capacité froide",
-                "Une perte de capacité et parfois un défaut antigel",
-                "Une suppression des alarmes",
-                "Une baisse automatique de la charge IT"
-              ],
-              "correct": 1,
-              "explanation": "Si le débit est insuffisant, la batterie n’échange plus correctement et les protections peuvent se déclencher."
-            }
-          ]
-        },
-        {
-          "id": "c16_electricite_critique",
-          "title": "Chaîne électrique : RMU, transformateur, TGBT, onduleur, PDU",
-          "focus_component": "ups",
-          "simulation_preset": {
-            "bp": 4.5,
-            "hp": 18.2,
-            "sh": 5,
-            "sc": 3,
-            "evapTemp": 2,
-            "condTemp": 45,
-            "cop": 3.2,
-            "fault": "Chaîne électrique nominale"
-          },
-          "content": "Un data center est aussi une installation électrique critique.\n\nChaîne typique simplifiée :\n\n1. **RMU HTA** : arrivée moyenne tension en boucle.\n2. **Transformateur** : conversion HTA vers basse tension.\n3. **TGBT / tableaux** : distribution basse tension.\n4. **Onduleur / UPS** : maintien des charges critiques pendant les défauts réseau.\n5. **PDU / busway** : distribution vers les baies, souvent en chemins A et B.\n6. **Baies IT** : charges finales.\n\nLe technicien CVC n’est pas forcément autorisé à manœuvrer ces équipements, mais il doit comprendre leur rôle. Une perte d’énergie peut arrêter pompes, groupes froids, unités de salle ou supervision. À l’inverse, une dérive thermique peut impacter les équipements électriques.\n\n**Règle professionnelle :** pas de manœuvre électrique sans habilitation, procédure, consignation et coordination exploitation.",
-          "quiz": [
-            {
-              "question": "Quel est le rôle principal de l’onduleur en data center ?",
-              "answers": [
-                "Produire du froid",
-                "Maintenir l’alimentation des charges critiques pendant les défauts courts",
-                "Remplacer le condenseur",
-                "Filtrer l’air de la salle"
-              ],
-              "correct": 1,
-              "explanation": "L’onduleur assure la continuité d’alimentation pendant les microcoupures et la transition vers les secours."
-            },
-            {
-              "question": "Que signifie généralement une distribution A/B vers les baies ?",
-              "answers": [
-                "Deux alimentations redondantes ou séparées",
-                "Deux circuits frigorifiques dans le même tube",
-                "Deux filtres d’air en série",
-                "Deux couleurs de peinture"
-              ],
-              "correct": 0,
-              "explanation": "Les alimentations A/B permettent de maintenir la charge si un chemin d’alimentation est indisponible, selon la conception du site."
-            },
-            {
-              "question": "Qui peut manœuvrer une cellule RMU HTA ?",
-              "answers": [
-                "N’importe quel technicien disponible",
-                "Uniquement du personnel habilité avec procédure",
-                "Le premier arrivé sur site",
-                "Le logiciel de quiz"
-              ],
-              "correct": 1,
-              "explanation": "La HTA nécessite habilitation, procédure, consignation et autorisation. Ce n’est pas une action improvisée."
-            }
-          ]
-        },
-        {
-          "id": "c17_riser_distribution",
-          "title": "Risers et cheminements techniques",
-          "focus_component": "riser",
-          "simulation_preset": {
-            "bp": 4.5,
-            "hp": 18.2,
-            "sh": 5,
-            "sc": 3,
-            "evapTemp": 2,
-            "condTemp": 45,
-            "cop": 3.2,
-            "fault": "Distribution verticale"
-          },
-          "content": "Le **riser** est une colonne technique verticale. Il peut contenir des câbles de puissance, du contrôle-commande, de la fibre, parfois des réseaux hydrauliques ou des supports de busway.\n\nUn bon technicien doit savoir lire un riser sans le considérer comme un simple placard.\n\nPoints à vérifier :\n\n- repérage clair des départs ;\n- séparation courants forts / courants faibles ;\n- supports mécaniques ;\n- coupe-feu entre niveaux ;\n- absence de condensation ;\n- accès maintenable ;\n- cohérence avec les plans ;\n- absence de stockage sauvage.\n\n**Danger courant :** couper le mauvais départ ou intervenir dans la mauvaise colonne. En site critique, le repérage et la validation d’impact sont aussi importants que l’action technique elle-même.",
-          "quiz": [
-            {
-              "question": "Pourquoi le coupe-feu est-il important dans un riser ?",
-              "answers": [
-                "Pour ralentir la propagation du feu et des fumées entre niveaux",
-                "Pour augmenter la BP",
-                "Pour faire tourner les ventilateurs plus vite",
-                "Pour remplacer une consignation"
-              ],
-              "correct": 0,
-              "explanation": "Les traversées verticales doivent préserver le compartimentage incendie du bâtiment."
-            },
-            {
-              "question": "Avant intervention dans un riser, que faut-il confirmer ?",
-              "answers": [
-                "Le repérage et l’impact réel du réseau concerné",
-                "La météo extérieure seulement",
-                "La couleur des baies",
-                "Le nombre de questions du quiz"
-              ],
-              "correct": 0,
-              "explanation": "Il faut identifier exactement le départ ou réseau concerné et valider l’impact avant toute action."
-            },
-            {
-              "question": "Quel problème peut créer de la condensation dans un riser ?",
-              "answers": [
-                "Risque électrique, corrosion ou dégradation d’isolants",
-                "Amélioration du rendement serveur",
-                "Suppression des alarmes",
-                "Augmentation automatique de l’autonomie UPS"
-              ],
-              "correct": 0,
-              "explanation": "La condensation près de chemins électriques ou de supports peut devenir dangereuse et doit être traitée."
-            }
-          ]
-        },
-        {
-          "id": "c18_supervision_bms_dcim",
-          "title": "Supervision BMS/DCIM : lire sans se laisser piéger",
-          "focus_component": "bms",
-          "simulation_preset": {
-            "bp": 4.2,
-            "hp": 21.5,
-            "sh": 6,
-            "sc": 6,
-            "evapTemp": 2,
-            "condTemp": 52,
-            "cop": 2.6,
-            "fault": "Alerte supervision"
-          },
-          "content": "La supervision est indispensable, mais elle ne remplace pas le raisonnement terrain.\n\nElle permet de voir :\n\n- alarmes actives ;\n- historiques ;\n- températures salle ;\n- températures baies ;\n- états ventilateurs/pompes/groupes ;\n- puissance électrique ;\n- tendances ;\n- communications automates.\n\nMais une sonde peut être mal placée, décalibrée ou non représentative. Une alarme acquittée peut rester non résolue. Une courbe peut être correcte globalement tout en masquant un point chaud local.\n\n**Méthode :** partir de la supervision pour prioriser, puis confirmer sur site quand l’impact est critique. Toujours noter l’heure, le symptôme, l’équipement concerné et l’action réalisée.",
-          "quiz": [
-            {
-              "question": "Une alarme acquittée signifie-t-elle que le défaut est résolu ?",
-              "answers": [
-                "Oui, toujours",
-                "Non, elle peut seulement avoir été reconnue par l’opérateur",
-                "Oui si elle est bleue",
-                "Oui si la salle est grande"
-              ],
-              "correct": 1,
-              "explanation": "Acquitter une alarme signifie souvent la reconnaître. Il faut vérifier si la cause a réellement disparu."
-            },
-            {
-              "question": "Pourquoi confirmer sur site une alarme critique ?",
-              "answers": [
-                "Parce que la supervision peut manquer de contexte ou avoir une sonde incohérente",
-                "Parce que les alarmes sont toujours fausses",
-                "Parce que les techniciens doivent marcher",
-                "Parce que le condenseur est toujours propre"
-              ],
-              "correct": 0,
-              "explanation": "La supervision guide le diagnostic, mais la vérification terrain reste essentielle sur un site critique."
-            },
-            {
-              "question": "Quelle information est utile dans un compte rendu d’alarme ?",
-              "answers": [
-                "Heure, symptôme, équipement, action et résultat",
-                "Uniquement le prénom du technicien",
-                "La couleur du badge",
-                "Le nombre de serveurs dans le monde"
-              ],
-              "correct": 0,
-              "explanation": "Un compte rendu exploitable doit permettre de comprendre la chronologie, l’impact et l’action réalisée."
-            }
-          ]
-        },
-        {
-          "id": "c19_modes_degrades",
-          "title": "Modes dégradés : redondance, N+1 et priorité d’action",
-          "focus_component": "condenser",
-          "simulation_preset": {
-            "bp": 3.9,
-            "hp": 23.5,
-            "sh": 7,
-            "sc": 7,
-            "evapTemp": 2,
-            "condTemp": 57,
-            "cop": 2.1,
-            "fault": "Rejet chaleur dégradé"
-          },
-          "content": "Un data center est conçu avec de la redondance, mais la redondance n’est pas une excuse pour improviser.\n\nNotions importantes :\n\n- **N** : capacité nécessaire pour tenir la charge.\n- **N+1** : une unité supplémentaire permet de perdre un équipement sans perdre le service.\n- **2N** : deux chaînes complètes peuvent théoriquement reprendre la charge.\n- **Mode dégradé** : le site fonctionne encore, mais avec moins de marge.\n\nEn mode dégradé, l’objectif n’est pas seulement de remettre en route vite. Il faut éviter de provoquer un second défaut. On analyse la marge restante, la charge IT, la météo, la capacité froide, l’énergie disponible et le temps de réparation.\n\n**Priorité terrain :** sécuriser le service, informer l’exploitation, stabiliser, diagnostiquer, puis réparer.",
-          "quiz": [
-            {
-              "question": "Que signifie N+1 dans une logique de capacité ?",
-              "answers": [
-                "Une unité de plus que le besoin nominal",
-                "Une unité en moins que le besoin",
-                "Un seul équipement sans secours",
-                "Une pression de plus dans le circuit"
-              ],
-              "correct": 0,
-              "explanation": "N+1 signifie qu’une unité supplémentaire est disponible par rapport au besoin nominal."
-            },
-            {
-              "question": "En mode dégradé, quel est le risque principal d’une action précipitée ?",
-              "answers": [
-                "Créer un second défaut et perdre la marge restante",
-                "Améliorer automatiquement le COP",
-                "Faire disparaître la charge IT",
-                "Réduire le besoin de compte rendu"
-              ],
-              "correct": 0,
-              "explanation": "Quand la marge est réduite, une mauvaise action peut provoquer une perte de service."
-            },
-            {
-              "question": "HP élevée sur plusieurs unités par forte chaleur : quelle piste est prioritaire ?",
-              "answers": [
-                "Rejet de chaleur : condenseurs/drycoolers, ventilation ou débit eau",
-                "Changer les claviers serveur",
-                "Éteindre la supervision",
-                "Ajouter des panneaux obturateurs sans vérifier le froid"
-              ],
-              "correct": 0,
-              "explanation": "Une HP élevée généralisée oriente vers le rejet de chaleur, surtout en conditions extérieures difficiles."
-            }
-          ]
-        },
-        {
-          "id": "c20_interventions_site_critique",
-          "title": "Intervention sur site critique : méthode et sécurité",
-          "focus_component": "rmu",
-          "simulation_preset": {
-            "bp": 4.5,
-            "hp": 18.2,
-            "sh": 5,
-            "sc": 3,
-            "evapTemp": 2,
-            "condTemp": 45,
-            "cop": 3.2,
-            "fault": "Préparation intervention"
-          },
-          "content": "La technique ne suffit pas. Sur un data center, la qualité d’intervention est aussi importante que le diagnostic.\n\nAvant intervention :\n\n- identifier l’équipement exact ;\n- comprendre l’impact ;\n- vérifier la redondance disponible ;\n- prévenir l’exploitation ;\n- obtenir les autorisations ;\n- préparer la consignation si nécessaire ;\n- prévoir retour arrière ;\n- documenter les valeurs avant action.\n\nPour le froid : récupération du fluide, remplacement du filtre déshydrateur si nécessaire, tirage au vide sérieux, contrôle d’étanchéité et recharge maîtrisée. Pour l’électricité : habilitation, consignation, VAT, EPI, procédure et périmètre clair.\n\n**Culture pro :** on ne gagne pas du temps en sautant les étapes. On crée du risque.",
-          "quiz": [
-            {
-              "question": "Avant toute action sur un équipement critique, que faut-il vérifier ?",
-              "answers": [
-                "Impact, redondance, autorisation et procédure",
-                "Seulement la marque de l’équipement",
-                "Uniquement la température extérieure",
-                "Rien si l’action semble simple"
-              ],
-              "correct": 0,
-              "explanation": "Impact, redondance, autorisation et procédure évitent de transformer une intervention simple en incident critique."
-            },
-            {
-              "question": "Sur un circuit frigorifique, que fait-on avant d’ouvrir le circuit ?",
-              "answers": [
-                "On récupère le fluide conformément aux règles",
-                "On purge à l’air libre",
-                "On augmente la HP",
-                "On retire les filtres de salle"
-              ],
-              "correct": 0,
-              "explanation": "Le fluide doit être récupéré avec le matériel adapté. Le rejet volontaire à l’atmosphère est interdit et dangereux."
-            },
-            {
-              "question": "Pourquoi noter les valeurs avant intervention ?",
-              "answers": [
-                "Pour comparer avant/après et comprendre l’effet réel de l’action",
-                "Pour décorer le rapport",
-                "Pour éviter de regarder la machine",
-                "Pour remplacer le diagnostic"
-              ],
-              "correct": 0,
-              "explanation": "Les valeurs avant/après permettent de valider l’action et d’éviter les conclusions approximatives."
-            }
-          ]
-        },
-        {
-          "id": "c21_diagnostic_datacenter",
-          "title": "Diagnostic terrain data center : ordre de priorité",
-          "focus_component": "all",
-          "simulation_preset": {
-            "bp": 3,
-            "hp": 22.2,
-            "sh": 13,
-            "sc": 1,
-            "evapTemp": -0.8,
-            "condTemp": 54,
-            "cop": 2,
-            "fault": "Diagnostic multi-symptômes"
-          },
-          "content": "Quand plusieurs symptômes apparaissent, il faut éviter le diagnostic au hasard.\n\nOrdre de lecture conseillé :\n\n1. **Impact IT** : quelles baies, quelle salle, quelle température entrée serveur ?\n2. **Supervision** : alarmes actives, tendance, équipement en défaut.\n3. **Air** : débit, filtres, allées froides/chaudes, confinement.\n4. **Froid** : BP, HP, surchauffe, sous-refroidissement, antigel, débit eau glacée.\n5. **Électricité** : alimentation unité, UPS, PDU, protections, variateurs.\n6. **Redondance** : combien de marge reste-t-il ?\n7. **Action** : stabiliser avant de réparer si le service est menacé.\n\nExemple : BP basse + surchauffe haute + température salle qui monte peut indiquer une batterie sous-alimentée, un filtre déshydrateur bouché, un détendeur trop fermé, un manque de charge ou un débit insuffisant selon le type d’unité. Le contexte départage les pistes.\n\n**Conclusion :** un bon technicien ne récite pas une panne. Il relie les mesures, l’environnement et l’impact réel.",
-          "quiz": [
-            {
-              "question": "Quel est le premier point à comprendre lors d’une alarme thermique data center ?",
-              "answers": [
-                "L’impact réel sur l’IT et les baies concernées",
-                "La couleur du condenseur",
-                "Le nombre de vis du capot",
-                "Le nom du fabricant du clavier"
-              ],
-              "correct": 0,
-              "explanation": "La priorité est de savoir si les charges IT sont exposées et où se situe l’impact."
-            },
-            {
-              "question": "BP basse + surchauffe haute signifie souvent :",
-              "answers": [
-                "Évaporateur sous-alimenté",
-                "Retour liquide massif",
-                "TGBT en court-circuit",
-                "Aucune piste possible"
-              ],
-              "correct": 0,
-              "explanation": "Cette combinaison oriente vers une alimentation insuffisante de l’évaporateur, à confirmer par le contexte."
-            },
-            {
-              "question": "Pourquoi intégrer l’électricité dans un diagnostic CVC data center ?",
-              "answers": [
-                "Parce que les pompes, ventilateurs, variateurs et unités dépendent de l’énergie",
-                "Parce que le froid n’a jamais besoin de fluide",
-                "Parce que les baies produisent du froid",
-                "Parce que l’UPS remplace la batterie froide"
-              ],
-              "correct": 0,
-              "explanation": "Une panne électrique ou un défaut variateur peut se traduire par une panne de refroidissement."
-            }
-          ]
+            "id": "m1_datacenter_adiabatic_chiller_continuous",
+            "title": "Production de froid data center : adiabatic dry cooler, chiller assist et continuous cooling",
+            "chapters": [
+                {
+                    "id": "c1_vue_ensemble",
+                    "title": "Vue d'ensemble de l'architecture",
+                    "content": "Cette installation n'est pas un simple circuit frigorifique isol\u00e9. C'est une cha\u00eene compl\u00e8te de production de froid pour site critique.\n\nLe principe g\u00e9n\u00e9ral est le suivant :\n\n1. Les baies serveurs r\u00e9chauffent l'air de la salle IT.\n2. Les CRAH r\u00e9cup\u00e8rent cet air chaud et le refroidissent gr\u00e2ce \u00e0 une batterie aliment\u00e9e en eau glac\u00e9e.\n3. La chaleur est transf\u00e9r\u00e9e vers une boucle hydraulique.\n4. Le drycooler adiabatique en toiture rejette cette chaleur \u00e0 l'ext\u00e9rieur.\n5. Quand les conditions ext\u00e9rieures ne suffisent plus, le chiller assist apporte un appoint m\u00e9canique.\n6. Le continuous cooling maintient un d\u00e9bit et une inertie pendant les transitions ou d\u00e9fauts courts.\n\n**\u00c0 retenir :** sur ce type de site, on ne cherche pas seulement \u00e0 produire du froid. On cherche \u00e0 maintenir la disponibilit\u00e9 thermique de la salle IT, m\u00eame pendant les bascules \u00e9lectriques, les changements de mode et les incidents partiels.",
+                    "focus_component": "all",
+                    "simulation_preset": {
+                        "bp": 4.5,
+                        "hp": 18.2,
+                        "sh": 5,
+                        "sc": 4,
+                        "evapTemp": 4,
+                        "condTemp": 36,
+                        "cop": 5.2,
+                        "fault": "Mode nominal free cooling"
+                    },
+                    "quiz": [
+                        {
+                            "question": "Quel est le r\u00f4le principal de l'installation de froid dans un data center ?",
+                            "answers": [
+                                "Cr\u00e9er du froid pour le confort humain",
+                                "Maintenir les conditions thermiques de la charge IT",
+                                "Refroidir uniquement le local \u00e9lectrique",
+                                "Produire de l'eau chaude"
+                            ],
+                            "correct": 1,
+                            "explanation": "La priorit\u00e9 est la disponibilit\u00e9 de la charge IT. Le confort humain est secondaire."
+                        },
+                        {
+                            "question": "Quel \u00e9quipement rejette principalement la chaleur vers l'ext\u00e9rieur dans ce syst\u00e8me ?",
+                            "answers": [
+                                "Le PDU",
+                                "Le drycooler adiabatique",
+                                "Le RMU",
+                                "Le ballon tampon"
+                            ],
+                            "correct": 1,
+                            "explanation": "Le drycooler en toiture \u00e9vacue la chaleur vers l'air ext\u00e9rieur."
+                        },
+                        {
+                            "question": "Pourquoi parle-t-on de cha\u00eene compl\u00e8te et pas seulement de groupe froid ?",
+                            "answers": [
+                                "Parce que l'air, l'eau, l'\u00e9lectricit\u00e9, la r\u00e9gulation et la redondance sont li\u00e9s",
+                                "Parce que le compresseur suffit \u00e0 tout expliquer",
+                                "Parce que la salle IT n'a pas d'importance",
+                                "Parce qu'il n'y a aucun r\u00e9seau hydraulique"
+                            ],
+                            "correct": 0,
+                            "explanation": "Sur site critique, une panne de d\u00e9bit, de r\u00e9gulation ou d'\u00e9nergie peut avoir autant d'impact qu'une panne frigorifique."
+                        }
+                    ]
+                },
+                {
+                    "id": "c2_salle_it_airflow",
+                    "title": "Salle IT : all\u00e9e froide, all\u00e9e chaude et reprise",
+                    "content": "Avant de regarder la production de froid, il faut comprendre le chemin de l'air.\n\nLes serveurs aspirent l'air froid en face avant et rejettent l'air chaud en face arri\u00e8re. Les unit\u00e9s de salle reprennent l'air chaud, le font passer sur une batterie froide, puis renvoient de l'air froid vers l'all\u00e9e froide.\n\nLes erreurs fr\u00e9quentes sont :\n\n- m\u00e9lange entre all\u00e9e chaude et all\u00e9e froide ;\n- obturateurs manquants dans les baies ;\n- dalle perfor\u00e9e mal plac\u00e9e ;\n- reprise d'air obstru\u00e9e ;\n- vitesse d'air trop faible ;\n- consigne trop basse qui masque un probl\u00e8me d'airflow.\n\n**R\u00e9flexe terrain :** en cas de point chaud, ne baisse pas la consigne imm\u00e9diatement. V\u00e9rifie d'abord le chemin de l'air, les obturateurs, le confinement et la charge r\u00e9elle des baies.",
+                    "focus_component": "racks",
+                    "simulation_preset": {
+                        "bp": 4.4,
+                        "hp": 18.0,
+                        "sh": 5,
+                        "sc": 4,
+                        "evapTemp": 5,
+                        "condTemp": 35,
+                        "cop": 5.1,
+                        "fault": "Airflow salle IT normal"
+                    },
+                    "quiz": [
+                        {
+                            "question": "Quel est le premier contr\u00f4le \u00e0 faire en cas de point chaud localis\u00e9 ?",
+                            "answers": [
+                                "Remplacer le chiller",
+                                "Contr\u00f4ler le chemin de l'air dans la salle",
+                                "Augmenter imm\u00e9diatement la HP",
+                                "Fermer toutes les vannes"
+                            ],
+                            "correct": 1,
+                            "explanation": "Un point chaud localis\u00e9 est souvent li\u00e9 \u00e0 l'airflow : confinement, obturateurs, dalles ou obstruction."
+                        },
+                        {
+                            "question": "O\u00f9 les serveurs aspirent-ils normalement l'air froid ?",
+                            "answers": [
+                                "\u00c0 l'arri\u00e8re des baies",
+                                "En face avant",
+                                "Dans le local \u00e9lectrique",
+                                "Dans le riser"
+                            ],
+                            "correct": 1,
+                            "explanation": "La face avant est c\u00f4t\u00e9 all\u00e9e froide."
+                        },
+                        {
+                            "question": "Pourquoi les obturateurs de baie sont importants ?",
+                            "answers": [
+                                "Ils \u00e9vitent le recyclage d'air chaud",
+                                "Ils augmentent la HP",
+                                "Ils remplacent les filtres",
+                                "Ils arr\u00eatent les pompes"
+                            ],
+                            "correct": 0,
+                            "explanation": "Les obturateurs emp\u00eachent l'air chaud de revenir vers la face avant des serveurs."
+                        }
+                    ]
+                },
+                {
+                    "id": "c3_boucle_eau_glacee",
+                    "title": "Boucle eau glac\u00e9e c\u00f4t\u00e9 b\u00e2timent",
+                    "content": "La boucle eau glac\u00e9e transporte le froid vers les CRAH. En r\u00e9alit\u00e9, elle transporte surtout la chaleur de la salle vers la production.\n\nLe d\u00e9part eau glac\u00e9e alimente les batteries froides. Le retour revient plus chaud apr\u00e8s avoir r\u00e9cup\u00e9r\u00e9 la chaleur de l'air.\n\nLes points essentiels sont :\n\n- d\u00e9bit suffisant ;\n- pression diff\u00e9rentielle correcte ;\n- vanne de r\u00e9gulation coh\u00e9rente ;\n- filtre propre ;\n- purge d'air correcte ;\n- calorifuge en bon \u00e9tat ;\n- delta T d\u00e9part/retour exploitable.\n\n**\u00c0 retenir :** une production de froid peut \u00eatre disponible, mais inefficace en salle si le d\u00e9bit d'eau est mauvais ou si une batterie est mal aliment\u00e9e.",
+                    "focus_component": "pumpSecondary",
+                    "simulation_preset": {
+                        "bp": 4.2,
+                        "hp": 18.4,
+                        "sh": 6,
+                        "sc": 4,
+                        "evapTemp": 4,
+                        "condTemp": 36,
+                        "cop": 4.9,
+                        "fault": "Boucle eau glac\u00e9e \u00e9quilibr\u00e9e"
+                    },
+                    "quiz": [
+                        {
+                            "question": "Que transporte r\u00e9ellement la boucle eau glac\u00e9e depuis la salle IT ?",
+                            "answers": [
+                                "Uniquement du froid",
+                                "La chaleur r\u00e9cup\u00e9r\u00e9e dans la salle",
+                                "De l'\u00e9lectricit\u00e9",
+                                "De l'air ext\u00e9rieur"
+                            ],
+                            "correct": 1,
+                            "explanation": "Le fluide repart plus chaud car il a capt\u00e9 la chaleur de l'air."
+                        },
+                        {
+                            "question": "Quel sympt\u00f4me peut indiquer un d\u00e9bit insuffisant c\u00f4t\u00e9 CRAH ?",
+                            "answers": [
+                                "Delta T incoh\u00e9rent et batterie mal aliment\u00e9e",
+                                "PDU trop charg\u00e9",
+                                "RMU ouvert",
+                                "Ventilateurs drycooler \u00e0 l'arr\u00eat uniquement"
+                            ],
+                            "correct": 0,
+                            "explanation": "Le d\u00e9bit influence directement le delta T et la capacit\u00e9 de la batterie."
+                        },
+                        {
+                            "question": "Pourquoi la purge d'air est-elle importante sur une boucle hydraulique ?",
+                            "answers": [
+                                "L'air peut r\u00e9duire le d\u00e9bit et perturber l'\u00e9change",
+                                "Elle augmente la puissance IT",
+                                "Elle remplace l'UPS",
+                                "Elle supprime le besoin de filtres"
+                            ],
+                            "correct": 0,
+                            "explanation": "Des poches d'air peuvent bloquer la circulation et d\u00e9grader les performances."
+                        }
+                    ]
+                },
+                {
+                    "id": "c4_drycooler_adiabatique",
+                    "title": "Adiabatic dry cooler en toiture",
+                    "content": "Le drycooler adiabatique rejette la chaleur vers l'air ext\u00e9rieur. Il travaille g\u00e9n\u00e9ralement avec une boucle glycol\u00e9e qui monte en toiture via un riser.\n\nEn mode sec, les ventilateurs font passer l'air ext\u00e9rieur sur la batterie. En mode adiabatique, l'air entrant est pr\u00e9-refroidi par \u00e9vaporation d'eau sur des pads ou des rampes de pulv\u00e9risation avant de traverser la batterie.\n\nCe point est tr\u00e8s important : l'eau adiabatique ne doit pas \u00eatre confondue avec l'eau glac\u00e9e du b\u00e2timent. Elle sert \u00e0 am\u00e9liorer les conditions d'air c\u00f4t\u00e9 drycooler.\n\nContr\u00f4les terrain :\n\n- ventilateurs EC ;\n- propret\u00e9 batterie ;\n- pads ou buses ;\n- qualit\u00e9 d'eau ;\n- purge / d\u00e9concentration ;\n- conductivit\u00e9 ;\n- pression eau ;\n- consigne d'activation adiabatique ;\n- risque gel selon climat et proc\u00e9dure site.",
+                    "focus_component": "adiabaticDrycooler",
+                    "simulation_preset": {
+                        "bp": 4.4,
+                        "hp": 19.0,
+                        "sh": 5,
+                        "sc": 4,
+                        "evapTemp": 4,
+                        "condTemp": 39,
+                        "cop": 4.7,
+                        "fault": "Drycooler avec appoint adiabatique l\u00e9ger"
+                    },
+                    "quiz": [
+                        {
+                            "question": "\u00c0 quoi sert l'eau dans le mode adiabatique du drycooler ?",
+                            "answers": [
+                                "\u00c0 refroidir directement les serveurs",
+                                "\u00c0 pr\u00e9-refroidir l'air entrant par \u00e9vaporation",
+                                "\u00c0 alimenter les PDU",
+                                "\u00c0 remplacer le glycol"
+                            ],
+                            "correct": 1,
+                            "explanation": "L'eau adiabatique am\u00e9liore la temp\u00e9rature de l'air entrant avant la batterie."
+                        },
+                        {
+                            "question": "Quel contr\u00f4le est indispensable sur la partie adiabatique ?",
+                            "answers": [
+                                "Qualit\u00e9 d'eau et \u00e9tat des pads/buses",
+                                "Charge des PDU uniquement",
+                                "Couleur des c\u00e2bles r\u00e9seau",
+                                "Tension HTA seulement"
+                            ],
+                            "correct": 0,
+                            "explanation": "Une eau mal ma\u00eetris\u00e9e encrasse les pads/buses et d\u00e9grade le rendement."
+                        },
+                        {
+                            "question": "O\u00f9 se situe g\u00e9n\u00e9ralement le drycooler dans ce mod\u00e8le ?",
+                            "answers": [
+                                "Dans la salle IT",
+                                "En toiture/terrasse",
+                                "Dans les baies",
+                                "Dans le faux plancher uniquement"
+                            ],
+                            "correct": 1,
+                            "explanation": "Le drycooler rejette la chaleur dehors, donc il est plac\u00e9 \u00e0 l'ext\u00e9rieur, souvent en toiture."
+                        }
+                    ]
+                },
+                {
+                    "id": "c5_riser_toiture",
+                    "title": "Riser : liaison toiture et local froid",
+                    "content": "Le riser est la colonne technique verticale qui relie le local froid au toit terrasse. Sur cette installation, il transporte notamment la mont\u00e9e glycol chaud vers le drycooler et la descente glycol refroidi vers l'\u00e9changeur ou la production.\n\nCe n'est pas juste un passage de tuyaux : c'est une zone critique pour la maintenance et la s\u00e9curit\u00e9 du b\u00e2timent.\n\n\u00c0 contr\u00f4ler :\n\n- rep\u00e9rage clair d\u00e9part/retour ;\n- sens de circulation ;\n- supports et dilatation ;\n- calorifuge ;\n- coupe-feu ;\n- purge en point haut ;\n- risque de condensation ;\n- acc\u00e8s maintenance ;\n- coh\u00e9rence avec les plans et les \u00e9tiquettes.\n\n**Erreur fr\u00e9quente :** confondre mont\u00e9e chaude et retour froid lors d'un diagnostic. Sur une installation critique, une mauvaise interpr\u00e9tation du riser peut faire perdre beaucoup de temps.",
+                    "focus_component": "riser",
+                    "simulation_preset": {
+                        "bp": 4.4,
+                        "hp": 18.8,
+                        "sh": 5,
+                        "sc": 4,
+                        "evapTemp": 4,
+                        "condTemp": 38,
+                        "cop": 4.8,
+                        "fault": "Riser toiture en fonctionnement normal"
+                    },
+                    "quiz": [
+                        {
+                            "question": "Pourquoi le rep\u00e9rage du riser est-il important ?",
+                            "answers": [
+                                "Pour \u00e9viter de confondre d\u00e9part et retour",
+                                "Pour choisir la couleur des racks",
+                                "Pour arr\u00eater l'UPS",
+                                "Pour r\u00e9gler uniquement la lumi\u00e8re"
+                            ],
+                            "correct": 0,
+                            "explanation": "Une confusion d\u00e9part/retour peut fausser totalement le diagnostic."
+                        },
+                        {
+                            "question": "Quel point doit \u00eatre surveill\u00e9 en point haut du r\u00e9seau ?",
+                            "answers": [
+                                "La purge d'air",
+                                "Le mot de passe DCIM",
+                                "Le nombre de serveurs",
+                                "La couleur du c\u00e2ble"
+                            ],
+                            "correct": 0,
+                            "explanation": "Les points hauts peuvent pi\u00e9ger l'air et perturber la circulation."
+                        },
+                        {
+                            "question": "Le riser est principalement une zone de :",
+                            "answers": [
+                                "liaison technique verticale",
+                                "stockage IT",
+                                "bureau utilisateur",
+                                "distribution de caf\u00e9"
+                            ],
+                            "correct": 0,
+                            "explanation": "Il relie verticalement les niveaux techniques du b\u00e2timent."
+                        }
+                    ]
+                },
+                {
+                    "id": "c6_echangeur_free_cooling",
+                    "title": "\u00c9changeur free cooling",
+                    "content": "L'\u00e9changeur free cooling permet de transf\u00e9rer l'\u00e9nergie entre la boucle glycol toiture et la boucle eau glac\u00e9e b\u00e2timent, sans m\u00e9langer les fluides.\n\nQuand l'air ext\u00e9rieur permet de rejeter suffisamment de chaleur, le syst\u00e8me peut produire du froid avec tr\u00e8s peu ou pas de compression m\u00e9canique. Les pompes et ventilateurs travaillent, mais le chiller assist reste peu sollicit\u00e9.\n\n\u00c0 surveiller :\n\n- temp\u00e9rature entr\u00e9e/sortie c\u00f4t\u00e9 glycol ;\n- temp\u00e9rature entr\u00e9e/sortie c\u00f4t\u00e9 eau glac\u00e9e ;\n- approche \u00e9changeur ;\n- perte de charge ;\n- d\u00e9bit primaire et secondaire ;\n- encrassement ;\n- vannes de mode ;\n- consignes automate.\n\n**Lecture simple :** plus l'\u00e9changeur est efficace, plus on repousse le besoin d'appoint m\u00e9canique.",
+                    "focus_component": "plateHx",
+                    "simulation_preset": {
+                        "bp": 4.5,
+                        "hp": 17.6,
+                        "sh": 5,
+                        "sc": 5,
+                        "evapTemp": 5,
+                        "condTemp": 32,
+                        "cop": 6.1,
+                        "fault": "Free cooling efficace"
+                    },
+                    "quiz": [
+                        {
+                            "question": "Que permet l'\u00e9changeur free cooling ?",
+                            "answers": [
+                                "Transf\u00e9rer la chaleur sans m\u00e9langer les fluides",
+                                "Supprimer toutes les pompes",
+                                "Alimenter directement les serveurs en glycol",
+                                "Remplacer le BMS"
+                            ],
+                            "correct": 0,
+                            "explanation": "L'\u00e9changeur s\u00e9pare les fluides tout en transf\u00e9rant l'\u00e9nergie."
+                        },
+                        {
+                            "question": "Quel indicateur aide \u00e0 juger l'\u00e9changeur ?",
+                            "answers": [
+                                "L'approche \u00e9changeur",
+                                "La couleur des murs",
+                                "La marque des racks",
+                                "Le nombre de badges"
+                            ],
+                            "correct": 0,
+                            "explanation": "L'approche compare les temp\u00e9ratures entre les deux c\u00f4t\u00e9s de l'\u00e9changeur."
+                        },
+                        {
+                            "question": "Quand le free cooling est efficace, le chiller assist est normalement :",
+                            "answers": [
+                                "moins sollicit\u00e9",
+                                "toujours \u00e0 100 %",
+                                "hors tension d\u00e9finitivement",
+                                "sans fluide"
+                            ],
+                            "correct": 0,
+                            "explanation": "Le free cooling r\u00e9duit le besoin de compression m\u00e9canique."
+                        }
+                    ]
+                },
+                {
+                    "id": "c7_chiller_assist",
+                    "title": "Chiller assist : appoint m\u00e9canique",
+                    "content": "Le chiller assist intervient quand le drycooler et le free cooling ne suffisent plus \u00e0 tenir la temp\u00e9rature d'eau demand\u00e9e.\n\nIl ne doit pas \u00eatre vu comme l'unique source de froid, mais comme un appoint ou une s\u00e9curit\u00e9 de capacit\u00e9.\n\nSituations typiques d'appel du chiller assist :\n\n- temp\u00e9rature ext\u00e9rieure \u00e9lev\u00e9e ;\n- humidit\u00e9 d\u00e9favorable au mode adiabatique ;\n- charge IT \u00e9lev\u00e9e ;\n- drycooler encrass\u00e9 ou ventilateurs limit\u00e9s ;\n- consigne eau glac\u00e9e basse ;\n- mode secours / d\u00e9grad\u00e9.\n\nContr\u00f4les :\n\n- ordre de marche ;\n- nombre d'\u00e9tages compresseurs ;\n- intensit\u00e9 ;\n- HP/BP ;\n- surchauffe/sous-refroidissement ;\n- d\u00e9bit \u00e9vaporateur ;\n- approche \u00e9vaporateur ;\n- alarmes frigorifiques ;\n- coh\u00e9rence avec la demande r\u00e9elle.",
+                    "focus_component": "chillerAssist",
+                    "simulation_preset": {
+                        "bp": 4.0,
+                        "hp": 21.5,
+                        "sh": 7,
+                        "sc": 4,
+                        "evapTemp": 2,
+                        "condTemp": 46,
+                        "cop": 3.6,
+                        "fault": "Chiller assist sollicit\u00e9"
+                    },
+                    "quiz": [
+                        {
+                            "question": "Quand le chiller assist intervient-il normalement ?",
+                            "answers": [
+                                "Quand le free cooling ne suffit plus",
+                                "Quand la salle est vide",
+                                "Quand le PDU est \u00e9teint",
+                                "Uniquement la nuit"
+                            ],
+                            "correct": 0,
+                            "explanation": "Il apporte un appoint m\u00e9canique lorsque les conditions free cooling/adiabatique ne suffisent pas."
+                        },
+                        {
+                            "question": "Quel contr\u00f4le est directement li\u00e9 au circuit frigorifique du chiller ?",
+                            "answers": [
+                                "HP/BP et surchauffe",
+                                "Nombre de badges visiteurs",
+                                "\u00c9tat des obturateurs uniquement",
+                                "Couleur du faux plancher"
+                            ],
+                            "correct": 0,
+                            "explanation": "HP, BP, surchauffe et sous-refroidissement permettent de lire le comportement frigorifique."
+                        },
+                        {
+                            "question": "Pourquoi un chiller assist trop sollicit\u00e9 est un signal \u00e0 analyser ?",
+                            "answers": [
+                                "Il peut indiquer une d\u00e9rive de free cooling, charge, consigne ou \u00e9change",
+                                "C'est toujours normal",
+                                "Il n'a aucun impact \u00e9nerg\u00e9tique",
+                                "Il coupe automatiquement la salle IT"
+                            ],
+                            "correct": 0,
+                            "explanation": "Une sollicitation excessive peut r\u00e9v\u00e9ler un probl\u00e8me d'exploitation ou de performance."
+                        }
+                    ]
+                },
+                {
+                    "id": "c8_continuous_cooling",
+                    "title": "Continuous cooling : maintenir le froid pendant les transitions",
+                    "content": "Le continuous cooling sert \u00e0 maintenir un refroidissement pendant une p\u00e9riode critique : bascule \u00e9lectrique, red\u00e9marrage d'\u00e9quipement, perte temporaire de production ou transition de mode.\n\nIl repose g\u00e9n\u00e9ralement sur une combinaison :\n\n- ballon tampon ou inertie hydraulique ;\n- pompes critiques secourues ;\n- alimentation UPS pour r\u00e9gulation et auxiliaires essentiels ;\n- s\u00e9quence automate de maintien de d\u00e9bit ;\n- seuils d'alarme et temporisations ;\n- redondance des unit\u00e9s de salle.\n\nLe but n'est pas de produire du froid ind\u00e9finiment sans production. Le but est de gagner du temps et d'\u00e9viter une mont\u00e9e brutale de temp\u00e9rature en salle IT.\n\n**R\u00e9flexe exploitation :** en cas de bascule, surveiller la tendance temp\u00e9rature salle, la temp\u00e9rature d\u00e9part eau, le d\u00e9bit, l'\u00e9tat des pompes critiques et les alarmes BMS/DCIM.",
+                    "focus_component": "bufferTank",
+                    "simulation_preset": {
+                        "bp": 3.8,
+                        "hp": 20.0,
+                        "sh": 6,
+                        "sc": 3,
+                        "evapTemp": 1,
+                        "condTemp": 42,
+                        "cop": 3.9,
+                        "fault": "Continuous cooling en surveillance"
+                    },
+                    "quiz": [
+                        {
+                            "question": "Quel est l'objectif du continuous cooling ?",
+                            "answers": [
+                                "Maintenir un refroidissement pendant une transition critique",
+                                "Remplacer d\u00e9finitivement toute production",
+                                "Arr\u00eater toutes les pompes",
+                                "Chauffer la salle IT"
+                            ],
+                            "correct": 0,
+                            "explanation": "Il donne du temps pendant une bascule ou un incident court."
+                        },
+                        {
+                            "question": "Quel \u00e9quipement apporte de l'inertie hydraulique ?",
+                            "answers": [
+                                "Le ballon tampon",
+                                "Le PDU",
+                                "Le RMU",
+                                "Le serveur"
+                            ],
+                            "correct": 0,
+                            "explanation": "Le ballon tampon augmente le volume d'eau disponible et ralentit les variations de temp\u00e9rature."
+                        },
+                        {
+                            "question": "Pendant une s\u00e9quence continuous cooling, que doit-on suivre en priorit\u00e9 ?",
+                            "answers": [
+                                "Tendance temp\u00e9rature, d\u00e9bit, pompes critiques et alarmes",
+                                "Uniquement le logo du constructeur",
+                                "La m\u00e9t\u00e9o du mois prochain",
+                                "Le nombre de visiteurs"
+                            ],
+                            "correct": 0,
+                            "explanation": "Ces informations permettent d'\u00e9valuer le temps disponible et le risque pour la charge IT."
+                        }
+                    ]
+                },
+                {
+                    "id": "c9_modes_fonctionnement",
+                    "title": "Modes de fonctionnement : sec, adiabatique, assist\u00e9",
+                    "content": "Une bonne exploitation commence par l'identification du mode actif.\n\n**Mode sec :** le drycooler rejette la chaleur avec ses ventilateurs, sans eau adiabatique. C'est le mode le plus simple et g\u00e9n\u00e9ralement le plus \u00e9conome en eau.\n\n**Mode adiabatique :** l'eau est utilis\u00e9e pour pr\u00e9-refroidir l'air entrant. Cela am\u00e9liore la capacit\u00e9 de rejet quand les conditions ext\u00e9rieures deviennent plus difficiles.\n\n**Mode chiller assist :** l'appoint m\u00e9canique compl\u00e8te le drycooler/free cooling pour maintenir la consigne d'eau glac\u00e9e.\n\n**Mode continuous cooling :** le syst\u00e8me maintient un d\u00e9bit et une inertie pendant une transition ou un d\u00e9faut court.\n\n**M\u00e9thode terrain :** identifier le mode demand\u00e9, le mode r\u00e9ellement actif, les \u00e9quipements autoris\u00e9s, les alarmes actives et les conditions ext\u00e9rieures.",
+                    "focus_component": "valveSet",
+                    "simulation_preset": {
+                        "bp": 4.1,
+                        "hp": 20.5,
+                        "sh": 6,
+                        "sc": 4,
+                        "evapTemp": 3,
+                        "condTemp": 43,
+                        "cop": 4.0,
+                        "fault": "Transition mode adiabatique vers chiller assist"
+                    },
+                    "quiz": [
+                        {
+                            "question": "Quel mode utilise l'eau pour pr\u00e9-refroidir l'air entrant du drycooler ?",
+                            "answers": [
+                                "Mode adiabatique",
+                                "Mode \u00e9lectrique",
+                                "Mode PDU",
+                                "Mode s\u00e9curit\u00e9 incendie"
+                            ],
+                            "correct": 0,
+                            "explanation": "Le mode adiabatique utilise l'\u00e9vaporation d'eau c\u00f4t\u00e9 air."
+                        },
+                        {
+                            "question": "Quelle diff\u00e9rence doit-on v\u00e9rifier sur le BMS ?",
+                            "answers": [
+                                "Mode demand\u00e9 et mode r\u00e9ellement actif",
+                                "Couleur de fond \u00e9cran",
+                                "Nom du navigateur",
+                                "Marque des chaussures"
+                            ],
+                            "correct": 0,
+                            "explanation": "Une commande peut \u00eatre demand\u00e9e sans \u00eatre r\u00e9ellement ex\u00e9cut\u00e9e \u00e0 cause d'une inhibition, d'une alarme ou d'une condition non remplie."
+                        },
+                        {
+                            "question": "Quel mode consomme g\u00e9n\u00e9ralement plus d'\u00e9nergie m\u00e9canique ?",
+                            "answers": [
+                                "Chiller assist",
+                                "Mode sec seul",
+                                "Mode lecture",
+                                "Mode arr\u00eat"
+                            ],
+                            "correct": 0,
+                            "explanation": "Le chiller assist implique de la compression m\u00e9canique."
+                        }
+                    ]
+                },
+                {
+                    "id": "c10_purge_air_glycol",
+                    "title": "Purge, air dans les r\u00e9seaux et glycol",
+                    "content": "Sur les r\u00e9seaux hydrauliques, l'air est un ennemi discret. Il peut r\u00e9duire le d\u00e9bit, cr\u00e9er du bruit, perturber les sondes, d\u00e9grader l'\u00e9change thermique et provoquer des d\u00e9fauts intermittents.\n\nLa purge ne signifie pas rejet de fluide frigorig\u00e8ne. Ici, on parle de purge d'air sur r\u00e9seaux eau/glycol et de maintien de la qualit\u00e9 hydraulique.\n\nPoints \u00e0 contr\u00f4ler :\n\n- purgeurs en points hauts ;\n- pression statique ;\n- vase d'expansion ;\n- appoint eau/glycol ;\n- concentration glycol ;\n- filtre/pot \u00e0 boues ;\n- pr\u00e9sence de bruit ou cavitation ;\n- stabilit\u00e9 de la pression diff\u00e9rentielle.\n\n**Attention data center :** une intervention hydraulique doit toujours \u00eatre pr\u00e9par\u00e9e : isolement, redondance disponible, autorisation exploitation, impact salle, proc\u00e9dure de remise en service.",
+                    "focus_component": "expansionVessel",
+                    "simulation_preset": {
+                        "bp": 3.5,
+                        "hp": 19.0,
+                        "sh": 8,
+                        "sc": 3,
+                        "evapTemp": 0,
+                        "condTemp": 40,
+                        "cop": 4.1,
+                        "fault": "Air possible dans r\u00e9seau hydraulique"
+                    },
+                    "quiz": [
+                        {
+                            "question": "Dans ce chapitre, la purge concerne principalement :",
+                            "answers": [
+                                "l'air des r\u00e9seaux eau/glycol",
+                                "le rejet de fluide frigorig\u00e8ne",
+                                "la suppression des serveurs",
+                                "l'arr\u00eat du BMS"
+                            ],
+                            "correct": 0,
+                            "explanation": "On parle ici de purge d'air hydraulique, pas de rejet de fluide frigorig\u00e8ne."
+                        },
+                        {
+                            "question": "Quel sympt\u00f4me peut indiquer de l'air dans un r\u00e9seau ?",
+                            "answers": [
+                                "Bruit, d\u00e9bit instable ou \u00e9change d\u00e9grad\u00e9",
+                                "\u00c9cran plus lumineux",
+                                "Baies plus hautes",
+                                "PDU neuf"
+                            ],
+                            "correct": 0,
+                            "explanation": "L'air peut provoquer du bruit, des pertes de d\u00e9bit et des performances instables."
+                        },
+                        {
+                            "question": "Pourquoi contr\u00f4ler la concentration glycol ?",
+                            "answers": [
+                                "Pour garantir protection antigel et performance hydraulique",
+                                "Pour alimenter l'UPS",
+                                "Pour r\u00e9gler la HTA",
+                                "Pour ouvrir les portes"
+                            ],
+                            "correct": 0,
+                            "explanation": "Une mauvaise concentration peut r\u00e9duire la protection antigel ou p\u00e9naliser les \u00e9changes."
+                        }
+                    ]
+                },
+                {
+                    "id": "c11_antigel",
+                    "title": "Antigel et protection des batteries",
+                    "content": "Le risque antigel concerne les batteries, les \u00e9changeurs et les r\u00e9seaux expos\u00e9s. Dans une installation data center, un d\u00e9clenchement antigel peut rapidement r\u00e9duire la capacit\u00e9 de refroidissement disponible.\n\nCauses possibles :\n\n- d\u00e9bit d'eau trop faible ;\n- filtre encrass\u00e9 ;\n- vanne ferm\u00e9e ou bloqu\u00e9e ;\n- pompe en d\u00e9faut ;\n- sonde incorrecte ;\n- consigne trop basse ;\n- concentration glycol insuffisante ;\n- air dans le r\u00e9seau ;\n- conditions ext\u00e9rieures d\u00e9favorables.\n\nContr\u00f4les terrain : temp\u00e9rature d\u00e9part/retour, d\u00e9bit, pression diff\u00e9rentielle, \u00e9tat pompe, position vanne, filtre, purge, concentration glycol, alarmes BMS.\n\n**\u00c0 retenir :** ne jamais shunter une s\u00e9curit\u00e9 antigel pour faire repartir l'installation sans diagnostic. Sur site critique, on cherche une remise en service ma\u00eetris\u00e9e, pas un red\u00e9marrage aveugle.",
+                    "focus_component": "coil",
+                    "simulation_preset": {
+                        "bp": 2.9,
+                        "hp": 19.8,
+                        "sh": 9,
+                        "sc": 3,
+                        "evapTemp": -3,
+                        "condTemp": 41,
+                        "cop": 3.7,
+                        "fault": "Risque antigel batterie"
+                    },
+                    "quiz": [
+                        {
+                            "question": "Quel param\u00e8tre peut favoriser le risque antigel ?",
+                            "answers": [
+                                "D\u00e9bit d'eau insuffisant",
+                                "Obturateurs propres",
+                                "PDU \u00e9quilibr\u00e9",
+                                "Bonne purge"
+                            ],
+                            "correct": 0,
+                            "explanation": "Un d\u00e9bit faible peut refroidir excessivement localement la batterie ou l'\u00e9changeur."
+                        },
+                        {
+                            "question": "Que faut-il \u00e9viter face \u00e0 une s\u00e9curit\u00e9 antigel ?",
+                            "answers": [
+                                "La shunter sans diagnostic",
+                                "Lire les alarmes",
+                                "V\u00e9rifier le d\u00e9bit",
+                                "Contr\u00f4ler le filtre"
+                            ],
+                            "correct": 0,
+                            "explanation": "Shunter une s\u00e9curit\u00e9 sans comprendre la cause peut aggraver l'incident."
+                        },
+                        {
+                            "question": "Quel fluide aide \u00e0 prot\u00e9ger une boucle expos\u00e9e au gel ?",
+                            "answers": [
+                                "Eau glycol\u00e9e correctement dos\u00e9e",
+                                "Air chaud de bureau",
+                                "Huile moteur",
+                                "Eau non trait\u00e9e au hasard"
+                            ],
+                            "correct": 0,
+                            "explanation": "Le glycol prot\u00e8ge contre le gel selon sa concentration et les temp\u00e9ratures de conception."
+                        }
+                    ]
+                },
+                {
+                    "id": "c12_supervision_bms_dcim",
+                    "title": "Supervision BMS/DCIM : lire avant d'agir",
+                    "content": "Le BMS/DCIM n'est pas seulement une liste d'alarmes. C'est l'outil qui permet de comprendre la s\u00e9quence.\n\nAvant d'intervenir, il faut regarder :\n\n- mode demand\u00e9 ;\n- mode actif ;\n- temp\u00e9ratures d\u00e9part/retour ;\n- tendances sur 15 min, 1 h et 24 h ;\n- \u00e9tat des pompes ;\n- position des vannes ;\n- \u00e9tat drycooler ;\n- autorisation adiabatique ;\n- ordre chiller assist ;\n- alarmes actives et acquitt\u00e9es ;\n- capacit\u00e9 restante et redondance.\n\n**M\u00e9thode :** ne jamais regarder une valeur isol\u00e9e. Toujours comparer la valeur, la tendance et l'\u00e9tat de l'\u00e9quipement qui devrait expliquer cette valeur.",
+                    "focus_component": "bms",
+                    "simulation_preset": {
+                        "bp": 4.1,
+                        "hp": 20.0,
+                        "sh": 6,
+                        "sc": 4,
+                        "evapTemp": 3,
+                        "condTemp": 42,
+                        "cop": 4.0,
+                        "fault": "Analyse BMS/DCIM demand\u00e9e"
+                    },
+                    "quiz": [
+                        {
+                            "question": "Pourquoi une tendance est-elle souvent plus utile qu'une valeur instantan\u00e9e ?",
+                            "answers": [
+                                "Elle montre l'\u00e9volution et la vitesse de d\u00e9rive",
+                                "Elle remplace tous les capteurs",
+                                "Elle coupe l'alarme",
+                                "Elle augmente la pression"
+                            ],
+                            "correct": 0,
+                            "explanation": "La tendance aide \u00e0 comprendre si la situation est stable, en am\u00e9lioration ou en d\u00e9gradation."
+                        },
+                        {
+                            "question": "Que faut-il comparer entre la commande et le terrain ?",
+                            "answers": [
+                                "Mode demand\u00e9 et mode r\u00e9ellement actif",
+                                "Taille des fen\u00eatres",
+                                "Couleur du logo",
+                                "Nom du technicien uniquement"
+                            ],
+                            "correct": 0,
+                            "explanation": "Un ordre peut \u00eatre bloqu\u00e9 par une inhibition, une s\u00e9curit\u00e9 ou une condition non remplie."
+                        },
+                        {
+                            "question": "Quelle est la bonne m\u00e9thode de lecture ?",
+                            "answers": [
+                                "Valeur + tendance + \u00e9tat \u00e9quipement",
+                                "Une seule valeur isol\u00e9e",
+                                "Uniquement la premi\u00e8re alarme",
+                                "Uniquement le ressenti"
+                            ],
+                            "correct": 0,
+                            "explanation": "Un diagnostic fiable croise plusieurs informations."
+                        }
+                    ]
+                },
+                {
+                    "id": "c13_scenarios_incident",
+                    "title": "Sc\u00e9narios d'incident typiques",
+                    "content": "Un technicien data center doit raisonner par sc\u00e9nario.\n\n**Sc\u00e9nario 1 : HP \u00e9lev\u00e9e / condensation \u00e9lev\u00e9e**\nV\u00e9rifier drycooler, ventilateurs, batterie encrass\u00e9e, air ext\u00e9rieur, mode adiabatique, qualit\u00e9 eau, glycol, non-condensables c\u00f4t\u00e9 chiller.\n\n**Sc\u00e9nario 2 : temp\u00e9rature salle en hausse mais production disponible**\nV\u00e9rifier d\u00e9bit eau glac\u00e9e, pompe secondaire, vannes CRAH, filtres air, ventilateurs, airflow, confinement.\n\n**Sc\u00e9nario 3 : chiller assist d\u00e9marre trop souvent**\nV\u00e9rifier efficacit\u00e9 free cooling, approche \u00e9changeur, consignes, encrassement drycooler, activation adiabatique, charge IT r\u00e9elle.\n\n**Sc\u00e9nario 4 : bascule \u00e9lectrique**\nV\u00e9rifier UPS, alimentation pompes critiques, continuous cooling, tendance eau glac\u00e9e, temp\u00e9rature salle et temps disponible.\n\n**R\u00e8gle :** avant toute action, \u00e9valuer impact IT, redondance, autorisation exploitation et retour arri\u00e8re.",
+                    "focus_component": "bms",
+                    "simulation_preset": {
+                        "bp": 3.8,
+                        "hp": 23.5,
+                        "sh": 8,
+                        "sc": 2,
+                        "evapTemp": 1,
+                        "condTemp": 51,
+                        "cop": 2.9,
+                        "fault": "Incident combin\u00e9 : HP \u00e9lev\u00e9e + chiller assist"
+                    },
+                    "quiz": [
+                        {
+                            "question": "Si la production est disponible mais la salle chauffe, que faut-il v\u00e9rifier en priorit\u00e9 ?",
+                            "answers": [
+                                "Distribution air/eau vers la salle",
+                                "La couleur du drycooler",
+                                "Le nom du constructeur",
+                                "Le nombre de modules de cours"
+                            ],
+                            "correct": 0,
+                            "explanation": "Le probl\u00e8me peut \u00eatre c\u00f4t\u00e9 d\u00e9bit, vannes, batteries, ventilateurs ou airflow."
+                        },
+                        {
+                            "question": "Un chiller assist qui d\u00e9marre trop souvent peut indiquer :",
+                            "answers": [
+                                "Un free cooling inefficace ou une consigne/charge d\u00e9favorable",
+                                "Une absence totale de charge",
+                                "Un PDU trop bas",
+                                "Un cours termin\u00e9"
+                            ],
+                            "correct": 0,
+                            "explanation": "Il faut analyser conditions ext\u00e9rieures, \u00e9changeur, drycooler, mode adiabatique et consignes."
+                        },
+                        {
+                            "question": "Avant une action terrain sur site critique, il faut d'abord v\u00e9rifier :",
+                            "answers": [
+                                "Impact IT, redondance et retour arri\u00e8re",
+                                "Uniquement l'outil disponible",
+                                "La m\u00e9t\u00e9o historique",
+                                "Le nombre de badges"
+                            ],
+                            "correct": 0,
+                            "explanation": "La disponibilit\u00e9 prime. Toute action doit \u00eatre encadr\u00e9e."
+                        }
+                    ]
+                },
+                {
+                    "id": "c14_ronde_technicien",
+                    "title": "Ronde technicien : checklist professionnelle",
+                    "content": "Une ronde efficace est structur\u00e9e. Elle ne consiste pas seulement \u00e0 regarder si une machine tourne.\n\n**Salle IT :** temp\u00e9rature entr\u00e9e baies, points chauds, confinement, alarmes, humidit\u00e9, portes, obturateurs.\n\n**CRAH :** filtres, ventilateurs, vanne, batterie, condensats, temp\u00e9rature soufflage/reprise, delta T eau.\n\n**Hydraulique :** pompes, pression diff\u00e9rentielle, purge, filtre, ballon tampon, vase d'expansion, fuites, calorifuge.\n\n**Toiture :** drycooler, ventilateurs, batterie, mode adiabatique, pads/buses, eau, purge, encrassement, glycol.\n\n**Chiller assist :** ordre de marche, HP/BP, intensit\u00e9, alarmes, approche \u00e9vaporateur, temps de fonctionnement.\n\n**\u00c9lectricit\u00e9 / supervision :** UPS, TGBT, alimentation pompes critiques, BMS/DCIM, tendances et alarmes.\n\n**Conclusion attendue :** \u00e9tat normal, d\u00e9rive \u00e0 surveiller, action imm\u00e9diate ou escalade.",
+                    "focus_component": "all",
+                    "simulation_preset": {
+                        "bp": 4.3,
+                        "hp": 19.2,
+                        "sh": 6,
+                        "sc": 4,
+                        "evapTemp": 3,
+                        "condTemp": 39,
+                        "cop": 4.5,
+                        "fault": "Ronde exploitation compl\u00e8te"
+                    },
+                    "quiz": [
+                        {
+                            "question": "Une ronde professionnelle doit finir par :",
+                            "answers": [
+                                "Une conclusion exploitable",
+                                "Une simple photo",
+                                "Un arr\u00eat g\u00e9n\u00e9ral",
+                                "Aucun commentaire"
+                            ],
+                            "correct": 0,
+                            "explanation": "Le technicien doit conclure : normal, \u00e0 surveiller, action ou escalade."
+                        },
+                        {
+                            "question": "Quel \u00e9l\u00e9ment toiture est sp\u00e9cifique au mode adiabatique ?",
+                            "answers": [
+                                "Pads/buses et eau adiabatique",
+                                "PDU",
+                                "Obturateur de baie",
+                                "RMU"
+                            ],
+                            "correct": 0,
+                            "explanation": "La partie adiabatique n\u00e9cessite des contr\u00f4les eau/pads/buses."
+                        },
+                        {
+                            "question": "Pourquoi regarder les tendances BMS pendant la ronde ?",
+                            "answers": [
+                                "Pour d\u00e9tecter une d\u00e9rive avant l'alarme critique",
+                                "Pour remplacer le contr\u00f4le terrain",
+                                "Pour \u00e9teindre l'UPS",
+                                "Pour ignorer les \u00e9quipements"
+                            ],
+                            "correct": 0,
+                            "explanation": "Les tendances r\u00e9v\u00e8lent une d\u00e9rive progressive avant qu'elle ne devienne critique."
+                        }
+                    ]
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }
