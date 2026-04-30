@@ -2745,6 +2745,708 @@
             "Négliger les transitions entre modes."
           ],
           "proTip": "Ton compte rendu doit pouvoir être compris par un autre technicien qui reprend l’astreinte après toi."
+        },
+        {
+          "id": "c34_fgas_habilitations",
+          "title": "Réglementation F-Gas & habilitations",
+          "content": "Travailler sur un circuit frigorifique contenant des fluides fluorés (F-Gaz) est encadré par la réglementation européenne 517/2014. **Sans le bon certificat, toute intervention est illégale**, même si tu maîtrises le geste technique.\n\nLes 4 catégories de certificats :\n\n**Catégorie 1** — Tous systèmes, toutes charges : installation, service, réparation, maintenance, récupération. C'est le certificat complet.\n\n**Catégorie 2** — Systèmes < 5 t CO2 éq. uniquement. Insuffisant pour la plupart des chillers data center.\n\n**Catégorie 3** — Récupération uniquement sur systèmes < 3 kg de fluide.\n\n**Catégorie 4** — Contrôle de fuites sans ouverture du circuit. Ne permet pas d'intervenir sur le circuit.\n\nSeuils de contrôle obligatoires :\n- ≥ 5 t CO2 éq. → contrôle tous les 12 mois\n- ≥ 50 t CO2 éq. → contrôle tous les 6 mois ou détecteur automatique\n- ≥ 500 t CO2 éq. → contrôle tous les 3 mois + détecteur automatique obligatoire\n\n**Avertissement fluides :** Ne jamais utiliser le R32 comme substitut dans un système R410A. Depuis 2020, la recharge en R404A (GWP > 2500) est interdite sur les systèmes existants.\n\n**Erreur fréquente :** croire qu'une compétence technique remplace le certificat. L'absence de certificat engage la responsabilité individuelle ET de l'entreprise.",
+          "focus_component": "all",
+          "simulation_preset": {
+            "bp": 4.5,
+            "hp": 18.2,
+            "sh": 5,
+            "sc": 3,
+            "evapTemp": 2,
+            "condTemp": 45,
+            "cop": 3.2,
+            "fault": "Cycle nominal — vérification réglementaire"
+          },
+          "checkpoint": {
+            "question": "Quel certificat est requis pour maintenir un chiller data center de 15 t CO2 éq. ?",
+            "answers": [
+              "Catégorie 1",
+              "Catégorie 2",
+              "Catégorie 4"
+            ],
+            "correct": 0,
+            "explanation": "Tout système > 5 t CO2 éq. requiert un certificat catégorie 1 pour toute intervention sur le circuit."
+          },
+          "quiz": [
+            {
+              "question": "Quel certificat est requis pour maintenir un chiller data center de 15 t CO2 éq. ?",
+              "answers": [
+                "Catégorie 1",
+                "Catégorie 2",
+                "Catégorie 4"
+              ],
+              "correct": 0,
+              "explanation": "Tout système > 5 t CO2 éq. requiert un certificat catégorie 1 pour toute intervention sur le circuit."
+            },
+            {
+              "question": "Quelle action est interdite depuis 2020 sur un système R404A ?",
+              "answers": [
+                "Recharger avec du R404A neuf",
+                "Effectuer un contrôle de fuites indirect",
+                "Récupérer le fluide pour recyclage"
+              ],
+              "correct": 0,
+              "explanation": "Le R404A a un GWP > 2500. F-Gas 517/2014 interdit toute recharge avec des fluides GWP > 2500 depuis 2020."
+            },
+            {
+              "question": "Un technicien cat. 4 peut légalement :",
+              "answers": [
+                "Contrôler les fuites sans ouvrir le circuit",
+                "Recharger le système si < 3 kg",
+                "Ouvrir le circuit et récupérer le fluide"
+              ],
+              "correct": 0,
+              "explanation": "Le certificat cat. 4 autorise uniquement le contrôle de fuites sans ouverture du circuit frigorifique."
+            }
+          ],
+          "estimated_minutes": 10,
+          "professional_level": "Réglementation",
+          "competency": "ops",
+          "criticality": "Très élevée",
+          "role": "Technicien frigoriste",
+          "mission": {
+            "title": "Vérification réglementaire avant intervention",
+            "context": "Tu es appelé pour intervenir sur un chiller data center. Avant d'ouvrir quoi que ce soit, tu dois valider ta couverture réglementaire.",
+            "objective": "Confirmer que ton certificat, celui de l'entreprise et le fluide concerné sont conformes.",
+            "actions": [
+              "Identifier le fluide sur la plaque signalétique de l'équipement.",
+              "Calculer la charge en t CO2 éq. : charge kg × GWP / 1000.",
+              "Vérifier que ton certificat F-Gas couvre l'intervention prévue.",
+              "Confirmer que l'entreprise est enregistrée auprès d'un organisme agréé.",
+              "Consigner ces informations dans la fiche d'intervention avant de commencer."
+            ],
+            "success": "Tu peux justifier ton droit à intervenir sur cet équipement avec ce fluide, et tu as documenté les informations réglementaires clés."
+          },
+          "fieldChecklist": [
+            {
+              "task": "Vérifier et présenter son certificat F-Gas catégorie adaptée à l'intervention.",
+              "sfg20_color": "red",
+              "sfg20_label": "Obligatoire légal",
+              "sfg20_reason": "F-Gas 517/2014 — Intervention sans certificat = infraction pénale."
+            },
+            {
+              "task": "Identifier le fluide frigorigène sur la plaque signalétique.",
+              "sfg20_color": "red",
+              "sfg20_label": "Obligatoire légal",
+              "sfg20_reason": "F-Gas 517/2014 — Obligatoire avant toute manipulation de fluide réglementé."
+            },
+            {
+              "task": "Calculer la charge en tonnes CO2 éq. et identifier le seuil de contrôle applicable.",
+              "sfg20_color": "red",
+              "sfg20_label": "Obligatoire légal",
+              "sfg20_reason": "F-Gas 517/2014 Art. 4 — Détermine la fréquence de contrôle obligatoire."
+            },
+            {
+              "task": "Vérifier l'enregistrement de l'entreprise auprès d'un organisme certificateur agréé.",
+              "sfg20_color": "red",
+              "sfg20_label": "Obligatoire légal",
+              "sfg20_reason": "F-Gas 517/2014 — Obligation de l'entreprise, pas seulement du technicien."
+            },
+            {
+              "task": "Consigner toutes les informations réglementaires dans la fiche d'intervention.",
+              "sfg20_color": "orange",
+              "sfg20_label": "Continuité opérationnelle",
+              "sfg20_reason": "SFG20 — Traçabilité nécessaire pour la conformité lors d'un audit."
+            }
+          ],
+          "commonMistakes": [
+            "Confondre la charge en kg de fluide et la charge en t CO2 éq.",
+            "Utiliser un certificat cat. 2 sur un chiller > 5 t CO2 éq.",
+            "Recharger un fluide à GWP > 2500 sur un système existant.",
+            "Substituer R32 dans un système R410A sans validation constructeur."
+          ],
+          "proTip": "Sur un data center, le chiller principal dépasse quasi systématiquement les 5 t CO2 éq. Demande la fiche technique à l'exploitant et calcule la charge avant ta première intervention."
+        },
+        {
+          "id": "c35_controle_fuites",
+          "title": "Contrôle des fuites : protocole terrain",
+          "content": "Détecter une fuite ne se résume pas à promener un détecteur électronique. SFG20 distingue deux méthodes : **directe** (instrument) et **indirecte** (analyse des performances du cycle).\n\n**Méthode indirecte** — comparaison des valeurs mesurées avec les valeurs de référence :\n- BP plus basse que la normale → charge insuffisante possible\n- SH anormalement élevée avec BP basse → suspect\n- SR réduit ou nul → possible manque de fluide\n- COP en baisse inexpliquée → à investiguer\n\nCette méthode est valide réglementairement si les données de référence sont fiables et documentées.\n\n**Méthode directe** — détecteur électronique, eau savonneuse, UV :\n- Contrôle autour des raccords, vannes, pressostat, détendeur\n- Commencer par les points de service et les raccords brasés\n- Un détecteur électronique doit être étalonné régulièrement\n\n**Fréquences obligatoires (F-Gas 517/2014) :**\n- ≥ 5 t CO2 éq. → contrôle annuel minimum\n- ≥ 50 t CO2 éq. → semestriel ou détecteur automatique\n- ≥ 500 t CO2 éq. → trimestriel + détecteur automatique obligatoire\n\n**Exemption :** équipement hermétique labellisé < 10 t CO2 éq. = pas de contrôle périodique obligatoire.\n\n**Erreur fréquente :** ne consigner la fuite que si elle est confirmée. Une dérive des performances sans autre explication doit déjà être tracée.",
+          "focus_component": "all",
+          "simulation_preset": {
+            "bp": 3.2,
+            "hp": 18.2,
+            "sh": 12,
+            "sc": 1,
+            "evapTemp": -2,
+            "condTemp": 45,
+            "cop": 2.4,
+            "fault": "BP basse + SH élevée : manque de fluide suspect"
+          },
+          "checkpoint": {
+            "question": "BP basse + SH élevée + COP en baisse. Quelle est la première hypothèse terrain ?",
+            "answers": [
+              "Manque de fluide frigorigène",
+              "HP trop élevée",
+              "Condenseur encrassé"
+            ],
+            "correct": 0,
+            "explanation": "Cette combinaison est caractéristique d'un manque de charge. La méthode indirecte permet de le suspecter avant d'ouvrir le circuit."
+          },
+          "quiz": [
+            {
+              "question": "BP basse + SH élevée + COP en baisse. Quelle est la première hypothèse terrain ?",
+              "answers": [
+                "Manque de fluide frigorigène",
+                "HP trop élevée",
+                "Condenseur encrassé"
+              ],
+              "correct": 0,
+              "explanation": "Cette combinaison est caractéristique d'un manque de charge. La méthode indirecte permet de le suspecter avant d'ouvrir le circuit."
+            },
+            {
+              "question": "À quelle fréquence contrôler les fuites sur un chiller de 80 t CO2 éq. sans détecteur automatique ?",
+              "answers": [
+                "Tous les 6 mois",
+                "Tous les ans",
+                "Tous les 3 mois"
+              ],
+              "correct": 0,
+              "explanation": "Entre 50 et 500 t CO2 éq., la fréquence obligatoire est semestrielle en l'absence de détecteur automatique."
+            },
+            {
+              "question": "Un équipement hermétique labellisé contenant 8 t CO2 éq. est-il soumis au contrôle périodique ?",
+              "answers": [
+                "Non, il est exempté si labellisé hermétique",
+                "Oui, contrôle annuel obligatoire",
+                "Oui, contrôle semestriel obligatoire"
+              ],
+              "correct": 0,
+              "explanation": "Les équipements hermétiques labellisés < 10 t CO2 éq. sont exemptés de contrôle périodique selon F-Gas 517/2014."
+            }
+          ],
+          "estimated_minutes": 9,
+          "professional_level": "Réglementation",
+          "competency": "cvc",
+          "criticality": "Très élevée",
+          "role": "Technicien frigoriste",
+          "mission": {
+            "title": "Contrôle de fuites sur circuit en service",
+            "context": "Le BMS remonte une dérive progressive de la BP depuis 10 jours. Aucune alarme active. Le chiller est à 65 t CO2 éq.",
+            "objective": "Appliquer le protocole de détection de fuite, méthode indirecte puis directe.",
+            "actions": [
+              "Relever BP, HP, SH, SR et COP actuels. Les comparer aux valeurs de référence.",
+              "Évaluer si la dérive est cohérente avec un manque de charge (méthode indirecte).",
+              "Passer à la méthode directe : détecteur sur raccords, vannes, pressostat, détendeur.",
+              "Consigner toutes les mesures, méthode utilisée et résultat dans la fiche de contrôle.",
+              "Informer l'exploitant et proposer une intervention si fuite confirmée."
+            ],
+            "success": "Tu as documenté la suspicion, appliqué les deux méthodes et produit une fiche de contrôle conforme F-Gas."
+          },
+          "fieldChecklist": [
+            {
+              "task": "Effectuer le contrôle de fuites à la fréquence réglementaire (annuel / semestriel / trimestriel selon charge CO2 éq.).",
+              "sfg20_color": "red",
+              "sfg20_label": "Obligatoire légal",
+              "sfg20_reason": "F-Gas 517/2014 Art. 4 — Contrôle périodique obligatoire selon seuil de charge."
+            },
+            {
+              "task": "Appliquer la méthode indirecte : comparer BP, HP, SH, SR, COP aux valeurs de référence.",
+              "sfg20_color": "red",
+              "sfg20_label": "Obligatoire légal",
+              "sfg20_reason": "F-Gas 517/2014 — Méthode indirecte valide si données de référence documentées."
+            },
+            {
+              "task": "Appliquer la méthode directe : contrôle aux points de service, raccords, vannes, pressostat.",
+              "sfg20_color": "red",
+              "sfg20_label": "Obligatoire légal",
+              "sfg20_reason": "F-Gas 517/2014 Art. 4 — La méthode directe reste obligatoire en complément de l'indirecte."
+            },
+            {
+              "task": "Remplir et archiver la fiche de contrôle de fuites (résultat positif ET négatif).",
+              "sfg20_color": "red",
+              "sfg20_label": "Obligatoire légal",
+              "sfg20_reason": "F-Gas 517/2014 Art. 6 — Traçabilité obligatoire de chaque contrôle, résultat inclus."
+            },
+            {
+              "task": "Vérifier l'étalonnage du détecteur électronique utilisé.",
+              "sfg20_color": "orange",
+              "sfg20_label": "Continuité opérationnelle",
+              "sfg20_reason": "SFG20 — Un détecteur non étalonné invalide le résultat du contrôle."
+            }
+          ],
+          "commonMistakes": [
+            "Ne tracer la fuite que si le détecteur bipe — une dérive de performance doit aussi être documentée.",
+            "Oublier d'étalonner régulièrement le détecteur électronique.",
+            "Confondre fuite lente et variation saisonnière — croiser avec les données BMS sur 30 jours.",
+            "Ne pas consigner les contrôles négatifs — la traçabilité est obligatoire même sans fuite détectée."
+          ],
+          "proTip": "La méthode indirecte te permet de suspecter une fuite sans ouvrir le circuit ni déranger l'exploitation. Sur site critique, c'est souvent la seule approche possible en première intention. Documente toujours, même quand le résultat est négatif."
+        },
+        {
+          "id": "c36_frequences_maintenance",
+          "title": "Planification & fréquences de maintenance",
+          "content": "SFG20 ne dit pas seulement quoi maintenir, il dit **quand** et **à quelle fréquence**. C'est ce qui distingue une maintenance préventive efficace d'un entretien au feeling.\n\n**Fréquences types par organe :**\n\n**Compresseur :**\n- Mensuel : relevé vibrations, intensité, température refoulement\n- Trimestriel : contrôle huile, étanchéité, bruit anormal\n- Annuel : analyse d'huile, calibration protections, inspection mécanique\n\n**Condenseur (adiabatique / dry cooler) :**\n- Mensuel : propreté échangeur, état ventilateurs, pression différentielle\n- Trimestriel : nettoyage, contrôle pads, qualité eau adiabatique\n- Annuel : inspection complète, antigivre, contrôle structure\n\n**Évaporateur / batterie froide CRAH :**\n- Mensuel : température départ/retour, état filtres, condensats\n- Trimestriel : nettoyage batterie, contrôle vanne, débit\n- Annuel : inspection complète, tests de performance\n\n**Circuit hydraulique :**\n- Mensuel : pression différentielle, température départ/retour, état pompes\n- Trimestriel : qualité glycol (concentration, pH, inhibiteurs)\n- Annuel : purge complète, analyse d'eau, contrôle expansion\n\n**Notion clé SFG20 : sur-maintenance vs sous-maintenance.** Intervenir trop souvent coûte et crée des risques d'erreur humaine. Trop rarement laisse les dérives s'installer. La fréquence SFG20 est le point d'équilibre validé par le terrain.\n\n**Erreur fréquente :** traiter toutes les tâches à la même fréquence. Un filtre à air se change différemment d'un palier de compresseur.",
+          "focus_component": "all",
+          "simulation_preset": {
+            "bp": 4.5,
+            "hp": 18.2,
+            "sh": 5,
+            "sc": 3,
+            "evapTemp": 2,
+            "condTemp": 45,
+            "cop": 3.2,
+            "fault": "Cycle nominal — maintenance planifiée"
+          },
+          "checkpoint": {
+            "question": "Quelle est la fréquence SFG20 recommandée pour le contrôle de la qualité du glycol ?",
+            "answers": [
+              "Trimestrielle",
+              "Mensuelle",
+              "Annuelle uniquement"
+            ],
+            "correct": 0,
+            "explanation": "La qualité du glycol se dégrade progressivement. Un contrôle trimestriel détecte la dégradation avant qu'elle atteigne les échangeurs."
+          },
+          "quiz": [
+            {
+              "question": "Quelle est la fréquence SFG20 recommandée pour le contrôle de la qualité du glycol ?",
+              "answers": [
+                "Trimestrielle",
+                "Mensuelle",
+                "Annuelle uniquement"
+              ],
+              "correct": 0,
+              "explanation": "La qualité du glycol se dégrade progressivement. Un contrôle trimestriel détecte la dégradation avant qu'elle atteigne les échangeurs."
+            },
+            {
+              "question": "Pourquoi la sur-maintenance est-elle un problème selon SFG20 ?",
+              "answers": [
+                "Elle génère des coûts inutiles et augmente le risque d'erreur humaine",
+                "Elle améliore toujours la fiabilité",
+                "Elle est interdite par F-Gas"
+              ],
+              "correct": 0,
+              "explanation": "SFG20 vise l'équilibre : trop d'interventions coûte et crée des risques. La fréquence optimale est définie par le contexte et l'état de l'actif."
+            },
+            {
+              "question": "Un relevé mensuel de vibrations compresseur sert à :",
+              "answers": [
+                "Détecter une dérive mécanique avant la panne",
+                "Vérifier la conformité F-Gas",
+                "Calculer le COP du système"
+              ],
+              "correct": 0,
+              "explanation": "Les vibrations anormales sont souvent le premier signe d'une usure mécanique. Les suivre mensuellement permet d'anticiper la panne."
+            }
+          ],
+          "estimated_minutes": 9,
+          "professional_level": "Exploitation",
+          "competency": "ops",
+          "criticality": "Élevée",
+          "role": "Technicien exploitation data center",
+          "mission": {
+            "title": "Construire le plan mensuel de maintenance préventive",
+            "context": "Tu es en charge de la maintenance d'un site avec dry cooler adiabatique, chiller assist et continuous cooling.",
+            "objective": "Identifier les tâches mensuelles et trimestrielles prioritaires selon la logique SFG20.",
+            "actions": [
+              "Lister les équipements du site : dry cooler, chiller, pompes, CRAH, circuit hydraulique.",
+              "Pour chaque équipement, identifier les tâches mensuelles à réaliser ce mois-ci.",
+              "Identifier les tâches trimestrielles en cours ce trimestre.",
+              "Estimer le temps nécessaire et vérifier la disponibilité de l'équipe.",
+              "Prioriser les tâches selon leur nature : légale, opérationnelle, ou discrétionnaire."
+            ],
+            "success": "Tu as un planning clair, priorisé et documenté, avec les tâches obligatoires identifiées en priorité."
+          },
+          "fieldChecklist": [
+            {
+              "task": "Réaliser le contrôle de fuites F-Gas à échéance (si échéance ce mois-ci).",
+              "sfg20_color": "red",
+              "sfg20_label": "Obligatoire légal",
+              "sfg20_reason": "F-Gas 517/2014 — Tâche légalement imposée, non reportable."
+            },
+            {
+              "task": "Relever vibrations, intensité et température de refoulement compresseur.",
+              "sfg20_color": "orange",
+              "sfg20_label": "Continuité opérationnelle",
+              "sfg20_reason": "SFG20 — Permet de détecter une dérive mécanique avant la panne."
+            },
+            {
+              "task": "Vérifier propreté échangeur condenseur et pression différentielle.",
+              "sfg20_color": "orange",
+              "sfg20_label": "Continuité opérationnelle",
+              "sfg20_reason": "SFG20 — Un condenseur encrassé dégrade le COP et peut mener à un arrêt."
+            },
+            {
+              "task": "Contrôler qualité glycol : concentration, pH, inhibiteurs (trimestriel).",
+              "sfg20_color": "orange",
+              "sfg20_label": "Continuité opérationnelle",
+              "sfg20_reason": "SFG20 — Une dégradation du glycol non détectée attaque les échangeurs."
+            },
+            {
+              "task": "Vérifier état filtres CRAH et condensats.",
+              "sfg20_color": "orange",
+              "sfg20_label": "Continuité opérationnelle",
+              "sfg20_reason": "SFG20 — Filtres colmatés réduisent l'airflow et dégradent le refroidissement IT."
+            },
+            {
+              "task": "Optimiser les set-points selon la saison si conditions favorables.",
+              "sfg20_color": "green",
+              "sfg20_label": "Discrétionnaire",
+              "sfg20_reason": "SFG20 — Amélioration du COP, reportable si ressources insuffisantes."
+            }
+          ],
+          "commonMistakes": [
+            "Appliquer la même fréquence à tous les équipements.",
+            "Oublier les contrôles glycol trimestriels jusqu'à la panne.",
+            "Ne pas distinguer les tâches légales des tâches opérationnelles dans le planning.",
+            "Ne pas ajuster le plan selon l'état réel de l'actif."
+          ],
+          "proTip": "La fréquence SFG20 est un minimum, pas un plafond. Si un équipement montre des signes de dérive, augmente la fréquence de surveillance sans attendre l'échéance."
+        },
+        {
+          "id": "c37_codification_risques",
+          "title": "Codification des risques SFG20",
+          "content": "SFG20 classe chaque **tâche de maintenance** selon une grille de criticité à 4 niveaux. Cette grille s'applique à chaque action individuelle, pas à un équipement ou un chapitre dans sa globalité.\n\n**🔴 Rouge — Obligation légale :** tâche imposée par la loi ou un code de pratique. Ne pas l'exécuter expose à une sanction réglementaire. Exemples : contrôle de fuites F-Gas, vérification des sécurités électriques, tests des soupapes de sécurité.\n\n**🟠 Orange — Continuité opérationnelle :** tâche critique pour la continuité du service. Son absence augmente significativement le risque de panne. Exemples : nettoyage condenseur, contrôle pompes critiques, état filtres CRAH.\n\n**🟢 Vert — Discrétionnaire :** amélioration ou optimisation. Utile, mais reportable si les ressources manquent. Exemples : optimisation des set-points, amélioration isolation, nettoyage esthétique.\n\nNote : SFG20 inclut également une catégorie **rose (sectorielle)**, pour les obligations propres à un secteur ou un contrat (ex. data center Tier III, norme client). Elle se place entre rouge et orange dans la priorisation.\n\n**Règle terrain :** en cas de contrainte de temps, traite d'abord les rouges, puis les oranges. Ne reporte jamais une tâche rouge. Une tâche orange non faite aujourd'hui peut devenir une urgence rouge demain.\n\n**Erreur fréquente :** classer un équipement entier comme 'rouge' ou 'orange'. La criticité s'applique à chaque tâche individuellement. Une même pompe peut avoir des tâches rouges (contrôle sécurités), oranges (relevé vibrations) et vertes (peinture).",
+          "focus_component": "all",
+          "simulation_preset": {
+            "bp": 4.5,
+            "hp": 18.2,
+            "sh": 5,
+            "sc": 3,
+            "evapTemp": 2,
+            "condTemp": 45,
+            "cop": 3.2,
+            "fault": "Cycle nominal — analyse de criticité par tâche"
+          },
+          "checkpoint": {
+            "question": "La criticité SFG20 s'applique à :",
+            "answers": [
+              "Chaque tâche de maintenance individuellement",
+              "L'équipement dans sa globalité",
+              "Le chapitre de formation concerné"
+            ],
+            "correct": 0,
+            "explanation": "Dans SFG20, chaque tâche reçoit sa propre criticité. Un même équipement peut avoir des tâches rouges, oranges et vertes."
+          },
+          "quiz": [
+            {
+              "question": "La criticité SFG20 s'applique à :",
+              "answers": [
+                "Chaque tâche de maintenance individuellement",
+                "L'équipement dans sa globalité",
+                "Le chapitre de formation concerné"
+              ],
+              "correct": 0,
+              "explanation": "Dans SFG20, chaque tâche reçoit sa propre criticité. Un même équipement peut avoir des tâches rouges, oranges et vertes."
+            },
+            {
+              "question": "Le contrôle de fuites F-Gas est classé :",
+              "answers": [
+                "Rouge — obligation légale",
+                "Orange — continuité opérationnelle",
+                "Vert — discrétionnaire"
+              ],
+              "correct": 0,
+              "explanation": "Le contrôle de fuites est imposé par F-Gas 517/2014. C'est une obligation légale, donc rouge SFG20."
+            },
+            {
+              "question": "L'optimisation des set-points en été est classée :",
+              "answers": [
+                "Vert — discrétionnaire",
+                "Rouge — obligation légale",
+                "Orange — continuité opérationnelle"
+              ],
+              "correct": 0,
+              "explanation": "L'optimisation des set-points améliore le COP mais n'est pas obligatoire. C'est une tâche discrétionnaire, donc verte."
+            }
+          ],
+          "estimated_minutes": 8,
+          "professional_level": "Exploitation",
+          "competency": "ops",
+          "criticality": "Élevée",
+          "role": "Technicien exploitation data center",
+          "mission": {
+            "title": "Classer 6 tâches selon la grille SFG20",
+            "context": "Tu reçois un planning avec 6 tâches non priorisées. Tu dois attribuer une criticité SFG20 à chacune avant de commencer.",
+            "objective": "Appliquer la grille rouge / orange / vert à chaque tâche individuellement.",
+            "actions": [
+              "Lire chaque tâche et identifier si elle est imposée par la loi, nécessaire à la continuité, ou discrétionnaire.",
+              "Attribuer une couleur SFG20 à chaque tâche avec sa justification.",
+              "Ordonner les tâches : rouge en premier, puis orange, puis vert.",
+              "Identifier les tâches qui ne peuvent pas être reportées sous aucune condition.",
+              "Documenter le classement et le communiquer à l'équipe avant de commencer."
+            ],
+            "success": "Chaque tâche a une couleur SFG20 justifiée, et le planning est ordonné par criticité réelle."
+          },
+          "fieldChecklist": [
+            {
+              "task": "Contrôle de fuites F-Gas à échéance.",
+              "sfg20_color": "red",
+              "sfg20_label": "Obligatoire légal",
+              "sfg20_reason": "F-Gas 517/2014 — Non reportable."
+            },
+            {
+              "task": "Test des sécurités haute pression du compresseur.",
+              "sfg20_color": "red",
+              "sfg20_label": "Obligatoire légal",
+              "sfg20_reason": "SFG20 — Imposé par les codes de pratique sécurité frigorifique."
+            },
+            {
+              "task": "Nettoyage échangeur condenseur.",
+              "sfg20_color": "orange",
+              "sfg20_label": "Continuité opérationnelle",
+              "sfg20_reason": "SFG20 — Encrassement dégrade le COP et peut provoquer un arrêt haute pression."
+            },
+            {
+              "task": "Contrôle pompes critiques : bruit, vibrations, pression différentielle.",
+              "sfg20_color": "orange",
+              "sfg20_label": "Continuité opérationnelle",
+              "sfg20_reason": "SFG20 — Panne pompe critique = perte de refroidissement salle IT."
+            },
+            {
+              "task": "Optimisation des set-points de température selon la saison.",
+              "sfg20_color": "green",
+              "sfg20_label": "Discrétionnaire",
+              "sfg20_reason": "SFG20 — Amélioration du COP, reportable si ressources insuffisantes."
+            },
+            {
+              "task": "Nettoyage esthétique des capots et bâtis équipement.",
+              "sfg20_color": "green",
+              "sfg20_label": "Discrétionnaire",
+              "sfg20_reason": "SFG20 — Aucun impact opérationnel ou légal direct."
+            }
+          ],
+          "commonMistakes": [
+            "Classer un équipement entier comme rouge ou orange au lieu de classer chaque tâche.",
+            "Reporter une tâche rouge parce que l'équipement semble fonctionner.",
+            "Confondre urgence perçue et criticité réglementaire.",
+            "Oublier de documenter le classement — la traçabilité fait partie de la conformité."
+          ],
+          "proTip": "Quand tu arrives avec un planning chargé, repère d'abord les rouges. Un seul rouge raté peut invalider toute une prestation de maintenance."
+        },
+        {
+          "id": "c38_documentation_tracabilite",
+          "title": "Documentation & traçabilité terrain",
+          "content": "SFG20 insiste : **ce qui n'est pas écrit n'a pas eu lieu.** La traçabilité n'est pas une formalité administrative, c'est une preuve de conformité et un outil de diagnostic.\n\n**Ce qu'une fiche d'intervention doit contenir :**\n- Date et heure d'intervention\n- Identifiant de l'équipement (tag, numéro de série)\n- Technicien intervenant et certificat utilisé\n- Tâche réalisée et méthode appliquée\n- Valeurs relevées avant / après intervention\n- Anomalies détectées et actions prises\n- Résultat (conforme / non-conforme / à surveiller)\n- Signature du responsable si requis\n\n**Types de documents terrain :**\n\n**Fiche de ronde** : relevé des valeurs BP, HP, SH, SR, températures, état pompes, alarmes. À produire à chaque ronde.\n\n**Rapport d'intervention** : document complet pour toute intervention sur circuit F-Gas, hydraulique ou électrique. Reste dans le dossier site.\n\n**Registre de maintenance** : synthèse chronologique de toutes les interventions sur un équipement. Obligatoire pour les systèmes F-Gas.\n\n**Fiche de contrôle de fuites** : résultat daté, méthode, valeurs, décision. Obligatoire même si aucune fuite n'est détectée.\n\n**Erreur fréquente :** ne remplir la fiche qu'en cas de problème. SFG20 exige la traçabilité de chaque passage, conforme ou non.",
+          "focus_component": "all",
+          "simulation_preset": {
+            "bp": 4.5,
+            "hp": 18.2,
+            "sh": 5,
+            "sc": 3,
+            "evapTemp": 2,
+            "condTemp": 45,
+            "cop": 3.2,
+            "fault": "Cycle nominal — fiche de ronde complète"
+          },
+          "checkpoint": {
+            "question": "Un contrôle de fuites négatif doit-il être documenté ?",
+            "answers": [
+              "Oui, la traçabilité est obligatoire même sans fuite détectée",
+              "Non, seulement si une fuite est trouvée",
+              "Uniquement si le système dépasse 50 t CO2 éq."
+            ],
+            "correct": 0,
+            "explanation": "SFG20 et F-Gas exigent la traçabilité de chaque contrôle. Un résultat négatif non documenté n'a pas eu lieu."
+          },
+          "quiz": [
+            {
+              "question": "Un contrôle de fuites négatif doit-il être documenté ?",
+              "answers": [
+                "Oui, la traçabilité est obligatoire même sans fuite détectée",
+                "Non, seulement si une fuite est trouvée",
+                "Uniquement si le système dépasse 50 t CO2 éq."
+              ],
+              "correct": 0,
+              "explanation": "SFG20 et F-Gas exigent la traçabilité de chaque contrôle. Un résultat négatif non documenté n'a pas eu lieu."
+            },
+            {
+              "question": "Quel document synthétise chronologiquement toutes les interventions sur un équipement ?",
+              "answers": [
+                "Le registre de maintenance",
+                "La fiche de ronde",
+                "Le rapport BMS"
+              ],
+              "correct": 0,
+              "explanation": "Le registre de maintenance est le document de référence chronologique pour un équipement. Obligatoire pour les systèmes F-Gas."
+            },
+            {
+              "question": "Que doit obligatoirement mentionner un rapport d'intervention sur circuit F-Gas ?",
+              "answers": [
+                "Le certificat F-Gas du technicien intervenant",
+                "Uniquement les valeurs BP et HP",
+                "Le numéro de série du détecteur de fuites"
+              ],
+              "correct": 0,
+              "explanation": "F-Gas 517/2014 exige que le rapport identifie le technicien et son habilitation. Sans cela, l'intervention n'est pas traçable réglementairement."
+            }
+          ],
+          "estimated_minutes": 8,
+          "professional_level": "Exploitation",
+          "competency": "supervision",
+          "criticality": "Élevée",
+          "role": "Technicien exploitation data center",
+          "mission": {
+            "title": "Produire une fiche de ronde complète et conforme",
+            "context": "Tu effectues une ronde de maintenance préventive sur le système de refroidissement sous contrat avec exigence de traçabilité SFG20.",
+            "objective": "Remplir une fiche de ronde utilisable comme preuve de conformité en cas d'audit.",
+            "actions": [
+              "Relever toutes les valeurs : BP, HP, SH, SR, températures départ/retour, état pompes.",
+              "Vérifier et noter l'état de chaque équipement : normal / dérive / anomalie.",
+              "Consigner les alarmes actives et leur statut : reconnue / ignorée / traitée.",
+              "Indiquer les actions prises ou à programmer.",
+              "Signer la fiche avec date, heure et identifiant du technicien."
+            ],
+            "success": "Ta fiche permet à un auditeur ou un collègue de reconstituer exactement l'état du système au moment de ta visite."
+          },
+          "fieldChecklist": [
+            {
+              "task": "Consigner le résultat du contrôle de fuites dans le registre F-Gas (si contrôle réalisé ce jour).",
+              "sfg20_color": "red",
+              "sfg20_label": "Obligatoire légal",
+              "sfg20_reason": "F-Gas 517/2014 Art. 6 — Traçabilité légalement obligatoire de chaque contrôle."
+            },
+            {
+              "task": "Identifier et documenter le certificat F-Gas utilisé pour toute intervention sur circuit.",
+              "sfg20_color": "red",
+              "sfg20_label": "Obligatoire légal",
+              "sfg20_reason": "F-Gas 517/2014 — L'habilitation doit être traçable dans le rapport d'intervention."
+            },
+            {
+              "task": "Relever et consigner BP, HP, SH, SR, températures départ/retour à chaque ronde.",
+              "sfg20_color": "orange",
+              "sfg20_label": "Continuité opérationnelle",
+              "sfg20_reason": "SFG20 — La tendance des relevés permet de détecter une dérive avant la panne."
+            },
+            {
+              "task": "Documenter toutes les alarmes actives et leur statut de traitement.",
+              "sfg20_color": "orange",
+              "sfg20_label": "Continuité opérationnelle",
+              "sfg20_reason": "SFG20 — Une alarme non documentée peut masquer une dégradation progressive."
+            },
+            {
+              "task": "Archiver les fiches de ronde dans le registre de maintenance du site.",
+              "sfg20_color": "orange",
+              "sfg20_label": "Continuité opérationnelle",
+              "sfg20_reason": "SFG20 — L'historique des rondes est nécessaire pour un audit et pour l'analyse des tendances."
+            }
+          ],
+          "commonMistakes": [
+            "Remplir la fiche uniquement quand un problème est détecté.",
+            "Laisser des champs vides sans explication.",
+            "Ne pas mentionner le certificat F-Gas dans un rapport d'intervention sur circuit.",
+            "Conserver les fiches uniquement en format papier sans copie numérique."
+          ],
+          "proTip": "Quand tu prends en main un nouveau site, commence par lire les dernières fiches de ronde avant d'aller sur le terrain. La tendance dans les documents te donne souvent plus d'informations que l'état instantané des équipements."
+        },
+        {
+          "id": "c39_audit_sfg20_simule",
+          "title": "Synthèse SFG20 : audit terrain simulé",
+          "content": "Ce chapitre est un cas pratique complet. Tu es technicien principal sur un data center. Un auditeur SFG20 arrive dans 48 heures.\n\n**Scénario :** le système fonctionne en mode nominal mais le BMS remonte une légère dérive BP depuis 10 jours. Le dernier contrôle de fuites date de 14 mois. Le registre de maintenance est incomplet sur les 3 derniers mois. Le technicien junior a un certificat cat. 2 mais intervient seul sur le chiller (75 t CO2 éq.).\n\n**Analyse tâche par tâche :**\n\n🔴 **Contrôle de fuites en retard** — tâche rouge non exécutée. 14 mois > 12 mois obligatoires pour > 5 t CO2 éq. Action immédiate requise.\n\n🔴 **Technicien cat. 2 sur chiller > 5 t CO2 éq.** — tâche rouge : intervention illégale. Doit cesser immédiatement.\n\n🟠 **BP en dérive depuis 10 jours sans investigation documentée** — tâche orange non exécutée. À traiter avant aggravation.\n\n🟠 **Registre incomplet sur 3 mois** — tâche orange non exécutée. La conformité ne peut pas être prouvée pour cette période.\n\n**Ordre d'action selon la grille SFG20 :**\n1. Stopper les interventions du technicien cat. 2 sur le chiller. (🔴)\n2. Planifier le contrôle de fuites en urgence avec un technicien cat. 1. (🔴)\n3. Investiguer et documenter la dérive BP. (🟠)\n4. Reconstituer le registre de maintenance autant que possible. (🟠)\n\n**Erreur fréquente :** traiter d'abord ce qui est visible (dérive BP) avant de régler ce qui est légalement obligatoire (fuites, habilitation).",
+          "focus_component": "all",
+          "simulation_preset": {
+            "bp": 3.8,
+            "hp": 18.2,
+            "sh": 9,
+            "sc": 2,
+            "evapTemp": 0,
+            "condTemp": 45,
+            "cop": 2.8,
+            "fault": "BP en dérive — investigation requise"
+          },
+          "checkpoint": {
+            "question": "Dans le scénario, quelle est la première action selon la grille SFG20 ?",
+            "answers": [
+              "Stopper les interventions du technicien cat. 2 (tâche rouge)",
+              "Investiguer la dérive BP (tâche orange)",
+              "Reconstituer le registre (tâche orange)"
+            ],
+            "correct": 0,
+            "explanation": "Les tâches rouges (obligations légales) passent toujours avant les tâches oranges. Une intervention illégale doit cesser immédiatement."
+          },
+          "quiz": [
+            {
+              "question": "Dans le scénario, quelle est la première action selon la grille SFG20 ?",
+              "answers": [
+                "Stopper les interventions du technicien cat. 2 (tâche rouge)",
+                "Investiguer la dérive BP (tâche orange)",
+                "Reconstituer le registre (tâche orange)"
+              ],
+              "correct": 0,
+              "explanation": "Les tâches rouges passent toujours avant les oranges. Une intervention illégale doit cesser immédiatement."
+            },
+            {
+              "question": "Un registre incomplet sur 3 mois est classé comment dans la grille SFG20 ?",
+              "answers": [
+                "Orange — la conformité ne peut pas être prouvée pour cette période",
+                "Rouge — infraction légale immédiate",
+                "Vert — acceptable si le site fonctionne normalement"
+              ],
+              "correct": 0,
+              "explanation": "L'absence de traçabilité sur 3 mois est une dérive opérationnelle orange. Elle devient rouge si elle concerne des tâches légalement obligatoires non documentées."
+            },
+            {
+              "question": "Une BP en dérive non investiguée depuis 10 jours est classée :",
+              "answers": [
+                "Orange — dérive opérationnelle à documenter et investiguer",
+                "Rouge — urgence légale immédiate",
+                "Vert — normale si le système est toujours en service"
+              ],
+              "correct": 0,
+              "explanation": "Une dérive non documentée touche la continuité opérationnelle. Elle est orange, mais peut devenir rouge si elle révèle une fuite F-Gas non contrôlée."
+            }
+          ],
+          "estimated_minutes": 12,
+          "professional_level": "Expertise",
+          "competency": "ops",
+          "criticality": "Très élevée",
+          "role": "Technicien principal exploitation data center",
+          "mission": {
+            "title": "Préparer le site pour un audit SFG20 en 48 heures",
+            "context": "Un auditeur externe arrive dans 48 heures. Ton manager te demande un rapport de conformité SFG20 sur les 6 modules du parcours.",
+            "objective": "Identifier toutes les tâches non conformes, les classer par criticité et proposer un plan d'action priorisé.",
+            "actions": [
+              "Vérifier les habilitations F-Gas de toute l'équipe vs les équipements du site.",
+              "Contrôler les dates des derniers contrôles de fuites vs les seuils réglementaires.",
+              "Passer en revue les fréquences de maintenance réalisées vs le plan SFG20.",
+              "Vérifier la complétude du registre de maintenance sur les 12 derniers mois.",
+              "Lister les tâches non conformes, leur attribuer une couleur SFG20 et proposer les actions correctives dans l'ordre rouge puis orange."
+            ],
+            "success": "Tu remets un rapport clair avec les tâches non conformes classées par criticité SFG20 et un plan d'action ordonné."
+          },
+          "fieldChecklist": [
+            {
+              "task": "Vérifier que tous les techniciens ont le certificat F-Gas adapté aux équipements du site.",
+              "sfg20_color": "red",
+              "sfg20_label": "Obligatoire légal",
+              "sfg20_reason": "F-Gas 517/2014 — Intervention sans certificat adapté = infraction."
+            },
+            {
+              "task": "Vérifier que les contrôles de fuites sont à jour selon les seuils réglementaires.",
+              "sfg20_color": "red",
+              "sfg20_label": "Obligatoire légal",
+              "sfg20_reason": "F-Gas 517/2014 Art. 4 — Retard sur contrôle de fuites = non-conformité légale."
+            },
+            {
+              "task": "Investiguer et documenter la dérive BP.",
+              "sfg20_color": "orange",
+              "sfg20_label": "Continuité opérationnelle",
+              "sfg20_reason": "SFG20 — Une dérive non investiguée peut masquer une fuite ou une dégradation critique."
+            },
+            {
+              "task": "Reconstituer le registre de maintenance sur les périodes incomplètes.",
+              "sfg20_color": "orange",
+              "sfg20_label": "Continuité opérationnelle",
+              "sfg20_reason": "SFG20 — La traçabilité est nécessaire pour prouver la conformité lors d'un audit."
+            },
+            {
+              "task": "Vérifier que les fréquences de maintenance SFG20 ont été respectées sur les 12 derniers mois.",
+              "sfg20_color": "orange",
+              "sfg20_label": "Continuité opérationnelle",
+              "sfg20_reason": "SFG20 — Le non-respect des fréquences est une dérive opérationnelle documentable."
+            }
+          ],
+          "commonMistakes": [
+            "Traiter les dérives techniques avant de régler les non-conformités réglementaires.",
+            "Croire qu'un registre incomplet peut être rempli rétroactivement sans mention explicite.",
+            "Oublier de vérifier les habilitations de toute l'équipe, pas seulement les siennes.",
+            "Produire un rapport de conformité sans ordre de priorité SFG20."
+          ],
+          "proTip": "Un audit SFG20 cherche à vérifier que le site est maintenu de façon légale, sûre et traçable. Si tu as des non-conformités, présente-les avec le plan d'action : c'est bien mieux que de les cacher et qu'elles soient découvertes."
         }
       ],
       "product_positioning": {
@@ -2791,4 +3493,4 @@
       ]
     }
   ]
-}
+          }
