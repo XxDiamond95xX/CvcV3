@@ -1,11 +1,44 @@
-import { create } from 'zustand';
-import courseData from '@/data/courses.json';
+import { create } from 'zustand'
+import courseData from '@/data/courses.json'
+import waterTankChapter from '@/data/waterTankChapter'
 
-const firstModule = courseData.modules[0];
-const firstChapter = firstModule.chapters[0];
+function insertWaterTankChapter(chapters) {
+  const alreadyExists = chapters.some((chapter) => chapter.id === waterTankChapter.id)
+  if (alreadyExists) return chapters
+
+  const insertionIndex = chapters.findIndex((chapter) => {
+    const searchableText = `${chapter.title ?? ''} ${chapter.content ?? ''}`.toLowerCase()
+    return searchableText.includes('continuous cooling')
+  })
+
+  const targetIndex = insertionIndex >= 0 ? insertionIndex + 1 : chapters.length
+
+  return [
+    ...chapters.slice(0, targetIndex),
+    waterTankChapter,
+    ...chapters.slice(targetIndex)
+  ]
+}
+
+const modules = courseData.modules.map((module, index) => {
+  if (index !== 0) {
+    return {
+      ...module,
+      chapters: [...module.chapters]
+    }
+  }
+
+  return {
+    ...module,
+    chapters: insertWaterTankChapter(module.chapters)
+  }
+})
+
+const firstModule = modules[0]
+const firstChapter = firstModule.chapters[0]
 
 export const useLearningStore = create((set, get) => ({
-  modules: courseData.modules,
+  modules,
   currentModule: firstModule,
   currentChapterIndex: 0,
   activeSimulationParams: firstChapter.simulation_preset,
@@ -14,9 +47,10 @@ export const useLearningStore = create((set, get) => ({
   answerStatus: null,
 
   setChapter: (chapterIndex) => {
-    const { currentModule } = get();
-    const targetChapter = currentModule.chapters[chapterIndex];
-    if (!targetChapter) return;
+    const { currentModule } = get()
+    const targetChapter = currentModule.chapters[chapterIndex]
+
+    if (!targetChapter) return
 
     set({
       currentChapterIndex: chapterIndex,
@@ -24,30 +58,36 @@ export const useLearningStore = create((set, get) => ({
       highlightedComponent: targetChapter.focus_component,
       selectedAnswer: null,
       answerStatus: null
-    });
+    })
   },
 
   nextChapter: () => {
-    const { currentModule, currentChapterIndex, setChapter } = get();
-    const nextIndex = currentChapterIndex + 1;
-    if (nextIndex < currentModule.chapters.length) setChapter(nextIndex);
+    const { currentModule, currentChapterIndex, setChapter } = get()
+    const nextIndex = currentChapterIndex + 1
+
+    if (nextIndex < currentModule.chapters.length) {
+      setChapter(nextIndex)
+    }
   },
 
   prevChapter: () => {
-    const { currentChapterIndex, setChapter } = get();
-    const prevIndex = currentChapterIndex - 1;
-    if (prevIndex >= 0) setChapter(prevIndex);
+    const { currentChapterIndex, setChapter } = get()
+    const prevIndex = currentChapterIndex - 1
+
+    if (prevIndex >= 0) {
+      setChapter(prevIndex)
+    }
   },
 
   answerCheckpoint: (answerIndex) => {
-    const { currentModule, currentChapterIndex } = get();
-    const chapter = currentModule.chapters[currentChapterIndex];
-    const isCorrect = chapter?.checkpoint?.correct === answerIndex;
+    const { currentModule, currentChapterIndex } = get()
+    const chapter = currentModule.chapters[currentChapterIndex]
+    const isCorrect = chapter?.checkpoint?.correct === answerIndex
 
     set({
       selectedAnswer: answerIndex,
       answerStatus: isCorrect ? 'correct' : 'incorrect'
-    });
+    })
   },
 
   resetProgress: () => {
@@ -58,6 +98,6 @@ export const useLearningStore = create((set, get) => ({
       highlightedComponent: firstChapter.focus_component,
       selectedAnswer: null,
       answerStatus: null
-    });
+    })
   }
-}));
+}))
