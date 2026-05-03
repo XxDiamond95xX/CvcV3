@@ -15,1233 +15,432 @@ const DEFAULT_PARAMS = {
   fault: 'Mode nominal'
 }
 
+const LEVEL_Y = {
+  it: 0,
+  cooling: 3.2,
+  electrical: 6.4,
+  roof: 9.6
+}
+
+const FOCUS_ALIASES = {
+  all: null,
+  compressor: 'chillerAssist',
+  condenser: 'adiabaticDrycooler',
+  expansionValve: 'chillerAssist',
+  evaporator: 'crah'
+}
+
 const VIEWS = {
   overview: {
-    label: 'Vue exploitation',
-    hint: 'Lecture globale : salle IT, local froid, riser, toiture et énergie critique.',
-    zones: ['itRoom', 'coolingRoom', 'electricalRoom', 'riserShaft', 'roof'],
-    equipment: [
-      'racks',
-      'crah',
-      'coldAisle',
-      'hotAisle',
-      'plateHx',
-      'bufferTank',
-      'primaryPumps',
-      'secondaryPumps',
-      'chillerAssist',
-      'adiabaticWater',
-      'adiabaticDrycooler',
-      'riser',
-      'ups',
-      'tgbt',
-      'pdu',
-      'bms'
-    ],
-    circuits: [
-      'airCold',
-      'airHot',
-      'chwSupply',
-      'chwReturn',
-      'glycolHot',
-      'glycolCold',
-      'adiabaticWater',
-      'criticalPower'
-    ]
+    label: 'Vue étagée',
+    hint: 'Lecture par niveaux : salle IT en bas, local froid au-dessus, énergie/supervision séparées, toiture en haut.',
+    zones: ['itLevel', 'coolingLevel', 'electricalLevel', 'roofLevel', 'riserShaft'],
+    equipment: ['racks', 'crah', 'coldAisle', 'hotAisle', 'plateHx', 'bufferTank', 'primaryPumps', 'secondaryPumps', 'chillerAssist', 'adiabaticWater', 'ups', 'tgbt', 'pdu', 'bms', 'adiabaticDrycooler', 'riser'],
+    circuits: ['airCold', 'airHot', 'chwSupply', 'chwReturn', 'glycolHot', 'glycolCold', 'adiabaticWater', 'continuousLoop', 'criticalPower', 'controls']
   },
   air: {
-    label: 'Air salle IT',
-    hint: 'Comprendre la séparation allée froide / allée chaude.',
-    zones: ['itRoom'],
+    label: 'Niveau 0 · Salle IT',
+    hint: 'Salle IT isolée : baies, allée froide, allée chaude et CRAH.',
+    zones: ['itLevel'],
     equipment: ['racks', 'crah', 'coldAisle', 'hotAisle'],
     circuits: ['airCold', 'airHot']
   },
   hydraulic: {
-    label: 'Hydraulique',
-    hint: 'Boucle eau glacée, échangeur, pompes et ballon tampon / water tank.',
-    zones: ['itRoom', 'coolingRoom', 'riserShaft', 'roof'],
-    equipment: [
-      'crah',
-      'plateHx',
-      'bufferTank',
-      'primaryPumps',
-      'secondaryPumps',
-      'adiabaticDrycooler',
-      'riser'
-    ],
-    circuits: ['chwSupply', 'chwReturn', 'glycolHot', 'glycolCold']
+    label: 'Niveau 1 · Hydraulique',
+    hint: 'Local froid espacé : échangeur, ballon tampon, pompes et chiller assist.',
+    zones: ['itLevel', 'coolingLevel', 'roofLevel', 'riserShaft'],
+    equipment: ['crah', 'plateHx', 'bufferTank', 'primaryPumps', 'secondaryPumps', 'chillerAssist', 'adiabaticDrycooler', 'riser'],
+    circuits: ['chwSupply', 'chwReturn', 'glycolHot', 'glycolCold', 'chillerSupply', 'chillerReturn']
+  },
+  waterTank: {
+    label: 'Focus water tank',
+    hint: 'Ballon tampon isolé : volume, inertie, stabilité et transition.',
+    zones: ['coolingLevel'],
+    equipment: ['plateHx', 'bufferTank', 'primaryPumps', 'secondaryPumps', 'chillerAssist'],
+    circuits: ['chwSupply', 'chwReturn', 'chillerSupply', 'chillerReturn', 'continuousLoop']
   },
   roof: {
-    label: 'Toiture',
-    hint: 'Dry adiabatique, eau de pulvérisation et rejet thermique.',
-    zones: ['coolingRoom', 'riserShaft', 'roof'],
+    label: 'Niveau 3 · Toiture',
+    hint: 'Dry cooler sur son propre étage pour clarifier le rejet thermique.',
+    zones: ['coolingLevel', 'roofLevel', 'riserShaft'],
     equipment: ['plateHx', 'adiabaticWater', 'adiabaticDrycooler', 'riser'],
     circuits: ['glycolHot', 'glycolCold', 'adiabaticWater', 'outsideAir', 'heatRejection']
   },
   chiller: {
     label: 'Chiller assist',
-    hint: 'Appoint mécanique quand le free cooling ne suffit plus.',
-    zones: ['coolingRoom', 'riserShaft', 'roof'],
-    equipment: ['chillerAssist', 'plateHx', 'bufferTank', 'primaryPumps', 'adiabaticDrycooler'],
-    circuits: [
-      'chillerSupply',
-      'chillerReturn',
-      'refrigerantDischarge',
-      'refrigerantLiquid',
-      'refrigerantExpansion',
-      'refrigerantSuction'
-    ]
+    hint: 'Appoint mécanique séparé du free cooling.',
+    zones: ['coolingLevel'],
+    equipment: ['chillerAssist', 'plateHx', 'bufferTank', 'primaryPumps'],
+    circuits: ['chillerSupply', 'chillerReturn', 'refrigerantDischarge', 'refrigerantLiquid', 'refrigerantExpansion', 'refrigerantSuction']
   },
   continuous: {
     label: 'Continuous cooling',
-    hint:
-      'Maintien du débit et de l’inertie pendant les transitions : ballon tampon, pompes critiques et énergie secourue.',
-    zones: ['itRoom', 'coolingRoom', 'electricalRoom'],
+    hint: 'Ballon tampon + pompes critiques + énergie secourue.',
+    zones: ['itLevel', 'coolingLevel', 'electricalLevel', 'riserShaft'],
     equipment: ['crah', 'bufferTank', 'primaryPumps', 'secondaryPumps', 'ups', 'tgbt', 'pdu', 'bms'],
     circuits: ['chwSupply', 'chwReturn', 'continuousLoop', 'criticalPower', 'controls']
   },
   electrical: {
-    label: 'Électricité',
-    hint: 'Chaîne critique : UPS, TGBT, PDU, pompes et supervision.',
-    zones: ['electricalRoom', 'coolingRoom', 'itRoom'],
+    label: 'Niveau 2 · Électricité',
+    hint: 'Énergie critique et supervision sur un étage dédié.',
+    zones: ['electricalLevel', 'coolingLevel', 'itLevel'],
     equipment: ['ups', 'tgbt', 'pdu', 'bms', 'primaryPumps', 'secondaryPumps', 'crah'],
     circuits: ['criticalPower', 'controls']
   },
   all: {
-    label: 'Tout',
-    hint: 'Vue complète, réservée aux utilisateurs déjà à l’aise.',
-    zones: ['itRoom', 'coolingRoom', 'electricalRoom', 'riserShaft', 'roof'],
-    equipment: [
-      'racks',
-      'crah',
-      'coldAisle',
-      'hotAisle',
-      'plateHx',
-      'bufferTank',
-      'primaryPumps',
-      'secondaryPumps',
-      'chillerAssist',
-      'adiabaticWater',
-      'adiabaticDrycooler',
-      'riser',
-      'ups',
-      'tgbt',
-      'pdu',
-      'bms'
-    ],
-    circuits: [
-      'airCold',
-      'airHot',
-      'chwSupply',
-      'chwReturn',
-      'glycolHot',
-      'glycolCold',
-      'adiabaticWater',
-      'outsideAir',
-      'heatRejection',
-      'chillerSupply',
-      'chillerReturn',
-      'refrigerantDischarge',
-      'refrigerantLiquid',
-      'refrigerantExpansion',
-      'refrigerantSuction',
-      'continuousLoop',
-      'criticalPower',
-      'controls'
-    ]
+    label: 'Tout afficher',
+    hint: 'Vue complète étagée avec équipements espacés.',
+    zones: ['itLevel', 'coolingLevel', 'electricalLevel', 'roofLevel', 'riserShaft'],
+    equipment: ['racks', 'crah', 'coldAisle', 'hotAisle', 'plateHx', 'bufferTank', 'primaryPumps', 'secondaryPumps', 'chillerAssist', 'adiabaticWater', 'ups', 'tgbt', 'pdu', 'bms', 'adiabaticDrycooler', 'riser'],
+    circuits: ['airCold', 'airHot', 'chwSupply', 'chwReturn', 'glycolHot', 'glycolCold', 'adiabaticWater', 'outsideAir', 'heatRejection', 'chillerSupply', 'chillerReturn', 'refrigerantDischarge', 'refrigerantLiquid', 'refrigerantExpansion', 'refrigerantSuction', 'continuousLoop', 'criticalPower', 'controls']
   }
 }
 
 const ZONES = {
-  itRoom: {
-    label: 'Salle IT',
-    subtitle: 'Baies · allée froide · allée chaude',
-    color: 0x38bdf8,
-    center: [-3.35, 0.02, 0.25],
-    size: [3.45, 0.06, 3.15],
-    labelPos: [-3.35, 2.22, -1.55]
-  },
-  coolingRoom: {
-    label: 'Local froid',
-    subtitle: 'Pompes · échangeur · chiller assist · ballon',
-    color: 0x22d3ee,
-    center: [0.55, 0.03, -1.0],
-    size: [3.5, 0.06, 2.45],
-    labelPos: [0.55, 2.18, -2.35]
-  },
-  electricalRoom: {
-    label: 'Local électrique',
-    subtitle: 'UPS · TGBT · distribution critique',
-    color: 0xfacc15,
-    center: [0.55, 0.03, 1.65],
-    size: [3.5, 0.06, 1.75],
-    labelPos: [0.55, 2.05, 2.55]
-  },
-  riserShaft: {
-    label: 'Riser technique',
-    subtitle: 'Montée toiture / descente retour',
-    color: 0xa78bfa,
-    center: [2.95, 1.65, -0.18],
-    size: [0.58, 3.3, 0.78],
-    labelPos: [2.95, 3.45, 0.45]
-  },
-  roof: {
-    label: 'Toit terrasse',
-    subtitle: 'Adiabatic dry cooler',
-    color: 0xf97316,
-    center: [1.25, 3.35, -0.85],
-    size: [3.85, 0.06, 1.9],
-    labelPos: [1.25, 4.08, -1.72]
-  }
+  itLevel: { label: 'Niveau 0 · Salle IT', color: 0x38bdf8, center: [0, LEVEL_Y.it, 0], size: [9.5, 0.06, 4.6], labelPos: [-4.25, LEVEL_Y.it + 0.34, -2.58] },
+  coolingLevel: { label: 'Niveau 1 · Local froid', color: 0x22d3ee, center: [0, LEVEL_Y.cooling, 0], size: [9.5, 0.06, 4.6], labelPos: [-4.25, LEVEL_Y.cooling + 0.34, -2.58] },
+  electricalLevel: { label: 'Niveau 2 · Énergie / supervision', color: 0xfacc15, center: [0, LEVEL_Y.electrical, 0], size: [9.5, 0.06, 4.6], labelPos: [-4.25, LEVEL_Y.electrical + 0.34, -2.58] },
+  roofLevel: { label: 'Niveau 3 · Toiture', color: 0xf97316, center: [0, LEVEL_Y.roof, 0], size: [9.5, 0.06, 4.6], labelPos: [-4.25, LEVEL_Y.roof + 0.34, -2.58] },
+  riserShaft: { label: 'Riser vertical', color: 0xa78bfa, center: [4.45, 4.8, -1.75], size: [0.42, 9.6, 0.42], labelPos: [4.55, 8.9, -0.95] }
 }
 
 const EQUIPMENT = {
-  racks: {
-    label: 'Baies serveurs',
-    color: '#94a3b8',
-    position: [-3.05, 0.95, 0.32],
-    size: [1.25, 1.45, 1.45],
-    summary:
-      'Charge IT. Elle transforme l’énergie électrique consommée en chaleur à évacuer en continu.',
-    observe:
-      'Température entrée serveur, points chauds, obturateurs, séparation allée froide/allée chaude, charge kW.'
-  },
-  coldAisle: {
-    label: 'Allée froide',
-    color: '#38bdf8',
-    position: [-3.05, 0.18, -0.78],
-    size: [1.85, 0.12, 0.48],
-    summary: 'Zone où l’air froid arrive en face avant des baies.',
-    observe: 'Température entrée serveur, dalles ouvertes, confinement, absence de recirculation chaude.'
-  },
-  hotAisle: {
-    label: 'Allée chaude',
-    color: '#f97316',
-    position: [-3.05, 0.18, 1.42],
-    size: [1.85, 0.12, 0.48],
-    summary: 'Zone où l’air chaud sort des baies avant d’être repris par les unités.',
-    observe: 'Température reprise, confinement, bypass, fuite d’air chaud vers l’allée froide.'
-  },
-  crah: {
-    label: 'CRAH / batterie froide',
-    color: '#0ea5e9',
-    position: [-4.58, 0.72, -0.25],
-    size: [0.62, 1.15, 1.5],
-    summary: 'Unité de salle qui souffle l’air froid vers les baies et reprend l’air chaud.',
-    observe:
-      'Débit air, filtres, batterie, vanne, condensats, risque antigel, température soufflage/reprise.'
-  },
-  plateHx: {
-    label: 'Échangeur free cooling',
-    color: '#67e8f9',
-    position: [-0.2, 0.72, -1.12],
-    size: [0.74, 0.95, 0.42],
-    summary: 'Sépare la boucle glycol extérieure de la boucle eau glacée intérieure.',
-    observe: 'Delta T primaire/secondaire, encrassement, vannes, purge, perte de charge.'
-  },
-  bufferTank: {
-    label: 'Ballon tampon / water tank',
-    color: '#38bdf8',
-    position: [1.1, 0.72, -0.45],
-    size: [0.62, 1.28, 0.62],
-    round: true,
-    tankDetails: true,
-    summary:
-      'Water tank de la boucle eau glacée : il ajoute du volume d’eau, stabilise la température et donne de l’inertie pendant les transitions.',
-    observe:
-      'Températures haut/bas, stratification, volume disponible, isolation, purge, sondes BMS/DCIM, cohérence départ/retour.',
-    learning: [
-      'Ne produit pas de froid : il stocke temporairement de l’énergie thermique grâce au volume d’eau.',
-      'Aide le continuous cooling lors d’une bascule de mode, d’un démarrage chiller assist ou d’une microcoupure.',
-      'Sa marge dépend du volume, du débit et du delta T disponible.',
-      'À ne pas confondre avec un vase d’expansion.'
-    ]
-  },
-  primaryPumps: {
-    label: 'Pompes primaires',
-    color: '#22d3ee',
-    position: [0.28, 0.38, -0.15],
-    size: [0.68, 0.46, 0.46],
-    summary: 'Assurent le débit entre production, échangeur et ballon tampon.',
-    observe: 'Débit, pression différentielle, variateur, vibrations, basculement pompe secours.'
-  },
-  secondaryPumps: {
-    label: 'Pompes secondaires critiques',
-    color: '#06b6d4',
-    position: [0.28, 0.38, 0.48],
-    size: [0.68, 0.46, 0.46],
-    summary: 'Maintiennent le débit vers les CRAH, y compris pendant les transitions de mode.',
-    observe: 'Alimentation secourue, pression différentielle salle, redondance N+1, alarmes variateur.'
-  },
-  chillerAssist: {
-    label: 'Chiller assist',
-    color: '#8b5cf6',
-    position: [1.58, 0.78, -1.45],
-    size: [0.95, 0.72, 0.82],
-    summary: 'Appoint mécanique lorsque le dry cooler et l’adiabatique ne suffisent plus.',
-    observe: 'Autorisation BMS, démarrage compresseur, HP/BP, charge, intensité, stabilité de consigne.'
-  },
-  adiabaticWater: {
-    label: 'Eau adiabatique',
-    color: '#7dd3fc',
-    position: [1.62, 0.46, 0.42],
-    size: [0.82, 0.5, 0.62],
-    summary: 'Alimente les pads ou buses pour pré-refroidir l’air extérieur du dry cooler.',
-    observe: 'Qualité d’eau, filtration, conductivité, purge, vanne, risque entartrage et hygiène.'
-  },
-  adiabaticDrycooler: {
-    label: 'Adiabatic dry cooler',
-    color: '#f97316',
-    position: [1.25, 3.63, -0.85],
-    size: [1.72, 0.52, 0.92],
-    summary: 'Équipement toiture : dry cooler avec pré-refroidissement adiabatique de l’air.',
-    observe:
-      'Ventilateurs, batteries, pads/buses, débit glycol, propreté, température extérieure, alarme eau.'
-  },
-  riser: {
-    label: 'Riser toiture',
-    color: '#a78bfa',
-    position: [2.95, 1.68, -0.18],
-    size: [0.28, 3.1, 0.28],
-    summary: 'Colonne verticale qui relie le local froid au dry cooler en toiture.',
-    observe: 'Supports, calorifuge, identification départ/retour, purgeurs hauts, coupe-feu, condensation.'
-  },
-  ups: {
-    label: 'UPS / onduleur',
-    color: '#a78bfa',
-    position: [-0.72, 0.62, 1.62],
-    size: [0.72, 0.82, 0.66],
-    summary:
-      'Alimentation secourue pour charges critiques et auxiliaires nécessaires au maintien du froid.',
-    observe: 'Charge %, autonomie, bypass, batterie, alarmes, température local.'
-  },
-  tgbt: {
-    label: 'TGBT critique',
-    color: '#facc15',
-    position: [0.38, 0.62, 1.62],
-    size: [0.72, 0.82, 0.66],
-    summary: 'Distribution basse tension vers pompes, CRAH, chiller assist et auxiliaires.',
-    observe: 'Départs, échauffement, intensités, sélectivité, identification des circuits.'
-  },
-  pdu: {
-    label: 'PDU / busway',
-    color: '#fbbf24',
-    position: [-2.15, 1.58, 0.24],
-    size: [1.15, 0.22, 0.28],
-    summary: 'Distribution finale vers les racks, souvent en double alimentation A/B.',
-    observe: 'Charge par phase, charge A/B, déséquilibre, alarmes, marge disponible.'
-  },
-  bms: {
-    label: 'BMS / DCIM',
-    color: '#60a5fa',
-    position: [1.42, 1.1, 1.66],
-    size: [0.72, 0.45, 0.5],
-    summary: 'Supervision des modes dry, adiabatique, chiller assist et continuous cooling.',
-    observe: 'Tendances, alarmes, séquences, seuils, sondes incohérentes, ordre de démarrage.'
-  }
+  racks: { label: 'Baies serveurs', color: '#94a3b8', position: [-2.85, LEVEL_Y.it + 0.78, 0.45], size: [1.45, 1.5, 1.4], summary: 'Charge IT. Elle transforme l’énergie électrique consommée en chaleur à évacuer en continu.', observe: 'Température entrée serveur, points chauds, obturateurs, séparation allée froide/allée chaude, charge kW.' },
+  coldAisle: { label: 'Allée froide', color: '#38bdf8', position: [-2.85, LEVEL_Y.it + 0.13, -1.25], size: [2.25, 0.12, 0.5], summary: 'Zone où l’air froid arrive en face avant des baies.', observe: 'Température entrée serveur, dalles ouvertes, confinement, absence de recirculation chaude.' },
+  hotAisle: { label: 'Allée chaude', color: '#f97316', position: [-2.85, LEVEL_Y.it + 0.13, 1.75], size: [2.25, 0.12, 0.5], summary: 'Zone où l’air chaud sort des baies avant d’être repris par les unités.', observe: 'Température reprise, confinement, bypass, fuite d’air chaud vers l’allée froide.' },
+  crah: { label: 'CRAH / batterie froide', color: '#0ea5e9', position: [2.85, LEVEL_Y.it + 0.68, 0.28], size: [0.78, 1.25, 1.6], summary: 'Unité de salle qui souffle l’air froid vers les baies et reprend l’air chaud.', observe: 'Débit air, filtres, batterie, vanne, condensats, risque antigel, température soufflage/reprise.' },
+  plateHx: { label: 'Échangeur free cooling', color: '#67e8f9', position: [-3.55, LEVEL_Y.cooling + 0.58, -1.05], size: [0.85, 1.05, 0.56], summary: 'Sépare la boucle glycol extérieure de la boucle eau glacée intérieure.', observe: 'Delta T primaire/secondaire, encrassement, vannes, purge, perte de charge.' },
+  bufferTank: { label: 'Ballon tampon / water tank', color: '#38bdf8', position: [-1.15, LEVEL_Y.cooling + 0.72, -1.05], size: [0.72, 1.45, 0.72], round: true, tankDetails: true, summary: 'Water tank de la boucle eau glacée : il ajoute du volume d’eau, stabilise la température et donne de l’inertie pendant les transitions.', observe: 'Températures haut/bas, stratification, volume disponible, isolation, purge, sondes BMS/DCIM, cohérence départ/retour.', learning: ['Ne produit pas de froid : il stocke temporairement de l’énergie thermique grâce au volume d’eau.', 'Aide le continuous cooling lors d’une bascule de mode, d’un démarrage chiller assist ou d’une microcoupure.', 'Sa marge dépend du volume, du débit et du delta T disponible.', 'À ne pas confondre avec un vase d’expansion.'] },
+  primaryPumps: { label: 'Pompes primaires', color: '#22d3ee', position: [1.35, LEVEL_Y.cooling + 0.32, -1.75], size: [0.8, 0.52, 0.5], summary: 'Assurent le débit entre production, échangeur et ballon tampon.', observe: 'Débit, pression différentielle, variateur, vibrations, basculement pompe secours.' },
+  secondaryPumps: { label: 'Pompes secondaires critiques', color: '#06b6d4', position: [1.35, LEVEL_Y.cooling + 0.32, 0.85], size: [0.8, 0.52, 0.5], summary: 'Maintiennent le débit vers les CRAH, y compris pendant les transitions de mode.', observe: 'Alimentation secourue, pression différentielle salle, redondance N+1, alarmes variateur.' },
+  chillerAssist: { label: 'Chiller assist', color: '#8b5cf6', position: [3.45, LEVEL_Y.cooling + 0.62, -0.95], size: [1.0, 0.85, 0.9], summary: 'Appoint mécanique lorsque le dry cooler et l’adiabatique ne suffisent plus.', observe: 'Autorisation BMS, démarrage compresseur, HP/BP, charge, intensité, stabilité de consigne.' },
+  adiabaticWater: { label: 'Eau adiabatique', color: '#7dd3fc', position: [3.45, LEVEL_Y.cooling + 0.36, 1.65], size: [0.9, 0.55, 0.65], summary: 'Alimente les pads ou buses pour pré-refroidir l’air extérieur du dry cooler.', observe: 'Qualité d’eau, filtration, conductivité, purge, vanne, risque entartrage et hygiène.' },
+  ups: { label: 'UPS / onduleur', color: '#a78bfa', position: [-3.35, LEVEL_Y.electrical + 0.52, 0.15], size: [0.88, 0.9, 0.75], summary: 'Alimentation secourue pour charges critiques et auxiliaires nécessaires au maintien du froid.', observe: 'Charge %, autonomie, bypass, batterie, alarmes, température local.' },
+  tgbt: { label: 'TGBT critique', color: '#facc15', position: [-1.45, LEVEL_Y.electrical + 0.52, 0.15], size: [0.88, 0.9, 0.75], summary: 'Distribution basse tension vers pompes, CRAH, chiller assist et auxiliaires.', observe: 'Départs, échauffement, intensités, sélectivité, identification des circuits.' },
+  pdu: { label: 'PDU / busway', color: '#fbbf24', position: [0.65, LEVEL_Y.electrical + 0.35, 0.15], size: [1.15, 0.32, 0.32], summary: 'Distribution finale vers les racks, souvent en double alimentation A/B.', observe: 'Charge par phase, charge A/B, déséquilibre, alarmes, marge disponible.' },
+  bms: { label: 'BMS / DCIM', color: '#60a5fa', position: [3.0, LEVEL_Y.electrical + 0.45, 0.15], size: [0.88, 0.55, 0.58], summary: 'Supervision des modes dry, adiabatique, chiller assist et continuous cooling.', observe: 'Tendances, alarmes, séquences, seuils, sondes incohérentes, ordre de démarrage.' },
+  adiabaticDrycooler: { label: 'Adiabatic dry cooler', color: '#f97316', position: [-0.25, LEVEL_Y.roof + 0.43, -0.25], size: [2.35, 0.62, 1.0], summary: 'Équipement toiture : dry cooler avec pré-refroidissement adiabatique de l’air.', observe: 'Ventilateurs, batteries, pads/buses, débit glycol, propreté, température extérieure, alarme eau.' },
+  riser: { label: 'Riser hydraulique', color: '#a78bfa', position: [4.45, 4.8, -1.75], size: [0.34, 9.4, 0.34], summary: 'Colonne verticale qui rend lisible la liaison entre les étages techniques.', observe: 'Supports, calorifuge, identification départ/retour, purgeurs hauts, coupe-feu, condensation.' }
 }
 
 const CIRCUITS = {
-  airCold: {
-    label: 'Air froid soufflé',
-    color: 0x38bdf8,
-    state: 'Air froid depuis CRAH vers face avant des baies',
-    kind: 'air',
-    radius: 0.15,
-    particles: 44,
-    speed: 0.075,
-    points: [
-      [-4.32, 0.72, -0.72],
-      [-3.86, 0.72, -0.72],
-      [-1.82, 0.72, -0.78],
-      [-1.82, 0.92, -0.18]
-    ]
-  },
-  airHot: {
-    label: 'Air chaud repris',
-    color: 0xf97316,
-    state: 'Air chaud depuis arrière des baies vers reprise CRAH',
-    kind: 'air',
-    radius: 0.15,
-    particles: 44,
-    speed: 0.065,
-    points: [
-      [-1.82, 1.48, 1.22],
-      [-3.86, 1.48, 1.42],
-      [-3.86, 1.1, 0.36],
-      [-4.32, 1.1, 0.36]
-    ]
-  },
-  chwSupply: {
-    label: 'Départ eau glacée',
-    color: 0x22d3ee,
-    state: 'Eau glacée vers CRAH / salle IT',
-    kind: 'water',
-    radius: 0.085,
-    particles: 34,
-    speed: 0.06,
-    points: [
-      [1.1, 0.76, -0.42],
-      [0.28, 0.76, -0.42],
-      [0.28, 0.76, -0.05],
-      [-4.34, 0.76, -0.05],
-      [-4.34, 0.95, -0.42]
-    ]
-  },
-  chwReturn: {
-    label: 'Retour eau glacée',
-    color: 0x0ea5e9,
-    state: 'Retour plus chaud depuis CRAH',
-    kind: 'water',
-    radius: 0.085,
-    particles: 34,
-    speed: 0.055,
-    points: [
-      [-4.34, 1.2, 0.1],
-      [-4.34, 1.2, -1.48],
-      [-0.2, 1.2, -1.48],
-      [-0.2, 0.86, -1.12]
-    ]
-  },
-  glycolHot: {
-    label: 'Glycol chaud vers toiture',
-    color: 0xef4444,
-    state: 'Chaleur envoyée au dry cooler via riser',
-    kind: 'glycol',
-    radius: 0.105,
-    particles: 38,
-    speed: 0.07,
-    points: [
-      [-0.2, 0.98, -1.12],
-      [2.95, 0.98, -1.12],
-      [2.95, 3.58, -1.12],
-      [1.25, 3.58, -1.12],
-      [1.25, 3.64, -0.85]
-    ]
-  },
-  glycolCold: {
-    label: 'Glycol refroidi depuis toiture',
-    color: 0x06b6d4,
-    state: 'Retour refroidi depuis dry cooler vers échangeur',
-    kind: 'glycol',
-    radius: 0.105,
-    particles: 38,
-    speed: 0.07,
-    points: [
-      [1.25, 3.64, -0.48],
-      [2.55, 3.64, -0.48],
-      [2.95, 3.38, 0.22],
-      [2.95, 0.62, 0.22],
-      [-0.2, 0.62, -0.82]
-    ]
-  },
-  adiabaticWater: {
-    label: 'Eau adiabatique',
-    color: 0x7dd3fc,
-    state: 'Eau vers pads/buses pour pré-refroidir l’air extérieur',
-    kind: 'water',
-    radius: 0.055,
-    particles: 26,
-    speed: 0.085,
-    points: [
-      [1.62, 0.54, 0.42],
-      [2.72, 0.54, 0.42],
-      [2.72, 3.9, 0.42],
-      [1.25, 3.9, 0.12],
-      [1.25, 3.7, -0.38]
-    ]
-  },
-  outsideAir: {
-    label: 'Air extérieur pré-refroidi',
-    color: 0x93c5fd,
-    state: 'Air extérieur traversant les pads adiabatiques',
-    kind: 'air',
-    radius: 0.12,
-    particles: 26,
-    speed: 0.06,
-    points: [
-      [0.05, 3.72, -0.85],
-      [0.62, 3.72, -0.85],
-      [1.25, 3.72, -0.85],
-      [1.92, 3.72, -0.85]
-    ]
-  },
-  heatRejection: {
-    label: 'Rejet chaleur toiture',
-    color: 0xff7a1a,
-    state: 'Chaleur évacuée vers l’extérieur',
-    kind: 'air',
-    radius: 0.14,
-    particles: 26,
-    speed: 0.08,
-    points: [
-      [1.25, 3.96, -0.85],
-      [1.25, 4.32, -0.85],
-      [1.85, 4.32, -0.85]
-    ]
-  },
-  chillerSupply: {
-    label: 'Appoint chiller vers ballon',
-    color: 0x8b5cf6,
-    state: 'Eau refroidie par chiller assist quand le free cooling ne suffit plus',
-    kind: 'water',
-    radius: 0.075,
-    particles: 24,
-    speed: 0.055,
-    points: [
-      [1.58, 0.82, -1.45],
-      [1.9, 0.82, -1.45],
-      [1.9, 0.82, -0.45],
-      [1.1, 0.82, -0.45]
-    ]
-  },
-  chillerReturn: {
-    label: 'Retour vers chiller assist',
-    color: 0x6d28d9,
-    state: 'Retour chiller après échange avec ballon / boucle',
-    kind: 'water',
-    radius: 0.075,
-    particles: 24,
-    speed: 0.052,
-    points: [
-      [1.1, 0.48, -0.45],
-      [1.1, 0.48, -1.78],
-      [1.58, 0.48, -1.78],
-      [1.58, 0.82, -1.45]
-    ]
-  },
-  refrigerantDischarge: {
-    label: 'Refoulement frigorifique',
-    color: 0xef4444,
-    state: 'Vapeur chaude HP dans le chiller assist',
-    kind: 'refrigerant',
-    radius: 0.045,
-    particles: 16,
-    speed: 0.075,
-    points: [
-      [1.35, 1.16, -1.72],
-      [2.12, 1.16, -1.72],
-      [2.12, 1.16, -1.18]
-    ]
-  },
-  refrigerantLiquid: {
-    label: 'Ligne liquide frigorifique',
-    color: 0xfb923c,
-    state: 'Liquide HP après condensation',
-    kind: 'refrigerant',
-    radius: 0.045,
-    particles: 16,
-    speed: 0.055,
-    points: [
-      [2.12, 0.95, -1.18],
-      [1.34, 0.95, -1.18],
-      [1.34, 0.95, -1.72]
-    ]
-  },
-  refrigerantExpansion: {
-    label: 'Après détente frigorifique',
-    color: 0x22c55e,
-    state: 'Mélange BP dans l’évaporateur du chiller assist',
-    kind: 'refrigerant',
-    radius: 0.045,
-    particles: 14,
-    speed: 0.055,
-    points: [
-      [1.34, 0.95, -1.72],
-      [1.34, 0.62, -1.72],
-      [1.74, 0.62, -1.72]
-    ]
-  },
-  refrigerantSuction: {
-    label: 'Aspiration frigorifique',
-    color: 0x38bdf8,
-    state: 'Vapeur BP retour compresseur',
-    kind: 'refrigerant',
-    radius: 0.045,
-    particles: 16,
-    speed: 0.06,
-    points: [
-      [1.74, 0.62, -1.72],
-      [1.74, 0.62, -2.02],
-      [1.35, 0.62, -2.02],
-      [1.35, 1.16, -1.72]
-    ]
-  },
-  continuousLoop: {
-    label: 'Boucle continuous cooling',
-    color: 0x14b8a6,
-    state: 'Débit maintenu par inertie + pompes critiques pendant transition ou microcoupure',
-    kind: 'water',
-    radius: 0.095,
-    particles: 40,
-    speed: 0.075,
-    points: [
-      [1.1, 1.08, -0.45],
-      [0.28, 1.08, -0.45],
-      [0.28, 1.08, 0.48],
-      [-4.34, 1.08, 0.48],
-      [-4.34, 0.84, -0.42]
-    ]
-  },
-  criticalPower: {
-    label: 'Énergie critique',
-    color: 0xfacc15,
-    state: 'UPS/TGBT vers pompes, CRAH et distribution IT',
-    kind: 'power',
-    radius: 0.05,
-    particles: 34,
-    speed: 0.075,
-    points: [
-      [-0.72, 0.9, 1.62],
-      [0.38, 0.9, 1.62],
-      [0.38, 1.32, 0.48],
-      [0.28, 1.32, 0.48],
-      [0.28, 1.32, -0.15],
-      [-4.58, 1.32, -0.25]
-    ]
-  },
-  controls: {
-    label: 'Supervision BMS/DCIM',
-    color: 0x60a5fa,
-    state: 'Ordres de mode, alarmes, tendances et sécurités',
-    kind: 'signal',
-    radius: 0.035,
-    particles: 24,
-    speed: 0.05,
-    points: [
-      [1.42, 1.1, 1.66],
-      [2.95, 1.1, 1.66],
-      [2.95, 3.2, 0.42],
-      [1.25, 3.2, -0.85]
-    ]
-  }
+  airCold: { color: 0x38bdf8, kind: 'air', particles: 32, speed: 0.16, points: [[2.45, LEVEL_Y.it + 0.62, -0.75], [0.45, LEVEL_Y.it + 0.62, -1.15], [-2.85, LEVEL_Y.it + 0.62, -1.25], [-3.55, LEVEL_Y.it + 0.9, -0.25]] },
+  airHot: { color: 0xf97316, kind: 'air', particles: 32, speed: 0.13, points: [[-3.55, LEVEL_Y.it + 1.18, 1.45], [-1.6, LEVEL_Y.it + 1.18, 1.75], [1.35, LEVEL_Y.it + 1.08, 1.2], [2.45, LEVEL_Y.it + 0.92, 0.65]] },
+  chwSupply: { color: 0x22d3ee, kind: 'water', particles: 34, speed: 0.11, points: [[-1.15, LEVEL_Y.cooling + 0.78, -1.05], [1.35, LEVEL_Y.cooling + 0.78, 0.85], [4.45, LEVEL_Y.cooling + 0.78, -0.1], [4.45, LEVEL_Y.it + 0.75, -0.1], [2.85, LEVEL_Y.it + 0.75, -0.3]] },
+  chwReturn: { color: 0x0ea5e9, kind: 'water', particles: 34, speed: 0.1, points: [[2.85, LEVEL_Y.it + 1.05, 0.55], [4.05, LEVEL_Y.it + 1.05, 0.6], [4.05, LEVEL_Y.cooling + 0.95, 0.6], [-3.55, LEVEL_Y.cooling + 0.95, -1.05]] },
+  glycolHot: { color: 0xef4444, kind: 'glycol', particles: 30, speed: 0.13, points: [[-3.55, LEVEL_Y.cooling + 0.86, -1.35], [4.45, LEVEL_Y.cooling + 0.86, -1.75], [4.45, LEVEL_Y.roof + 0.55, -1.75], [-0.25, LEVEL_Y.roof + 0.55, -0.85]] },
+  glycolCold: { color: 0x06b6d4, kind: 'glycol', particles: 30, speed: 0.13, points: [[-0.25, LEVEL_Y.roof + 0.36, 0.15], [4.05, LEVEL_Y.roof + 0.36, 0.15], [4.05, LEVEL_Y.cooling + 0.58, 0.15], [-3.55, LEVEL_Y.cooling + 0.58, -0.7]] },
+  adiabaticWater: { color: 0x7dd3fc, kind: 'water', particles: 24, speed: 0.16, points: [[3.45, LEVEL_Y.cooling + 0.48, 1.65], [3.85, LEVEL_Y.cooling + 0.48, 1.65], [3.85, LEVEL_Y.roof + 0.76, 1.0], [-0.25, LEVEL_Y.roof + 0.76, 0.36]] },
+  outsideAir: { color: 0x93c5fd, kind: 'air', particles: 22, speed: 0.11, points: [[-2.0, LEVEL_Y.roof + 0.56, -0.25], [-1.25, LEVEL_Y.roof + 0.56, -0.25], [-0.25, LEVEL_Y.roof + 0.56, -0.25], [0.95, LEVEL_Y.roof + 0.56, -0.25]] },
+  heatRejection: { color: 0xff7a1a, kind: 'air', particles: 22, speed: 0.16, points: [[-0.25, LEVEL_Y.roof + 0.82, -0.25], [-0.25, LEVEL_Y.roof + 1.22, -0.25], [0.7, LEVEL_Y.roof + 1.22, -0.25]] },
+  chillerSupply: { color: 0x8b5cf6, kind: 'water', particles: 22, speed: 0.1, points: [[3.45, LEVEL_Y.cooling + 0.78, -0.95], [1.35, LEVEL_Y.cooling + 0.78, -0.95], [-1.15, LEVEL_Y.cooling + 0.78, -1.05]] },
+  chillerReturn: { color: 0x6d28d9, kind: 'water', particles: 22, speed: 0.1, points: [[-1.15, LEVEL_Y.cooling + 0.46, -1.05], [0.8, LEVEL_Y.cooling + 0.46, -1.95], [3.45, LEVEL_Y.cooling + 0.46, -0.95]] },
+  refrigerantDischarge: { color: 0xef4444, kind: 'refrigerant', particles: 16, speed: 0.14, points: [[3.2, LEVEL_Y.cooling + 1.05, -1.35], [3.9, LEVEL_Y.cooling + 1.05, -1.35], [3.9, LEVEL_Y.cooling + 0.78, -0.55]] },
+  refrigerantLiquid: { color: 0xfb923c, kind: 'refrigerant', particles: 16, speed: 0.1, points: [[3.9, LEVEL_Y.cooling + 0.62, -0.55], [3.2, LEVEL_Y.cooling + 0.62, -0.55], [3.2, LEVEL_Y.cooling + 0.62, -1.35]] },
+  refrigerantExpansion: { color: 0x22c55e, kind: 'refrigerant', particles: 14, speed: 0.1, points: [[3.2, LEVEL_Y.cooling + 0.62, -1.35], [3.2, LEVEL_Y.cooling + 0.35, -1.35], [3.75, LEVEL_Y.cooling + 0.35, -1.35]] },
+  refrigerantSuction: { color: 0x38bdf8, kind: 'refrigerant', particles: 16, speed: 0.11, points: [[3.75, LEVEL_Y.cooling + 0.35, -1.35], [3.75, LEVEL_Y.cooling + 0.35, -1.75], [3.2, LEVEL_Y.cooling + 0.35, -1.75], [3.2, LEVEL_Y.cooling + 1.05, -1.35]] },
+  continuousLoop: { color: 0x14b8a6, kind: 'water', particles: 34, speed: 0.15, points: [[-1.15, LEVEL_Y.cooling + 1.06, -1.05], [1.35, LEVEL_Y.cooling + 1.06, 0.85], [3.95, LEVEL_Y.cooling + 1.06, 0.45], [3.95, LEVEL_Y.it + 0.96, 0.45], [2.85, LEVEL_Y.it + 0.96, 0.28]] },
+  criticalPower: { color: 0xfacc15, kind: 'power', particles: 30, speed: 0.14, points: [[-3.35, LEVEL_Y.electrical + 0.82, 0.15], [-1.45, LEVEL_Y.electrical + 0.82, 0.15], [0.65, LEVEL_Y.electrical + 0.7, 0.15], [1.35, LEVEL_Y.cooling + 0.9, 0.85], [2.85, LEVEL_Y.it + 1.05, 0.28]] },
+  controls: { color: 0x60a5fa, kind: 'signal', particles: 24, speed: 0.08, points: [[3.0, LEVEL_Y.electrical + 0.72, 0.15], [3.85, LEVEL_Y.electrical + 0.72, 0.15], [3.85, LEVEL_Y.cooling + 1.0, -0.95], [-1.15, LEVEL_Y.cooling + 1.05, -1.05], [2.85, LEVEL_Y.it + 1.15, 0.28]] }
 }
 
 const GUIDE_STEPS = [
-  {
-    title: '1. La chaleur naît dans la salle IT',
-    text:
-      'Les baies transforment l’électricité en chaleur. Le premier objectif est de conserver une entrée serveur froide et stable.',
-    view: 'air',
-    focus: 'racks'
-  },
-  {
-    title: '2. Le CRAH sépare l’air froid et l’air chaud',
-    text:
-      'L’air froid doit aller vers l’avant des baies. L’air chaud doit revenir vers les unités sans recirculer.',
-    view: 'air',
-    focus: 'crah'
-  },
-  {
-    title: '3. L’eau glacée transporte la chaleur',
-    text:
-      'La boucle hydraulique récupère la chaleur côté CRAH et la ramène vers l’échangeur et le ballon.',
-    view: 'hydraulic',
-    focus: 'bufferTank'
-  },
-  {
-    title: '4. Le ballon tampon donne de l’inertie',
-    text:
-      'Le water tank ajoute du volume d’eau. Il stabilise la température et donne du temps pendant une transition.',
-    view: 'hydraulic',
-    focus: 'bufferTank'
-  },
-  {
-    title: '5. Le dry adiabatique rejette la chaleur en toiture',
-    text:
-      'Le glycol chaud monte par le riser, passe dans le dry cooler, puis redescend refroidi vers l’échangeur.',
-    view: 'roof',
-    focus: 'adiabaticDrycooler'
-  },
-  {
-    title: '6. Le chiller assist prend le relais si nécessaire',
-    text:
-      'Si le free cooling ne suffit plus, le chiller assist ajoute de la puissance frigorifique pour tenir la consigne.',
-    view: 'chiller',
-    focus: 'chillerAssist'
-  },
-  {
-    title: '7. Le continuous cooling protège la charge',
-    text:
-      'Le ballon tampon donne de l’inertie, les pompes critiques maintiennent le débit et l’énergie secourue garde les auxiliaires disponibles.',
-    view: 'continuous',
-    focus: 'bufferTank'
-  }
+  { title: '1. Niveau 0 : la chaleur naît en salle IT', text: 'Les baies sont isolées sur le premier étage de la maquette. Cela permet de lire clairement air froid, air chaud et CRAH.', view: 'air', focus: 'racks' },
+  { title: '2. Le CRAH transfère la chaleur vers l’eau', text: 'Le CRAH reste au niveau IT, mais ses tubes montent vers le niveau hydraulique pour montrer le lien avec le local froid.', view: 'air', focus: 'crah' },
+  { title: '3. Niveau 1 : local froid espacé', text: 'Échangeur, ballon tampon, pompes et chiller assist sont séparés pour éviter les superpositions et faciliter la lecture.', view: 'hydraulic', focus: 'bufferTank' },
+  { title: '4. Water tank : inertie hydraulique', text: 'Le ballon tampon ne produit pas de froid : il ajoute du volume d’eau, stabilise la température et donne du temps pendant les transitions.', view: 'waterTank', focus: 'bufferTank' },
+  { title: '5. Niveau 3 : rejet en toiture', text: 'Le dry cooler est placé sur sa propre dalle. Le riser montre comment le glycol monte et redescend.', view: 'roof', focus: 'adiabaticDrycooler' },
+  { title: '6. Niveau 2 : énergie et supervision', text: 'UPS, TGBT, PDU et BMS/DCIM sont séparés du local froid pour clarifier la chaîne critique.', view: 'electrical', focus: 'bms' },
+  { title: '7. Continuous cooling', text: 'Le continuous cooling repose sur le trio : ballon tampon pour l’inertie, pompes pour le débit, énergie secourue pour maintenir les auxiliaires.', view: 'continuous', focus: 'bufferTank' }
 ]
 
-function v(point) {
+function normalizeFocus(key) {
+  if (!key || key === 'all') return null
+  return FOCUS_ALIASES[key] ?? key
+}
+
+function vector3(point) {
   return new THREE.Vector3(point[0], point[1], point[2])
 }
 
-function makeMaterial(color, options = {}) {
-  return new THREE.MeshStandardMaterial({
-    color,
-    emissive: options.emissive ?? color,
-    emissiveIntensity: options.emissiveIntensity ?? 0,
-    roughness: options.roughness ?? 0.5,
-    metalness: options.metalness ?? 0.12,
-    transparent: options.opacity !== undefined,
-    opacity: options.opacity ?? 1
-  })
+function createTextSprite(text, options = {}) {
+  const { color = '#e0f2fe', background = 'rgba(15, 23, 42, 0.78)', fontSize = 34, padding = 18, scale = [1.45, 0.36, 1] } = options
+  const canvas = document.createElement('canvas')
+  const context = canvas.getContext('2d')
+  const font = `700 ${fontSize}px Inter, system-ui, sans-serif`
+
+  context.font = font
+  const textWidth = Math.ceil(context.measureText(text).width)
+  canvas.width = Math.max(256, textWidth + padding * 2)
+  canvas.height = 78
+
+  context.font = font
+  context.fillStyle = background
+  context.strokeStyle = 'rgba(255, 255, 255, 0.16)'
+  context.lineWidth = 2
+
+  const radius = 16
+  const w = canvas.width
+  const h = canvas.height
+
+  context.beginPath()
+  context.moveTo(radius, 1)
+  context.lineTo(w - radius, 1)
+  context.quadraticCurveTo(w - 1, 1, w - 1, radius)
+  context.lineTo(w - 1, h - radius)
+  context.quadraticCurveTo(w - 1, h - 1, w - radius, h - 1)
+  context.lineTo(radius, h - 1)
+  context.quadraticCurveTo(1, h - 1, 1, h - radius)
+  context.lineTo(1, radius)
+  context.quadraticCurveTo(1, 1, radius, 1)
+  context.closePath()
+  context.fill()
+  context.stroke()
+
+  context.fillStyle = color
+  context.textBaseline = 'middle'
+  context.fillText(text, padding, h / 2)
+
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.minFilter = THREE.LinearFilter
+  texture.needsUpdate = true
+
+  const material = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false, depthTest: false })
+  const sprite = new THREE.Sprite(material)
+  sprite.scale.set(scale[0] * (canvas.width / 256), scale[1], scale[2])
+  sprite.renderOrder = 999
+  return sprite
 }
 
-function cylinderBetween(start, end, radius, material) {
-  const a = v(start)
-  const b = v(end)
-  const direction = b.clone().sub(a)
-  const length = direction.length()
-  const geometry = new THREE.CylinderGeometry(radius, radius, length, 18)
+function addZone(scene, zone, labelsVisible) {
+  const geometry = new THREE.BoxGeometry(zone.size[0], zone.size[1], zone.size[2])
+  const material = new THREE.MeshStandardMaterial({ color: zone.color, transparent: true, opacity: 0.14, roughness: 0.8, metalness: 0.05 })
   const mesh = new THREE.Mesh(geometry, material)
+  mesh.position.set(...zone.center)
+  scene.add(mesh)
 
-  mesh.position.copy(a.clone().add(b).multiplyScalar(0.5))
-  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize())
-  mesh.castShadow = true
-  mesh.receiveShadow = true
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geometry), new THREE.LineBasicMaterial({ color: zone.color, transparent: true, opacity: 0.55 }))
+  edges.position.copy(mesh.position)
+  scene.add(edges)
 
-  return mesh
-}
+  const grid = new THREE.GridHelper(zone.size[0], 8, zone.color, 0x1e293b)
+  grid.position.set(zone.center[0], zone.center[1] + 0.035, zone.center[2])
+  grid.material.transparent = true
+  grid.material.opacity = 0.22
+  scene.add(grid)
 
-function pointOnPolyline(points, progress) {
-  const vectors = points.map(v)
-  const lengths = []
-  let total = 0
-
-  for (let i = 0; i < vectors.length - 1; i += 1) {
-    const length = vectors[i].distanceTo(vectors[i + 1])
-    lengths.push(length)
-    total += length
+  if (labelsVisible) {
+    const label = createTextSprite(zone.label, { color: '#f8fafc', background: 'rgba(2, 6, 23, 0.8)', fontSize: 28, scale: [1.35, 0.32, 1] })
+    label.position.set(...zone.labelPos)
+    scene.add(label)
   }
-
-  if (!total) return vectors[0] ?? new THREE.Vector3()
-
-  let target = ((progress % 1) + 1) % 1
-  target *= total
-
-  for (let i = 0; i < lengths.length; i += 1) {
-    if (target <= lengths[i]) {
-      return vectors[i].clone().lerp(vectors[i + 1], target / lengths[i])
-    }
-
-    target -= lengths[i]
-  }
-
-  return vectors[vectors.length - 1]
 }
 
-function addTankDetails(scene, item, selected) {
-  const ringMaterial = new THREE.LineBasicMaterial({
-    color: 0xe0f2fe,
-    transparent: true,
-    opacity: selected ? 0.9 : 0.55
-  })
-
-  ;[-0.34, 0.34].forEach((offset) => {
-    const ring = new THREE.LineSegments(
-      new THREE.EdgesGeometry(
-        new THREE.CylinderGeometry(item.size[0] / 2 + 0.04, item.size[0] / 2 + 0.04, 0.035, 28)
-      ),
-      ringMaterial
-    )
-
-    ring.position.set(item.position[0], item.position[1] + offset, item.position[2])
-    scene.add(ring)
-  })
-
-  const sensorMaterial = new THREE.MeshBasicMaterial({ color: 0xe0f2fe })
-
-  ;[0.43, -0.43].forEach((offset) => {
-    const sensor = new THREE.Mesh(new THREE.SphereGeometry(0.045, 14, 14), sensorMaterial)
-
-    sensor.position.set(
-      item.position[0] + item.size[0] / 2 + 0.065,
-      item.position[1] + offset,
-      item.position[2]
-    )
-
-    scene.add(sensor)
-  })
-}
-
-function addBox(scene, item, selected = false) {
+function addEquipment(scene, key, item, selected, labelsVisible, clickableObjects) {
   const color = new THREE.Color(item.color)
-  const material = makeMaterial(color, {
-    emissive: color,
-    emissiveIntensity: selected ? 0.25 : 0.02,
-    roughness: 0.58,
-    metalness: 0.16
+  const geometry = item.round
+    ? new THREE.CylinderGeometry(item.size[0] / 2, item.size[0] / 2, item.size[1], 36)
+    : new THREE.BoxGeometry(item.size[0], item.size[1], item.size[2])
+
+  const material = new THREE.MeshStandardMaterial({
+    color,
+    roughness: 0.36,
+    metalness: selected ? 0.28 : 0.14,
+    emissive: selected ? color.clone().multiplyScalar(0.42) : new THREE.Color(0x000000),
+    transparent: true,
+    opacity: selected ? 1 : 0.92
   })
 
-  let mesh
-
-  if (item.round) {
-    const geometry = new THREE.CylinderGeometry(item.size[0] / 2, item.size[0] / 2, item.size[1], 28)
-    mesh = new THREE.Mesh(geometry, material)
-  } else {
-    mesh = new THREE.Mesh(new THREE.BoxGeometry(...item.size), material)
-  }
-
+  const mesh = new THREE.Mesh(geometry, material)
   mesh.position.set(...item.position)
+  mesh.userData.equipmentKey = key
   mesh.castShadow = true
   mesh.receiveShadow = true
   scene.add(mesh)
+  clickableObjects.push(mesh)
 
-  const outlineGeometry = item.round
-    ? new THREE.CylinderGeometry(item.size[0] / 2 + 0.015, item.size[0] / 2 + 0.015, item.size[1] + 0.02, 28)
-    : new THREE.BoxGeometry(item.size[0] + 0.02, item.size[1] + 0.02, item.size[2] + 0.02)
-
-  const outline = new THREE.LineSegments(
-    new THREE.EdgesGeometry(outlineGeometry),
-    new THREE.LineBasicMaterial({
-      color: selected ? 0xffffff : color,
-      transparent: true,
-      opacity: selected ? 0.75 : 0.25
-    })
-  )
-
+  const outline = new THREE.LineSegments(new THREE.EdgesGeometry(geometry), new THREE.LineBasicMaterial({ color: selected ? 0xffffff : color, transparent: true, opacity: selected ? 0.9 : 0.36 }))
   outline.position.copy(mesh.position)
   scene.add(outline)
 
+  if (selected) {
+    const haloGeometry = item.round
+      ? new THREE.CylinderGeometry(item.size[0] / 2 + 0.12, item.size[0] / 2 + 0.12, item.size[1] + 0.18, 36)
+      : new THREE.BoxGeometry(item.size[0] + 0.2, item.size[1] + 0.2, item.size[2] + 0.2)
+
+    const halo = new THREE.Mesh(haloGeometry, new THREE.MeshBasicMaterial({ color: 0x60a5fa, transparent: true, opacity: 0.2, depthWrite: false }))
+    halo.position.copy(mesh.position)
+    scene.add(halo)
+  }
+
   if (item.tankDetails) {
-    addTankDetails(scene, item, selected)
-  }
+    const ringMaterial = new THREE.LineBasicMaterial({ color: 0xe0f2fe, transparent: true, opacity: selected ? 0.9 : 0.55 })
 
-  return mesh
-}
-
-function addRacks(scene, selected) {
-  const rackMaterial = makeMaterial(0x64748b, { roughness: 0.55, metalness: 0.25 })
-  const doorMaterial = makeMaterial(0x0f172a, { roughness: 0.44, metalness: 0.25 })
-  const positions = [-3.65, -3.15, -2.65, -2.15]
-
-  positions.forEach((x) => {
-    ;[-0.03, 0.68].forEach((z) => {
-      const rack = new THREE.Mesh(new THREE.BoxGeometry(0.34, 1.42, 0.52), rackMaterial)
-      rack.position.set(x, 0.76, z)
-      rack.castShadow = true
-      rack.receiveShadow = true
-      scene.add(rack)
-
-      const front = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.18, 0.03), doorMaterial)
-      front.position.set(x, 0.76, z - 0.28)
-      scene.add(front)
-
-      const edge = new THREE.LineSegments(
-        new THREE.EdgesGeometry(new THREE.BoxGeometry(0.34, 1.42, 0.52)),
-        new THREE.LineBasicMaterial({
-          color: 0xffffff,
-          transparent: true,
-          opacity: selected ? 0.45 : 0.16
-        })
+    ;[-0.42, 0.42].forEach((offset) => {
+      const ring = new THREE.LineSegments(
+        new THREE.EdgesGeometry(new THREE.CylinderGeometry(item.size[0] / 2 + 0.045, item.size[0] / 2 + 0.045, 0.04, 28)),
+        ringMaterial
       )
-      edge.position.copy(rack.position)
-      scene.add(edge)
+      ring.position.set(item.position[0], item.position[1] + offset, item.position[2])
+      scene.add(ring)
     })
-  })
-}
 
-function addDrycooler(scene, selected) {
-  const base = addBox(scene, EQUIPMENT.adiabaticDrycooler, selected)
-  const fanMaterial = makeMaterial(0x0f172a, { roughness: 0.4, metalness: 0.35 })
+    const sensorMaterial = new THREE.MeshBasicMaterial({ color: 0xe0f2fe })
 
-  ;[-0.52, 0, 0.52].forEach((offset) => {
-    const fan = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.055, 32), fanMaterial)
-    fan.position.set(base.position.x + offset, base.position.y + 0.29, base.position.z)
-    fan.rotation.x = Math.PI / 2
-    scene.add(fan)
-  })
-}
-
-function addZone(scene, zone, active = true) {
-  const material = new THREE.MeshStandardMaterial({
-    color: zone.color,
-    transparent: true,
-    opacity: active ? 0.105 : 0.025,
-    roughness: 0.8,
-    metalness: 0
-  })
-
-  const floor = new THREE.Mesh(new THREE.BoxGeometry(...zone.size), material)
-  floor.position.set(...zone.center)
-  floor.receiveShadow = true
-  scene.add(floor)
-
-  const line = new THREE.LineSegments(
-    new THREE.EdgesGeometry(new THREE.BoxGeometry(...zone.size)),
-    new THREE.LineBasicMaterial({
-      color: zone.color,
-      transparent: true,
-      opacity: active ? 0.55 : 0.14
+    ;[0.5, -0.5].forEach((offset) => {
+      const sensor = new THREE.Mesh(new THREE.SphereGeometry(0.055, 14, 14), sensorMaterial)
+      sensor.position.set(item.position[0] + item.size[0] / 2 + 0.09, item.position[1] + offset, item.position[2])
+      scene.add(sensor)
     })
-  )
 
-  line.position.copy(floor.position)
-  scene.add(line)
-
-  const wallMaterial = new THREE.MeshBasicMaterial({
-    color: zone.color,
-    transparent: true,
-    opacity: active ? 0.04 : 0.012,
-    side: THREE.DoubleSide
-  })
-
-  const [w, , d] = zone.size
-  const back = new THREE.Mesh(new THREE.PlaneGeometry(w, 1.9), wallMaterial)
-  back.position.set(zone.center[0], 0.95, zone.center[2] + d / 2)
-  scene.add(back)
-
-  const side = new THREE.Mesh(new THREE.PlaneGeometry(d, 1.9), wallMaterial)
-  side.rotation.y = Math.PI / 2
-  side.position.set(zone.center[0] - w / 2, 0.95, zone.center[2])
-  scene.add(side)
-}
-
-function riskState(params) {
-  const hp = Number(params?.hp ?? DEFAULT_PARAMS.hp)
-  const bp = Number(params?.bp ?? DEFAULT_PARAMS.bp)
-  const sh = Number(params?.sh ?? DEFAULT_PARAMS.sh)
-  const sc = Number(params?.sc ?? DEFAULT_PARAMS.sc)
-  const evapTemp = Number(params?.evapTemp ?? DEFAULT_PARAMS.evapTemp)
-  const warnings = []
-
-  if (hp >= 22) {
-    warnings.push('HP élevée : vérifier dry cooler, débit glycol, encrassement, mode adiabatique et non-condensables.')
-  }
-
-  if (bp <= 3.2 || evapTemp <= -2) {
-    warnings.push('Risque antigel : vérifier débit eau, filtres, vanne, pompe et sécurité antigel.')
-  }
-
-  if (sh <= 2) {
-    warnings.push('Surchauffe faible : risque de retour liquide côté chiller assist.')
-  }
-
-  if (sh >= 10) {
-    warnings.push('Surchauffe haute : évaporateur/chiller ou batterie probablement sous-alimenté.')
-  }
-
-  if (sc <= 2) {
-    warnings.push('Sous-refroidissement faible : ligne liquide instable ou charge à contrôler.')
-  }
-
-  if (!warnings.length) {
-    warnings.push('État global cohérent : poursuivre la ronde avec les tendances BMS/DCIM.')
-  }
-
-  return {
-    hp,
-    bp,
-    sh,
-    sc,
-    evapTemp,
-    warnings,
-    hpHigh: hp >= 22,
-    freezeRisk: bp <= 3.2 || evapTemp <= -2,
-    lowSh: sh <= 2,
-    lowSc: sc <= 2
-  }
-}
-
-function circuitColor(key, risk) {
-  if ((key === 'glycolHot' || key === 'heatRejection') && risk.hpHigh) return 0xff2d16
-  if ((key === 'chwSupply' || key === 'continuousLoop') && risk.freezeRisk) return 0x93c5fd
-  if (key === 'refrigerantSuction' && risk.lowSh) return 0x22c55e
-  if (key === 'refrigerantLiquid' && risk.lowSc) return 0xffbf69
-
-  return CIRCUITS[key].color
-}
-
-function addCircuit(scene, key, circuit, risk) {
-  const color = circuitColor(key, risk)
-  const material = makeMaterial(color, {
-    emissive: color,
-    emissiveIntensity: circuit.kind === 'air' ? 0.5 : 0.35,
-    roughness: 0.32,
-    metalness: 0.1
-  })
-
-  const group = new THREE.Group()
-
-  for (let i = 0; i < circuit.points.length - 1; i += 1) {
-    group.add(cylinderBetween(circuit.points[i], circuit.points[i + 1], circuit.radius, material))
-
-    const elbow = new THREE.Mesh(new THREE.SphereGeometry(circuit.radius * 1.45, 18, 18), material)
-    elbow.position.copy(v(circuit.points[i]))
-    group.add(elbow)
-  }
-
-  const last = new THREE.Mesh(
-    new THREE.SphereGeometry(circuit.radius * 1.45, 18, 18),
-    material
-  )
-  last.position.copy(v(circuit.points[circuit.points.length - 1]))
-  group.add(last)
-
-  const arrowMaterial = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.96 })
-
-  for (let i = 0; i < circuit.points.length - 1; i += 1) {
-    const start = v(circuit.points[i])
-    const end = v(circuit.points[i + 1])
-    const direction = end.clone().sub(start)
-
-    if (direction.length() < 0.55) continue
-
-    const count = direction.length() > 2 ? 2 : 1
-
-    for (let a = 0; a < count; a += 1) {
-      const arrow = new THREE.Mesh(new THREE.ConeGeometry(circuit.radius * 2.25, circuit.radius * 5.4, 20), arrowMaterial)
-      arrow.position.copy(start.clone().lerp(end, count === 2 ? 0.38 + a * 0.34 : 0.62))
-      arrow.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize())
-      group.add(arrow)
+    if (labelsVisible) {
+      const tag = createTextSprite('inertie hydraulique', { color: '#bae6fd', background: 'rgba(8, 47, 73, 0.82)', fontSize: 24, scale: [1.05, 0.26, 1] })
+      tag.position.set(item.position[0], item.position[1] + 1.02, item.position[2] - 0.48)
+      scene.add(tag)
     }
   }
 
-  const particleMaterial = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.98 })
-  const particleScale = circuit.kind === 'air' ? 0.92 : 0.72
+  if (labelsVisible) {
+    const label = createTextSprite(item.label, { color: selected ? '#ffffff' : '#e0f2fe', background: selected ? 'rgba(37, 99, 235, 0.86)' : 'rgba(15, 23, 42, 0.78)', fontSize: selected ? 28 : 24, scale: selected ? [1.34, 0.33, 1] : [1.12, 0.29, 1] })
+    label.position.set(item.position[0], item.position[1] + item.size[1] / 2 + 0.34, item.position[2])
+    scene.add(label)
+  }
+}
 
-  for (let i = 0; i < circuit.particles; i += 1) {
-    const particle = new THREE.Mesh(
-      new THREE.SphereGeometry(circuit.radius * particleScale, 12, 12),
-      particleMaterial
-    )
+function createTube(points, color, radius) {
+  const curve = new THREE.CatmullRomCurve3(points.map(vector3))
+  const geometry = new THREE.TubeGeometry(curve, 96, radius, 10, false)
+  const material = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.45 })
+  const tube = new THREE.Mesh(geometry, material)
+  return { tube, curve }
+}
 
-    particle.userData.flowParticle = true
-    particle.userData.points = circuit.points
-    particle.userData.offset = i / circuit.particles
-    particle.userData.speed = circuit.speed
-    group.add(particle)
+function addCircuit(scene, circuit, particlesBag) {
+  const radiusByKind = { air: 0.045, water: 0.035, glycol: 0.04, refrigerant: 0.028, power: 0.026, signal: 0.018 }
+  const { tube, curve } = createTube(circuit.points, circuit.color, radiusByKind[circuit.kind] ?? 0.03)
+  scene.add(tube)
+
+  const particleGeometry = new THREE.SphereGeometry((radiusByKind[circuit.kind] ?? 0.03) * 1.7, 10, 10)
+  const particleMaterial = new THREE.MeshBasicMaterial({ color: circuit.color, transparent: true, opacity: 0.95 })
+  const particles = []
+
+  for (let index = 0; index < circuit.particles; index += 1) {
+    const particle = new THREE.Mesh(particleGeometry, particleMaterial)
+    const progress = index / circuit.particles
+    particle.position.copy(curve.getPointAt(progress))
+    particle.userData.progress = progress
+    scene.add(particle)
+    particles.push(particle)
   }
 
-  group.userData.circuitKey = key
-  scene.add(group)
+  particlesBag.push({ curve, particles, speed: circuit.speed })
 }
 
-function metricStatus(label, risk) {
-  if (label === 'HP' && risk.hpHigh) return 'danger'
-  if (label === 'BP' && risk.freezeRisk) return 'warning'
-  if (label === 'SH' && (risk.lowSh || risk.sh >= 10)) return 'warning'
-  if (label === 'SR' && risk.lowSc) return 'warning'
-  return 'ok'
-}
+function disposeObject(object) {
+  if (object.geometry) object.geometry.dispose()
 
-function statusClass(status) {
-  if (status === 'danger') return 'border-red-400/50 bg-red-500/15 text-red-100'
-  if (status === 'warning') return 'border-amber-400/45 bg-amber-500/15 text-amber-100'
-  return 'border-emerald-400/30 bg-emerald-500/10 text-emerald-100'
-}
-
-function mapLegacyFocus(focus) {
-  const aliases = {
-    all: null,
-    compressor: 'chillerAssist',
-    condenser: 'adiabaticDrycooler',
-    expansionValve: 'chillerAssist',
-    evaporator: 'crah',
-    diagnostic: 'bms'
+  if (object.material) {
+    const materials = Array.isArray(object.material) ? object.material : [object.material]
+    materials.forEach((material) => {
+      if (material.map) material.map.dispose()
+      material.dispose()
+    })
   }
-
-  return aliases[focus] ?? focus
 }
 
-export default function HvacCycle3D({ highlightedComponent = 'all', params = DEFAULT_PARAMS }) {
+export default function HvacCycle3D({ highlightedComponent = null, params = DEFAULT_PARAMS, className = '' }) {
   const mountRef = useRef(null)
-  const labelsRef = useRef({})
-  const cameraToolsRef = useRef({})
   const [activeView, setActiveView] = useState('overview')
-  const [drawer, setDrawer] = useState(null)
-  const [selectedKey, setSelectedKey] = useState(null)
   const [labelsVisible, setLabelsVisible] = useState(true)
+  const [selectedKey, setSelectedKey] = useState(null)
   const [guideIndex, setGuideIndex] = useState(0)
+  const [zoomedOut, setZoomedOut] = useState(false)
 
-  const view = VIEWS[activeView]
-  const risk = useMemo(() => riskState(params), [params])
-  const guide = GUIDE_STEPS[guideIndex]
-  const mappedFocus = mapLegacyFocus(highlightedComponent)
-  const focusKey = selectedKey || (EQUIPMENT[mappedFocus] ? mappedFocus : null)
-  const selected = selectedKey ? EQUIPMENT[selectedKey] : null
+  const focusKey = useMemo(() => {
+    const guideFocus = GUIDE_STEPS[guideIndex]?.focus
+    return normalizeFocus(highlightedComponent) ?? guideFocus ?? null
+  }, [guideIndex, highlightedComponent])
 
-  const zones = useMemo(
-    () => Object.entries(ZONES).filter(([key]) => view.zones.includes(key)),
-    [view]
-  )
+  const visible = useMemo(() => {
+    const config = VIEWS[activeView] ?? VIEWS.overview
+    return { zones: config.zones, equipment: config.equipment, circuits: config.circuits, hint: config.hint }
+  }, [activeView])
 
-  const equipment = useMemo(
-    () => Object.entries(EQUIPMENT).filter(([key]) => view.equipment.includes(key)),
-    [view]
-  )
-
-  const circuits = useMemo(
-    () => Object.entries(CIRCUITS).filter(([key]) => view.circuits.includes(key)),
-    [view]
-  )
+  const selected = selectedKey ? EQUIPMENT[selectedKey] : focusKey ? EQUIPMENT[focusKey] : null
+  const selectedLabel = selectedKey ? 'Équipement sélectionné' : focusKey ? 'Focus pédagogique' : 'Sélection'
 
   useEffect(() => {
-    if (!mountRef.current) return undefined
+    const step = GUIDE_STEPS[guideIndex]
+    if (step?.view) setActiveView(step.view)
+  }, [guideIndex])
 
+  useEffect(() => {
     const mount = mountRef.current
-    mount.innerHTML = ''
+    if (!mount) return
 
-    const width = mount.clientWidth || 800
-    const height = mount.clientHeight || 620
-    const isMobile = width < 700
+    const width = mount.clientWidth || 900
+    const height = mount.clientHeight || 560
 
     const scene = new THREE.Scene()
     scene.background = new THREE.Color(0x020617)
+    scene.fog = new THREE.Fog(0x020617, 18, 34)
 
-    const camera = new THREE.PerspectiveCamera(isMobile ? 58 : 46, width / height, 0.1, 120)
-    const widePosition = isMobile
-      ? new THREE.Vector3(9.2, 6.4, 9.4)
-      : new THREE.Vector3(7.3, 5.1, 7.1)
-    const detailPosition = isMobile
-      ? new THREE.Vector3(6.8, 4.9, 6.8)
-      : new THREE.Vector3(5.4, 4.0, 5.4)
-
-    camera.position.copy(widePosition)
+    const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100)
+    camera.position.set(zoomedOut ? 10.5 : 8.4, zoomedOut ? 11.4 : 9.2, zoomedOut ? 15.2 : 12.4)
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.7))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
     renderer.setSize(width, height)
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
     mount.appendChild(renderer.domElement)
 
     const controls = new OrbitControls(camera, renderer.domElement)
-    controls.target.set(-0.55, 1.45, -0.1)
     controls.enableDamping = true
-    controls.dampingFactor = 0.08
-    controls.minDistance = 4.2
-    controls.maxDistance = isMobile ? 26 : 20
-    controls.maxPolarAngle = Math.PI * 0.5
+    controls.dampingFactor = 0.06
+    controls.enablePan = true
+    controls.minDistance = 8
+    controls.maxDistance = 24
+    controls.target.set(0.2, 4.8, -0.35)
 
-    cameraToolsRef.current = {
-      reset: () => {
-        camera.position.copy(widePosition)
-        controls.target.set(-0.55, 1.45, -0.1)
-        controls.update()
-      },
-      dezoom: () => {
-        camera.position.copy(isMobile ? new THREE.Vector3(11.5, 7.5, 11.5) : new THREE.Vector3(9.2, 6.2, 9.2))
-        controls.target.set(-0.55, 1.45, -0.1)
-        controls.update()
-      },
-      detail: () => {
-        camera.position.copy(detailPosition)
-        controls.target.set(-0.55, 1.45, -0.1)
-        controls.update()
-      }
-    }
+    scene.add(new THREE.HemisphereLight(0xe0f2fe, 0x020617, 1.3))
 
-    scene.add(new THREE.AmbientLight(0xffffff, 1.15))
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.35)
+    keyLight.position.set(5, 12, 6)
+    keyLight.castShadow = true
+    scene.add(keyLight)
 
-    const sun = new THREE.DirectionalLight(0xffffff, 1.85)
-    sun.position.set(6, 8, 5)
-    sun.castShadow = true
-    scene.add(sun)
+    const pointLight = new THREE.PointLight(0x38bdf8, 1.15, 16)
+    pointLight.position.set(-4, 5.5, 2.8)
+    scene.add(pointLight)
 
-    const blueFill = new THREE.PointLight(0x38bdf8, 1.6, 9)
-    blueFill.position.set(-4.2, 2.2, -2.2)
-    scene.add(blueFill)
+    visible.zones.forEach((key) => addZone(scene, ZONES[key], labelsVisible))
 
-    const warmFill = new THREE.PointLight(0xf97316, 1.1, 8)
-    warmFill.position.set(2.2, 4.3, -1.1)
-    scene.add(warmFill)
+    const particleGroups = []
+    visible.circuits.forEach((key) => addCircuit(scene, CIRCUITS[key], particleGroups))
 
-    const grid = new THREE.GridHelper(8.5, 17, 0x334155, 0x172033)
-    grid.position.y = -0.015
-    scene.add(grid)
-
-    const labelTargets = {}
-    const clickables = []
-
-    zones.forEach(([, zone]) => addZone(scene, zone, true))
-
-    equipment.forEach(([key, item]) => {
-      const isSelected = focusKey === key
-
-      if (key === 'racks') {
-        addRacks(scene, isSelected)
-      } else if (key === 'adiabaticDrycooler') {
-        addDrycooler(scene, isSelected)
-      } else {
-        const mesh = addBox(scene, item, isSelected)
-        mesh.userData.equipmentKey = key
-        clickables.push(mesh)
-      }
-
-      labelTargets[`eq:${key}`] = v(item.position).add(
-        new THREE.Vector3(0, item.size?.[1] ? item.size[1] / 2 + 0.18 : 0.8, 0)
-      )
+    const clickableObjects = []
+    visible.equipment.forEach((key) => {
+      const item = EQUIPMENT[key]
+      const selectedForRender = key === focusKey || key === selectedKey
+      addEquipment(scene, key, item, selectedForRender, labelsVisible, clickableObjects)
     })
-
-    zones.forEach(([key, zone]) => {
-      labelTargets[`zone:${key}`] = v(zone.labelPos)
-    })
-
-    circuits.forEach(([key, circuit]) => addCircuit(scene, key, circuit, risk))
 
     const raycaster = new THREE.Raycaster()
     const pointer = new THREE.Vector2()
 
-    function onPointer(event) {
+    const handlePointerDown = (event) => {
       const rect = renderer.domElement.getBoundingClientRect()
       pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
       pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
-
       raycaster.setFromCamera(pointer, camera)
-
-      const hit = raycaster
-        .intersectObjects(clickables, true)
-        .find((item) => item.object.userData.equipmentKey)
-
-      if (hit) {
-        setSelectedKey(hit.object.userData.equipmentKey)
-        setDrawer('equipment')
-      }
+      const hits = raycaster.intersectObjects(clickableObjects, false)
+      if (hits[0]?.object?.userData?.equipmentKey) setSelectedKey(hits[0].object.userData.equipmentKey)
     }
 
-    renderer.domElement.addEventListener('pointerdown', onPointer)
+    renderer.domElement.addEventListener('pointerdown', handlePointerDown)
 
-    const clock = new THREE.Clock()
-
-    function updateLabels() {
-      const w = mount.clientWidth || width
-      const h = mount.clientHeight || height
-
-      Object.entries(labelTargets).forEach(([key, position]) => {
-        const node = labelsRef.current[key]
-        if (!node) return
-
-        const projected = position.clone().project(camera)
-        const x = (projected.x * 0.5 + 0.5) * w
-        const y = (-projected.y * 0.5 + 0.5) * h
-        const visible = projected.z < 1 && labelsVisible
-
-        node.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`
-        node.style.opacity = visible ? '1' : '0'
-      })
-    }
-
-    let frame
-
-    function animate() {
-      const time = clock.getElapsedTime()
-
-      scene.traverse((object) => {
-        if (object.userData.flowParticle) {
-          object.position.copy(
-            pointOnPolyline(object.userData.points, object.userData.offset + time * object.userData.speed)
-          )
-        }
-      })
-
-      controls.update()
-      updateLabels()
-      renderer.render(scene, camera)
-      frame = requestAnimationFrame(animate)
-    }
-
-    animate()
-
-    function onResize() {
+    const handleResize = () => {
       const nextWidth = mount.clientWidth || width
       const nextHeight = mount.clientHeight || height
       camera.aspect = nextWidth / nextHeight
@@ -1249,311 +448,126 @@ export default function HvacCycle3D({ highlightedComponent = 'all', params = DEF
       renderer.setSize(nextWidth, nextHeight)
     }
 
-    window.addEventListener('resize', onResize)
+    window.addEventListener('resize', handleResize)
+
+    let animationFrame = 0
+    const clock = new THREE.Clock()
+
+    const animate = () => {
+      const delta = clock.getDelta()
+      particleGroups.forEach((group) => {
+        group.particles.forEach((particle) => {
+          particle.userData.progress = (particle.userData.progress + delta * group.speed) % 1
+          particle.position.copy(group.curve.getPointAt(particle.userData.progress))
+        })
+      })
+      controls.update()
+      renderer.render(scene, camera)
+      animationFrame = requestAnimationFrame(animate)
+    }
+
+    animate()
 
     return () => {
-      cancelAnimationFrame(frame)
-      window.removeEventListener('resize', onResize)
-      renderer.domElement.removeEventListener('pointerdown', onPointer)
+      cancelAnimationFrame(animationFrame)
+      renderer.domElement.removeEventListener('pointerdown', handlePointerDown)
+      window.removeEventListener('resize', handleResize)
+      controls.dispose()
+      scene.traverse(disposeObject)
       renderer.dispose()
-      mount.innerHTML = ''
-      cameraToolsRef.current = {}
+      if (renderer.domElement.parentNode === mount) mount.removeChild(renderer.domElement)
     }
-  }, [activeView, circuits, equipment, focusKey, labelsVisible, risk, zones])
-
-  const metrics = [
-    ['BP', risk.bp, 'bar'],
-    ['HP', risk.hp, 'bar'],
-    ['SH', risk.sh, 'K'],
-    ['SR', risk.sc, 'K']
-  ]
+  }, [activeView, focusKey, labelsVisible, selectedKey, visible.circuits, visible.equipment, visible.zones, zoomedOut])
 
   return (
-    <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950 shadow-2xl">
-      <div className="flex flex-col gap-3 border-b border-white/10 bg-slate-950/95 p-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <p className="text-xs font-black uppercase tracking-[0.22em] text-sky-300">Système réel</p>
-          <h3 className="text-lg font-black text-white">Dry adiabatique + chiller assist + continuous cooling</h3>
-          <p className="mt-1 text-xs text-slate-400">
-            Coupe bâtiment compartimentée, circuits droits et flux volontairement accentués.
-          </p>
-        </div>
+    <div className={`relative min-h-[640px] overflow-hidden rounded-3xl border border-slate-800 bg-slate-950 ${className}`}>
+      <div ref={mountRef} className="h-[760px] w-full min-h-[640px]" />
 
-        <div className="grid grid-cols-4 gap-2">
-          {metrics.map(([label, value, unit]) => (
-            <div
-              key={label}
-              className={`rounded-2xl border px-3 py-2 text-center ${statusClass(metricStatus(label, risk))}`}
-            >
-              <div className="text-[10px] font-black uppercase tracking-wider opacity-80">{label}</div>
-              <div className="text-sm font-black">
-                {value}
-                {unit}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="relative h-[520px] min-h-[520px] w-full sm:h-[620px]">
-        <div ref={mountRef} className="absolute inset-0" />
-
-        {labelsVisible &&
-          zones.map(([key, zone]) => (
-            <div
-              key={key}
-              ref={(node) => {
-                if (node) labelsRef.current[`zone:${key}`] = node
-              }}
-              className="pointer-events-none absolute left-0 top-0 z-10 rounded-2xl border border-white/10 bg-slate-950/70 px-3 py-1.5 text-center text-[8px] font-black uppercase tracking-[0.12em] text-white shadow-xl backdrop-blur transition-opacity sm:text-[10px]"
-            >
-              <div>{zone.label}</div>
-              <div className="text-[8px] font-semibold normal-case tracking-normal text-slate-300">
-                {zone.subtitle}
-              </div>
-            </div>
-          ))}
-
-        {labelsVisible &&
-          equipment.map(([key, item]) => {
-            const selectedLabel = focusKey === key || selectedKey === key
-
-            return (
-              <button
-                key={key}
-                ref={(node) => {
-                  if (node) labelsRef.current[`eq:${key}`] = node
-                }}
-                type="button"
-                onClick={() => {
-                  setSelectedKey(key)
-                  setDrawer('equipment')
-                }}
-                className={`absolute left-0 top-0 z-10 rounded-full border px-2 py-1 text-[8px] font-black uppercase tracking-[0.1em] backdrop-blur transition hover:scale-105 sm:px-3 sm:text-[10px] ${
-                  selectedLabel
-                    ? 'border-white/70 bg-white/20 text-white shadow-[0_0_24px_rgba(255,255,255,0.22)]'
-                    : 'border-slate-700 bg-slate-950/70 text-slate-300 hover:border-blue-300'
-                }`}
-              >
-                {item.label}
-              </button>
-            )
-          })}
-
-        <div className="absolute left-3 right-3 top-3 z-20 flex gap-2 overflow-x-auto rounded-3xl border border-white/10 bg-slate-950/75 p-2 backdrop-blur">
-          {Object.entries(VIEWS).map(([key, config]) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setActiveView(key)}
-              className={`shrink-0 rounded-2xl px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] transition ${
-                activeView === key
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              {config.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="absolute bottom-3 left-3 right-3 z-20 grid gap-2 sm:left-auto sm:right-3 sm:w-[360px]">
-          <div className="rounded-3xl border border-white/10 bg-slate-950/78 p-3 text-xs text-slate-200 shadow-2xl backdrop-blur">
-            <div className="font-black uppercase tracking-[0.16em] text-sky-200">Vue active</div>
-            <div className="mt-1 text-sm font-bold text-white">{view.label}</div>
-            <p className="mt-1 text-slate-400">{view.hint}</p>
+      <div className="pointer-events-none absolute inset-x-0 top-0 flex flex-col gap-3 p-4">
+        <div className="pointer-events-auto flex flex-wrap items-center justify-between gap-3">
+          <div className="rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 shadow-2xl backdrop-blur">
+            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-sky-300">Modèle 3D étagé</p>
+            <h3 className="mt-1 text-sm font-black text-white">{VIEWS[activeView]?.label}</h3>
+            <p className="mt-1 max-w-xl text-xs text-slate-300">{visible.hint}</p>
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={() => setLabelsVisible((value) => !value)}
-              className="rounded-2xl bg-slate-900 px-3 py-2 text-[10px] font-black uppercase tracking-wide text-slate-300 hover:bg-slate-800"
-            >
+          <div className="flex flex-wrap gap-2">
+            <button type="button" onClick={() => setLabelsVisible((value) => !value)} className="rounded-2xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-xs font-bold text-slate-100 backdrop-blur">
               {labelsVisible ? 'Sans labels' : 'Avec labels'}
             </button>
-            <button
-              type="button"
-              onClick={() => cameraToolsRef.current.dezoom?.()}
-              className="rounded-2xl bg-slate-900 px-3 py-2 text-[10px] font-black uppercase tracking-wide text-slate-300 hover:bg-slate-800"
-            >
-              Dézoom +
+            <button type="button" onClick={() => setZoomedOut((value) => !value)} className="rounded-2xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-xs font-bold text-slate-100 backdrop-blur">
+              {zoomedOut ? 'Dézoom -' : 'Dézoom +'}
             </button>
-            <button
-              type="button"
-              onClick={() => {
-                setDrawer('guide')
-                setActiveView(guide.view)
-                setSelectedKey(guide.focus)
-              }}
-              className="rounded-2xl bg-blue-600 px-3 py-2 text-[10px] font-black uppercase tracking-wide text-white hover:bg-blue-500"
-            >
-              Guide
+            <button type="button" onClick={() => { setSelectedKey(null); setActiveView('overview') }} className="rounded-2xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-xs font-bold text-slate-100 backdrop-blur">
+              Vue étagée
             </button>
           </div>
         </div>
 
-        <div className="absolute right-3 top-24 z-20 flex flex-col gap-2">
-          <button
-            type="button"
-            onClick={() => setDrawer('legend')}
-            className="rounded-2xl border border-white/10 bg-slate-950/80 px-3 py-2 text-[10px] font-black uppercase tracking-wide text-slate-300 backdrop-blur hover:bg-slate-900"
-          >
-            Flux
-          </button>
-          <button
-            type="button"
-            onClick={() => setDrawer('risks')}
-            className="rounded-2xl border border-white/10 bg-slate-950/80 px-3 py-2 text-[10px] font-black uppercase tracking-wide text-slate-300 backdrop-blur hover:bg-slate-900"
-          >
-            Risques
-          </button>
+        <div className="pointer-events-auto flex gap-2 overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-2 backdrop-blur">
+          {Object.entries(VIEWS).map(([key, view]) => (
+            <button type="button" key={key} onClick={() => { setActiveView(key); setSelectedKey(null) }} className={`shrink-0 rounded-xl px-3 py-2 text-xs font-black transition ${key === activeView ? 'bg-blue-500 text-white' : 'bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+              {view.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {drawer ? (
-        <div className="absolute inset-x-3 bottom-3 z-30 max-h-[72%] overflow-y-auto rounded-[1.7rem] border border-white/10 bg-slate-950/96 p-4 text-slate-200 shadow-2xl backdrop-blur sm:left-auto sm:right-4 sm:w-[390px]">
-          <div className="mb-3 flex items-start justify-between gap-3">
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 grid gap-3 p-4 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="pointer-events-auto rounded-3xl border border-white/10 bg-slate-950/85 p-4 shadow-2xl backdrop-blur">
+          <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-sky-300">
-                {drawer === 'equipment'
-                  ? 'Équipement'
-                  : drawer === 'legend'
-                    ? 'Lecture des flux'
-                    : drawer === 'guide'
-                      ? 'Visite guidée'
-                      : 'Risques'}
-              </p>
-              <h3 className="mt-1 text-lg font-black text-white">
-                {drawer === 'equipment'
-                  ? selected?.label
-                  : drawer === 'guide'
-                    ? guide.title
-                    : drawer === 'legend'
-                      ? view.label
-                      : 'Points de vigilance'}
-              </h3>
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-300">Guide 3D</p>
+              <h3 className="mt-1 text-sm font-black text-white">{GUIDE_STEPS[guideIndex].title}</h3>
             </div>
-
-            <button
-              type="button"
-              onClick={() => setDrawer(null)}
-              className="rounded-xl bg-slate-800 px-3 py-2 text-[10px] font-black uppercase tracking-wide text-slate-300 hover:bg-slate-700"
-            >
-              Fermer
-            </button>
+            <div className="flex gap-2">
+              <button type="button" onClick={() => setGuideIndex((index) => Math.max(0, index - 1))} className="rounded-xl bg-slate-800 px-3 py-2 text-xs font-bold text-slate-100 disabled:opacity-40" disabled={guideIndex === 0}>←</button>
+              <button type="button" onClick={() => setGuideIndex((index) => Math.min(GUIDE_STEPS.length - 1, index + 1))} className="rounded-xl bg-blue-600 px-3 py-2 text-xs font-bold text-white disabled:opacity-40" disabled={guideIndex === GUIDE_STEPS.length - 1}>→</button>
+            </div>
           </div>
+          <p className="mt-2 text-xs leading-relaxed text-slate-300">{GUIDE_STEPS[guideIndex].text}</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {GUIDE_STEPS.map((step, index) => (
+              <button type="button" key={step.title} onClick={() => setGuideIndex(index)} className={`h-2.5 w-8 rounded-full ${index === guideIndex ? 'bg-blue-400' : 'bg-slate-700'}`} aria-label={`Étape ${index + 1}`} />
+            ))}
+          </div>
+        </div>
 
-          {drawer === 'equipment' && selected ? (
-            <div className="space-y-3">
-              <p className="text-sm leading-relaxed text-slate-300">{selected.summary}</p>
+        <div className="pointer-events-auto rounded-3xl border border-white/10 bg-slate-950/85 p-4 shadow-2xl backdrop-blur">
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-blue-300">{selectedLabel}</p>
 
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-300">
-                  À contrôler sur site
-                </h4>
-                <p className="mt-2 text-xs leading-relaxed text-slate-300">{selected.observe}</p>
+          {selected ? (
+            <>
+              <h3 className="mt-1 text-base font-black text-white">{selected.label}</h3>
+              <p className="mt-2 text-xs leading-relaxed text-slate-300">{selected.summary}</p>
+
+              <div className="mt-3 rounded-2xl border border-white/10 bg-slate-900/80 p-3">
+                <h4 className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">À contrôler sur site</h4>
+                <p className="mt-2 text-xs leading-relaxed text-slate-200">{selected.observe}</p>
               </div>
 
               {selected.learning?.length ? (
-                <div className="rounded-2xl border border-sky-400/20 bg-sky-500/10 p-3">
-                  <h4 className="text-[10px] font-black uppercase tracking-[0.18em] text-sky-200">
-                    Notions water tank
-                  </h4>
-
+                <div className="mt-3 rounded-2xl border border-sky-400/20 bg-sky-500/10 p-3">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.18em] text-sky-200">Notions water tank</h4>
                   <ul className="mt-2 space-y-1 text-xs text-sky-50/90">
                     {selected.learning.map((point) => (
-                      <li key={point} className="leading-relaxed">
-                        • {point}
-                      </li>
+                      <li key={point} className="leading-relaxed">• {point}</li>
                     ))}
                   </ul>
                 </div>
               ) : null}
-            </div>
-          ) : null}
+            </>
+          ) : (
+            <p className="mt-2 text-xs leading-relaxed text-slate-300">Clique sur un équipement pour afficher son rôle et les contrôles terrain associés.</p>
+          )}
 
-          {drawer === 'legend' ? (
-            <div className="space-y-3">
-              <p className="text-sm text-slate-300">{view.hint}</p>
-
-              {circuits.map(([key, circuit]) => (
-                <div key={key} className="rounded-2xl border border-white/10 bg-white/5 p-3">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="h-3 w-3 rounded-full"
-                      style={{ backgroundColor: `#${circuit.color.toString(16).padStart(6, '0')}` }}
-                    />
-                    <div className="text-xs font-black text-white">{circuit.label}</div>
-                  </div>
-                  <p className="mt-1 text-xs leading-relaxed text-slate-400">{circuit.state}</p>
-                </div>
-              ))}
-            </div>
-          ) : null}
-
-          {drawer === 'guide' ? (
-            <div className="space-y-4">
-              <p className="text-sm leading-relaxed text-slate-300">{guide.text}</p>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveView(guide.view)
-                  setSelectedKey(guide.focus)
-                  setDrawer('equipment')
-                }}
-                className="rounded-2xl bg-blue-600 px-4 py-2 text-xs font-black uppercase tracking-wide text-white hover:bg-blue-500"
-              >
-                Afficher sur le modèle
-              </button>
-
-              <div className="flex items-center justify-between gap-3">
-                <button
-                  type="button"
-                  onClick={() => setGuideIndex((value) => Math.max(0, value - 1))}
-                  disabled={guideIndex === 0}
-                  className="rounded-2xl bg-slate-800 px-4 py-2 font-black text-white disabled:opacity-35"
-                >
-                  Précédent
-                </button>
-
-                <span className="text-xs font-black text-slate-400">
-                  {guideIndex + 1} / {GUIDE_STEPS.length}
-                </span>
-
-                <button
-                  type="button"
-                  onClick={() => setGuideIndex((value) => Math.min(GUIDE_STEPS.length - 1, value + 1))}
-                  disabled={guideIndex === GUIDE_STEPS.length - 1}
-                  className="rounded-2xl bg-blue-600 px-4 py-2 font-black text-white disabled:opacity-35"
-                >
-                  Suivant
-                </button>
-              </div>
-            </div>
-          ) : null}
-
-          {drawer === 'risks' ? (
-            <div className="space-y-3">
-              {risk.warnings.map((warning) => (
-                <div key={warning} className="rounded-2xl border border-amber-400/20 bg-amber-500/10 p-3 text-xs leading-relaxed text-amber-100">
-                  {warning}
-                </div>
-              ))}
-
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-300">
-                  Ordre professionnel
-                </h4>
-                <p className="mt-2 text-xs leading-relaxed text-slate-400">
-                  Confirmer par tendance BMS/DCIM, vérifier le débit, l’échange thermique et la redondance avant toute intervention.
-                </p>
-              </div>
-            </div>
-          ) : null}
+          <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
+            <div className="rounded-2xl bg-slate-900/90 p-2"><p className="text-slate-500">T évap.</p><p className="font-black text-white">{params?.evapTemp ?? DEFAULT_PARAMS.evapTemp}°C</p></div>
+            <div className="rounded-2xl bg-slate-900/90 p-2"><p className="text-slate-500">T cond.</p><p className="font-black text-white">{params?.condTemp ?? DEFAULT_PARAMS.condTemp}°C</p></div>
+            <div className="rounded-2xl bg-slate-900/90 p-2"><p className="text-slate-500">COP</p><p className="font-black text-white">{params?.cop ?? DEFAULT_PARAMS.cop}</p></div>
+          </div>
         </div>
-      ) : null}
+      </div>
     </div>
   )
 }
